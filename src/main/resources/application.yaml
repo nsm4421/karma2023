@@ -12,10 +12,8 @@ spring:
   config:
     activate:
       on-profile: common
-
-# ...
-
 ---
+# development
 spring:
   config:
     activate:
@@ -32,9 +30,13 @@ spring:
     hibernate:
       ddl-auto: create
     show-sql: true
+kakao:
+  api:
+    base-url: "https://dapi.kakao.com/v2/local/search/address.json"
+    secret-key: ${KAKAO_REST_API_KEY}
 
 ---
-
+# production
 spring:
   config:
     activate:
