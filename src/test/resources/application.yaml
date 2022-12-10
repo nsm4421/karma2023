@@ -1,0 +1,13 @@
+# properties for test
+spring:
+  datasource:
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    url: jdbc:tc:mariadb:10:///
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+
+kakao:
+  api:
+    secret-key: ${KAKAO_API_SECRET_KEY}
