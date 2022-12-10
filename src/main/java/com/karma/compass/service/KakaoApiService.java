@@ -2,8 +2,8 @@ package com.karma.compass.service;
 
 import com.karma.compass.domain.kakao.KakaoApiResponseDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -14,32 +14,29 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 
-@Slf4j      // for logging
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class KakaoApiService {
-    // @Value → inject value from application.yaml
-    @Value("kazao.api.secret-key") private String kakaoApiSecretKey;
-    @Value("kakao.api.base-url") private String kakaoApiBaseUrl;
+    private String KAKAO_BASE_URL = "https://dapi.kakao.com/v2/local/search/address.json";
+    @Value("kakao.api.secret-key") private String KAKAO_SECRET_KEY;
     private final RestTemplate restTemplate;
 
-    private URI getUri(String address){
-        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(kakaoApiBaseUrl);
-        uriComponentsBuilder.queryParam("query", address);
-        URI uri = uriComponentsBuilder.build().encode().toUri();
-        log.info("[getUri] address:{} uri:{}", address, uri);
+    public URI buildUri(String address) {
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(KAKAO_BASE_URL);
+        uriBuilder.queryParam("query", address);
+        URI uri = uriBuilder.build().encode().toUri();
+        log.info("KakaoApiService.buildUri - address: [{}], uri: [{}]", address, uri);
         return uri;
     }
 
-    public KakaoApiResponseDto requestAddressSearch(String address){
-        if (ObjectUtils.isEmpty(address)) return null;
-        URI uri = getUri(address);
-        HttpHeaders httpHeaders = new HttpHeaders();
-        String authToken = String.format("KakaoAK %s", kakaoApiSecretKey);
-        httpHeaders.set(HttpHeaders.AUTHORIZATION, authToken);
-        HttpEntity httpEntity = new HttpEntity<>(httpHeaders);
+    public KakaoApiResponseDto searchAddress(String address) {
+        if(ObjectUtils.isEmpty(address)) return null;
+        URI uri = buildUri(address);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION, "KakaoAK " + KAKAO_SECRET_KEY);
         return restTemplate
-                .exchange(uri, HttpMethod.GET, httpEntity, KakaoApiResponseDto.class)
+                .exchange(uri, HttpMethod.GET, new HttpEntity<>(headers), KakaoApiResponseDto.class)
                 .getBody();
     }
 }
