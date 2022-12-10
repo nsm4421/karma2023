@@ -11,4 +11,4 @@ spring:
 kakao:
   api:
     base-url: "https://dapi.kakao.com/v2/local/search/address.json"
-    secret-key: ${KAKAO_API_SECRET_KEY}
+    secret-key: "425c9f67304c991d5687ee7be2878350"

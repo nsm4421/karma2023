@@ -18,8 +18,8 @@ import java.net.URI;
 @Service
 @RequiredArgsConstructor
 public class KakaoApiService {
-    private String KAKAO_BASE_URL = "https://dapi.kakao.com/v2/local/search/address.json";
-    @Value("kakao.api.secret-key") private String KAKAO_SECRET_KEY;
+    @Value("${kakao.api.base-url}") private String KAKAO_BASE_URL;
+    @Value("${kakao.api.secret-key}") private String KAKAO_SECRET_KEY;
     private final RestTemplate restTemplate;
 
     public URI buildUri(String address) {

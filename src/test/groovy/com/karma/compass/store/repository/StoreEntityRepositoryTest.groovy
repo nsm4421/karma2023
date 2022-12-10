@@ -12,7 +12,7 @@ class StoreEntityRepositoryTest extends AbstractIntegrationBaseTest {
         storeEntityRepository.deleteAll();
     }
 
-    def "Repository 정상동작 test"(){
+    def "Save Entity, Check Fields"(){
         given:
             String address = "서울특별시 동작구 상도동"
             String name = "할리스커피"
@@ -28,5 +28,22 @@ class StoreEntityRepositoryTest extends AbstractIntegrationBaseTest {
             saved.getName() == store.getName()
             saved.getLatitude() == store.getLatitude()
             saved.getLongitude() == store.getLongitude()
+    }
+
+    def "Save Entity, Check Count"(){
+        given:
+            String address = "서울특별시 동작구 상도동"
+            String name = "할리스커피"
+            Double latitude = 12
+            Double longitude = 12
+            def store = StoreEntity.of(name, address, latitude, longitude);
+
+        when:
+            def cntBeforeSave = storeEntityRepository.findAll().size();
+            def saved = storeEntityRepository.saveAll(Arrays.asList(store))
+            def cntAfterSave = storeEntityRepository.findAll().size();
+
+        then:
+            cntAfterSave == cntBeforeSave+1
     }
 }

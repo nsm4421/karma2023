@@ -1,15 +1,14 @@
 package com.karma.compass.service
 
 import com.karma.compass.AbstractIntegrationBaseTest
+import com.karma.compass.domain.kakao.KakaoApiResponseDto
+import org.springframework.beans.factory.annotation.Autowired
+
 import java.nio.charset.StandardCharsets
 
 class KakaoApiServiceTest extends AbstractIntegrationBaseTest {
 
-    private KakaoApiService kakaoService
-
-    def setup(){
-        kakaoService = new KakaoApiService()
-    }
+    @Autowired private KakaoApiService kakaoService
 
     def "buildUri"() {
         given:
@@ -23,5 +22,24 @@ class KakaoApiServiceTest extends AbstractIntegrationBaseTest {
 
         then:
             디코딩 ==  "https://dapi.kakao.com/v2/local/search/address.json?query=" + 한글주소
+    }
+
+    def "searchAddress - if address is null, then return null"(){
+        given:
+        String 한글주소 = null
+        when:
+            KakaoApiResponseDto 검색결과 = kakaoService.searchAddress(한글주소)
+        then:
+            검색결과 == null
+    }
+
+    def "searchAddress - if address is valid, then return dto"(){
+        given:
+            String 한글주소 = "서울 동작구 상도동"
+        when:
+            KakaoApiResponseDto 검색결과 = kakaoService.searchAddress(한글주소)
+        then:
+            검색결과.documents.size()>0
+            검색결과.meta.totalCount>0
     }
 }
