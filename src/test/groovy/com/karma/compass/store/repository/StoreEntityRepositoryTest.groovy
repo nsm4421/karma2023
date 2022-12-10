@@ -1,7 +1,7 @@
 package com.karma.compass.store.repository
 
 import com.karma.compass.AbstractIntegrationBaseTest
-import com.karma.compass.domain.store.StoreEntity
+import com.karma.compass.domain.entity.StoreEntity
 import com.karma.compass.repository.StoreEntityRepository
 import org.springframework.beans.factory.annotation.Autowired
 

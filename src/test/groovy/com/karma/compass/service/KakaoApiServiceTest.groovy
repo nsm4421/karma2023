@@ -1,7 +1,8 @@
 package com.karma.compass.service
 
 import com.karma.compass.AbstractIntegrationBaseTest
-import com.karma.compass.domain.kakao.KakaoApiResponseDto
+import com.karma.compass.domain.dto.KakaoApiResponseDto
+import com.karma.compass.util.KakaoApiService
 import org.springframework.beans.factory.annotation.Autowired
 
 import java.nio.charset.StandardCharsets

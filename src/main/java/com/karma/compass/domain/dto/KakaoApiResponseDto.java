@@ -1,4 +1,4 @@
-package com.karma.compass.domain.kakao;
+package com.karma.compass.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

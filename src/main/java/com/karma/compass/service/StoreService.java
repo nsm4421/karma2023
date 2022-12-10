@@ -1,6 +1,6 @@
 package com.karma.compass.service;
 
-import com.karma.compass.domain.store.StoreEntity;
+import com.karma.compass.domain.entity.StoreEntity;
 import com.karma.compass.repository.StoreEntityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

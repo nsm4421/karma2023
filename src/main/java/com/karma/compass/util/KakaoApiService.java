@@ -1,6 +1,6 @@
-package com.karma.compass.service;
+package com.karma.compass.util;
 
-import com.karma.compass.domain.kakao.KakaoApiResponseDto;
+import com.karma.compass.domain.dto.KakaoApiResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +15,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 
 @Slf4j
-@Service
 @RequiredArgsConstructor
 public class KakaoApiService {
     @Value("${kakao.api.base-url}") private String KAKAO_BASE_URL;

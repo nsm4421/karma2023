@@ -1,4 +1,4 @@
-package com.karma.compass.domain.store;
+package com.karma.compass.domain.entity;
 
 import com.karma.compass.domain.util.AuditingFields;
 import lombok.*;
