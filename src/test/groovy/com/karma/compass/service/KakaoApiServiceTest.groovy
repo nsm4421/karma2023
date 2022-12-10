@@ -1,10 +1,9 @@
 package com.karma.compass.service
 
-import spock.lang.Specification
-
+import com.karma.compass.AbstractIntegrationBaseTest
 import java.nio.charset.StandardCharsets
 
-class KakaoApiServiceTest extends Specification {
+class KakaoApiServiceTest extends AbstractIntegrationBaseTest {
 
     private KakaoApiService kakaoService
 
