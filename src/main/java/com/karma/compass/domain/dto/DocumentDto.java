@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
-@AllArgsConstructor
-@NoArgsConstructor
+@Setter
 public class DocumentDto {
     /**
      * address_name(String)	전체 지번 주소 또는 전체 도로명 주소, 입력에 따라 결정됨
@@ -28,4 +28,16 @@ public class DocumentDto {
     private Double longitude;
     @JsonProperty("y")
     private Double latitude;
+
+    private DocumentDto(String addressName, Double longitude, Double latitude) {
+        this.addressName = addressName;
+        this.longitude = longitude;
+        this.latitude = latitude;
+    }
+
+    protected DocumentDto(){}
+
+    public static DocumentDto of(String addressName, Double longitude, Double latitude){
+        return new DocumentDto(addressName, longitude, latitude);
+    }
 }
