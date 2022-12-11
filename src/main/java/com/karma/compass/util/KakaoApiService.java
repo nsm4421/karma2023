@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
@@ -29,6 +32,11 @@ public class KakaoApiService {
         return uri;
     }
 
+    @Retryable(
+            value = {RuntimeException.class},   // 에러 종류
+            maxAttempts = 2,                    // 최대 시도 횟수
+            backoff = @Backoff(delay = 2000)    // 딜레이 시간 (2초)
+    )
     public KakaoApiResponseDto searchAddress(String address) {
         if(ObjectUtils.isEmpty(address)) return null;
         URI uri = buildUri(address);
@@ -37,5 +45,11 @@ public class KakaoApiService {
         return restTemplate
                 .exchange(uri, HttpMethod.GET, new HttpEntity<>(headers), KakaoApiResponseDto.class)
                 .getBody();
+    }
+
+    @Recover
+    public KakaoApiResponseDto recover(RuntimeException e, String address){
+        log.error("Error occurs... address : [{}] error : [{}]", address, e.getMessage());
+        return null;
     }
 }
