@@ -1,6 +1,7 @@
 package com.karma.prj.model.entity;
 
 import com.karma.prj.model.dto.UserDto;
+import com.karma.prj.model.util.RoleType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,7 +32,7 @@ public class UserEntity {
     private String nickname;
     private String password;
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private RoleType role;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @CreatedDate @Column(updatable = false, name = "created_at")
     private LocalDateTime createdAt;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @LastModifiedDate @Column(name = "modified_at")
@@ -39,7 +40,7 @@ public class UserEntity {
     @Column(name = "removed_at") @Setter
     private LocalDateTime removedAt;
 
-    private UserEntity(String email, String username, String nickname, String password, Role role, LocalDateTime createdAt, LocalDateTime removedAt) {
+    private UserEntity(String email, String username, String nickname, String password, RoleType role, LocalDateTime createdAt, LocalDateTime removedAt) {
         this.email = email;
         this.username = username;
         this.nickname = nickname;
@@ -51,7 +52,7 @@ public class UserEntity {
 
     protected UserEntity(){}
 
-    public static UserEntity of(String email, String username, String nickname, String password, Role role, LocalDateTime createdAt, LocalDateTime removedAt) {
+    public static UserEntity of(String email, String username, String nickname, String password, RoleType role, LocalDateTime createdAt, LocalDateTime removedAt) {
         return new UserEntity(email, username, nickname, password, role, createdAt, removedAt);
     }
 

@@ -1,5 +1,5 @@
 package com.karma.prj.model.util;
 
-public enum Role {
+public enum RoleType {
     USER,MANAGER,ADMIN;
 }
