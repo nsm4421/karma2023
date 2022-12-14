@@ -26,7 +26,7 @@ public abstract class AuditingFields {
     private LocalDateTime modifiedAt;
     @CreatedBy @Column(updatable = false, length = 100, name = "created_by")
     private String createdBy;
-    @LastModifiedBy @Column(length = 100, name = "modified_at")
+    @LastModifiedBy @Column(length = 100, name = "modified_by")
     private String modifiedBy;
     @Column(name = "removed_at") @Setter
     private LocalDateTime removedAt;

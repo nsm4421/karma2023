@@ -1,19 +1,18 @@
 package com.karma.prj.config;
 
-import com.karma.prj.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import static org.springframework.security.config.Customizer.withDefaults;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 
 @Configuration
+@EnableWebSecurity
 public class SecurityConfig {
-
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http
@@ -45,10 +44,6 @@ public class SecurityConfig {
                 // csrf 풀기
                 .csrf().disable()
                 .build();
-    }
-    @Bean
-    public UserDetailsService userDetailsService(UserRepository repository) {
-        return null;
     }
 
     @Bean
