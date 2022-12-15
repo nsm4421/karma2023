@@ -16,7 +16,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     public UserDto register(String email, String username, String nickname, String password){
-        // 중복체크
+        // 중복체크 - 유저명, 닉네임, 이메일
         userRepository.findByUsername(username).ifPresent(it->{
             throw CustomException.of(
                     CustomErrorCode.DUPLICATED_USERNAME,
@@ -42,5 +42,15 @@ public class UserService {
         return UserEntity.dto(user);
     }
 
-
+    public String login(String username, String password){
+        // 존재하는 회원여부
+        UserEntity user = userRepository.findByUsername(username)
+                .orElseThrow(()->{throw CustomException.of(CustomErrorCode.USERNAME_NOT_FOUND);});
+        // 비밀번호 일치여부 확인
+        if (!passwordEncoder.matches(password, user.getPassword())){
+            throw CustomException.of(CustomErrorCode.INVALID_PASSWORD);
+        }
+        // TODO : JWT 토큰 반환
+        return "";
+    }
 }
