@@ -4,6 +4,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import static org.springframework.security.config.Customizer.withDefaults;
+
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -22,22 +24,9 @@ public class SecurityConfig {
                         // Static(html, css, js, favicon...) 허용
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations())
                         .permitAll()
-                        // TODO : GET, POST 요청 허용할 Url
-//                        // GET 요청 허용
-//                        .requestMatchers(
-//                                HttpMethod.GET,
-//                                "/"
-//                        )
-//                        .permitAll()
-//                        // POST 요청 허용
-//                        .requestMatchers(
-//                                HttpMethod.POST,
-//                                "/register", "/login"
-//                        )
-//                        .permitAll()
-                        // 이 외의 모든 기능은 인증 필요
+                        // TODO
                         .anyRequest()
-                        .authenticated()
+                        .permitAll()
                 )
                 .formLogin(withDefaults())
                 .logout(logout -> logout.logoutSuccessUrl("/"))
