@@ -32,6 +32,6 @@ public class UserController {
      */
     @PostMapping("/login")
     public CustomResponse<String> login(@RequestBody LoginRequest req){
-        return CustomResponse.success(userService.login(req.getUsername(), req.getUsername()));
+        return CustomResponse.success(userService.login(req.getUsername(), req.getPassword()));
     }
 }

@@ -8,6 +8,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -24,17 +25,25 @@ public class SecurityConfig {
                         // Static(html, css, js, favicon...) 허용
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations())
                         .permitAll()
-                        // TODO
-                        .anyRequest()
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/*/user/register", "/api/*/user/login")
                         .permitAll()
+                        .requestMatchers("/api/**")
+                        .authenticated()
+                        .anyRequest().permitAll()
+
                 )
+                // TODO : Exception handling
+//                .exceptionHandling()
+//                .authenticationEntryPoint()
+//                .and()
                 .formLogin(withDefaults())
                 .logout(logout -> logout.logoutSuccessUrl("/"))
                 // csrf 풀기
                 .csrf().disable()
                 .build();
     }
-
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
