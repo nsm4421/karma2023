@@ -39,7 +39,9 @@ public class CommentEntity extends AuditingFields {
                 entity.getContent(),
                 entity.getUser().getNickname(),
                 entity.getCreatedAt(),
-                entity.getModifiedAt()
+                entity.getModifiedAt(),
+                entity.getCreatedBy(),
+                entity.getModifiedBy()
         );
     }
 }

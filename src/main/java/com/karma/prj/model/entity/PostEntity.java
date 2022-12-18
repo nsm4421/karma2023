@@ -49,9 +49,11 @@ public class PostEntity extends AuditingFields {
                 entity.getId(),
                 entity.getTitle(),
                 entity.getContent(),
-                entity.getUser().getUsername(),
+                entity.getUser().getNickname(),
                 entity.getCreatedAt(),
-                entity.getModifiedAt()
+                entity.getModifiedAt(),
+                entity.getCreatedBy(),
+                entity.getModifiedBy()
         );
     }
 }
