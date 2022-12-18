@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     @Value("${jwt.secret-key}") private String secretKey;
     @Value("${jwt.duration}") private Long duration;
 
@@ -51,7 +51,7 @@ public class UserService {
             );
         });
         // 비밀번호 인코딩
-        String encodedPassword = passwordEncoder.encode(password);
+        String encodedPassword = bCryptPasswordEncoder.encode(password);
         // DB 저장
         UserEntity user = userRepository.save(UserEntity.of(email, username, nickname, encodedPassword, RoleType.USER, null, null));
         return UserEntity.dto(user);
@@ -69,10 +69,16 @@ public class UserService {
         UserEntity user = userRepository.findByUsername(username)
                 .orElseThrow(()->{throw CustomException.of(CustomErrorCode.USERNAME_NOT_FOUND);});
         // 비밀번호 일치여부 확인
-        if (!passwordEncoder.matches(password, user.getPassword())){
+        if (!bCryptPasswordEncoder.matches(password, user.getPassword())){
             throw CustomException.of(CustomErrorCode.INVALID_PASSWORD);
         }
-        // TODO : JWT 토큰 반환
         return JwtUtil.generateToken(username, secretKey, duration);
+    }
+
+    @Transactional(readOnly = true)
+    public UserEntity findByUsername(String username){
+        return userRepository.findByUsername(username).orElseThrow(()->{
+            throw CustomException.of(CustomErrorCode.USERNAME_NOT_FOUND);
+        });
     }
 }

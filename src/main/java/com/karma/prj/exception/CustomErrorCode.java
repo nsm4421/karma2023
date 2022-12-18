@@ -13,8 +13,11 @@ public enum CustomErrorCode {
     DUPLICATED_EMAIL(HttpStatus.CONFLICT, "Email is duplicated..."),
     // not found
     USERNAME_NOT_FOUND(HttpStatus.NOT_FOUND, "Username is not found..."),
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "Post is not found..."),
     // auth failure
     INVALID_PASSWORD(HttpStatus.FORBIDDEN, "Password is wrong..."),
+    NOT_GRANTED_ACCESS(HttpStatus.FORBIDDEN, "Access denied due to grant..."),
+    INVALID_TOKEN(HttpStatus.FORBIDDEN, "Token is invalid..."),
     // internal server error
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error...")
     ;
