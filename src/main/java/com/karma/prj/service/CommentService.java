@@ -83,6 +83,7 @@ public class CommentService {
      * @param commentId
      * @param username 자기가 작성한 댓글인지 확인하기 위해 authentication에서 추출한 username
      */
+    @Transactional
     public void delete(Long postId, Long commentId, String username){
         PostEntity post = postRepository.findById(postId).orElseThrow(()->{
             throw CustomException.of(CustomErrorCode.POST_NOT_FOUND);

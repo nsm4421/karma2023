@@ -34,10 +34,9 @@ public class CommentController {
         return CustomResponse.success(commentService.modify(req.getPostId(), req.getCommentId(), req.getContent(), authentication.getName()));
     }
 
-    @PutMapping
-    public CustomResponse<Void> modify(@RequestBody DeleteCommentRequest req, Authentication authentication){
+    @DeleteMapping
+    public CustomResponse<Void> delete(@RequestBody DeleteCommentRequest req, Authentication authentication){
         commentService.delete(req.getPostId(), req.getCommentId(), authentication.getName());
         return CustomResponse.success();
     }
-
 }
