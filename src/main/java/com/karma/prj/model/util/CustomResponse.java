@@ -14,6 +14,8 @@ public class CustomResponse<T> {
         this.result = result;
     }
 
+    protected CustomResponse(){}
+
     public static <T> CustomResponse<T> success() {
         return new CustomResponse<T>("SUCCESS", null);
     }
@@ -24,5 +26,16 @@ public class CustomResponse<T> {
 
     public static CustomResponse<Void> error(String resultCode) {
         return new CustomResponse<Void>(resultCode, null);
+    }
+
+    public static String json(CustomResponse res){
+        if (res.result == null) {
+            return "{" +
+                    "\"resultCode\":" + "\"" + res.statusCode + "\"," +
+                    "\"result\":" + null + "}";
+        }
+        return "{" +
+                "\"resultCode\":" + "\"" + res.statusCode + "\"," +
+                "\"result\":" + "\"" + res.result.toString() + "\"" + "}";
     }
 }

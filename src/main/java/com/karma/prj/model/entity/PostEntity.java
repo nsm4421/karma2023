@@ -31,12 +31,17 @@ public class PostEntity extends AuditingFields {
     @OneToMany(fetch = FetchType.LAZY) @JoinColumn(name = "post_id")
     private List<CommentEntity> comments;
 
+    private PostEntity(String title, String content, UserEntity user, List<CommentEntity> comments) {
+        this.title = title;
+        this.content = content;
+        this.user = user;
+        this.comments = comments;
+    }
+
+    protected PostEntity(){}
+
     public static PostEntity of(String title, String content, UserEntity user) {
-        PostEntity entity = new PostEntity();
-        entity.setTitle(title);
-        entity.setContent(content);
-        entity.setUser(user);
-        return entity;
+        return new PostEntity(title, content, user, List.of());
     }
 
     public static PostDto dto(PostEntity entity){
@@ -44,7 +49,7 @@ public class PostEntity extends AuditingFields {
                 entity.getId(),
                 entity.getTitle(),
                 entity.getContent(),
-                UserEntity.dto(entity.getUser()),
+                entity.getUser().getUsername(),
                 entity.getCreatedAt(),
                 entity.getModifiedAt()
         );
