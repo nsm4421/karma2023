@@ -2,9 +2,12 @@ package com.karma.prj.service;
 
 import com.karma.prj.exception.CustomErrorCode;
 import com.karma.prj.exception.CustomException;
+import com.karma.prj.model.dto.CommentDto;
 import com.karma.prj.model.dto.PostDto;
+import com.karma.prj.model.entity.CommentEntity;
 import com.karma.prj.model.entity.PostEntity;
 import com.karma.prj.model.entity.UserEntity;
+import com.karma.prj.repository.CommentRepository;
 import com.karma.prj.repository.PostRepository;
 import com.karma.prj.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
