@@ -5,9 +5,12 @@ import com.karma.prj.exception.CustomException;
 import com.karma.prj.model.dto.CommentDto;
 import com.karma.prj.model.dto.PostDto;
 import com.karma.prj.model.entity.CommentEntity;
+import com.karma.prj.model.entity.LikeEntity;
 import com.karma.prj.model.entity.PostEntity;
 import com.karma.prj.model.entity.UserEntity;
+import com.karma.prj.model.util.LikeType;
 import com.karma.prj.repository.CommentRepository;
+import com.karma.prj.repository.LikeRepository;
 import com.karma.prj.repository.PostRepository;
 import com.karma.prj.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,12 +19,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class PostService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
+    private final LikeRepository likeRepository;
 
     /**
      * 포스트 작성요청
@@ -145,7 +151,7 @@ public class PostService {
      */
     @Transactional
     public CommentDto modifyComment(Long postId, Long commentId, String content, String username){
-        PostEntity post = postRepository.findById(postId).orElseThrow(()->{
+        postRepository.findById(postId).orElseThrow(()->{
             throw CustomException.of(CustomErrorCode.POST_NOT_FOUND);
         });
         CommentEntity comment = commentRepository.findById(commentId).orElseThrow(()->{
@@ -166,7 +172,7 @@ public class PostService {
      */
     @Transactional
     public void deleteComment(Long postId, Long commentId, String username){
-        PostEntity post = postRepository.findById(postId).orElseThrow(()->{
+        postRepository.findById(postId).orElseThrow(()->{
             throw CustomException.of(CustomErrorCode.POST_NOT_FOUND);
         });
         CommentEntity comment = commentRepository.findById(commentId).orElseThrow(()->{
@@ -176,5 +182,47 @@ public class PostService {
             throw CustomException.of(CustomErrorCode.NOT_GRANTED_ACCESS);
         }
         commentRepository.deleteById(commentId);
+    }
+
+    /**
+     * 좋아요 & 싫어요 개수 가져오기
+     * @param postId 좋아요 & 싫어요 포스트 id
+
+     */
+    @Transactional(readOnly = true)
+    public Map<String, Long> getLikeCount(Long postId){
+        PostEntity post = postRepository.findById(postId).orElseThrow(()->{
+            throw CustomException.of(CustomErrorCode.POST_NOT_FOUND);
+        });
+        return Map.of(
+                "LIKE", likeRepository.getLikeCountByPostAndLikeType(post, LikeType.LIKE),
+                "HATE", likeRepository.getLikeCountByPostAndLikeType(post, LikeType.HATE)
+        );
+    }
+
+    /**
+     * 좋아요 & 싫어요 요청
+     * @param postId 좋아요 & 싫어요 포스트 id
+     * @param likeType LIKE(좋아요), HATE(싫어요)
+     * @param username 유저명
+     */
+    @Transactional
+    public void likePost(Long postId, LikeType likeType, String username){
+        UserEntity user = userRepository.findByUsername(username).orElseThrow(()->{
+            throw CustomException.of(CustomErrorCode.USERNAME_NOT_FOUND);
+        });
+        PostEntity post = postRepository.findById(postId).orElseThrow(()->{
+            throw CustomException.of(CustomErrorCode.POST_NOT_FOUND);
+        });
+        likeRepository.findByUserAndPostAndLikeType(user, post, likeType).ifPresent(it->{
+            if (it.getLikeType().equals(likeType)){
+                // 이미 좋아요를 누르고 좋아요를 누른 경우 or 이미 싫어요를 누르고 싫어요를 누른 경우 → 에러
+                throw CustomException.of(CustomErrorCode.ALREADY_LIKED);
+            } else {
+                // 좋아요를 누르고 싫어오를 누른 경우 or 이미 싫어요를 누르고 좋아요를 누른 경우 → 삭제
+                likeRepository.deleteById(it.getId());
+            }
+        });
+        likeRepository.save(LikeEntity.of(user, post, likeType));
     }
 }

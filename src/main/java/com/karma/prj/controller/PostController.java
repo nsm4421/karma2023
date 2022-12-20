@@ -1,6 +1,7 @@
 package com.karma.prj.controller;
 
 import com.karma.prj.controller.request.*;
+import com.karma.prj.controller.response.GetLikeResponse;
 import com.karma.prj.model.dto.CommentDto;
 import com.karma.prj.model.dto.PostDto;
 import com.karma.prj.model.util.CustomResponse;
@@ -58,6 +59,17 @@ public class PostController {
     @DeleteMapping("/comment")
     public CustomResponse<Void> deletePost(@RequestBody DeleteCommentRequest req, Authentication authentication){
         postService.deleteComment(req.getPostId(), req.getCommentId(), authentication.getName());
+        return CustomResponse.success();
+    }
+
+    @GetMapping("/like/{postId}")
+    public CustomResponse<GetLikeResponse> getLikeCount(@PathVariable Long postId){
+        return CustomResponse.success(GetLikeResponse.from(postId, postService.getLikeCount(postId)));
+    }
+
+    @PostMapping("/like")
+    public CustomResponse<Void> likePost(@RequestBody LikePostRequest req, Authentication authentication){
+        postService.likePost(req.getPostId(), req.getLikeType(), authentication.getName());
         return CustomResponse.success();
     }
 }
