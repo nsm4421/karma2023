@@ -15,7 +15,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -35,7 +34,7 @@ class PostServiceTest {
         String username = "테스트_유저명";
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(mock(UserEntity.class)));
         when(postRepository.save(any())).thenReturn(mock(PostEntity.class));
-        Assertions.assertDoesNotThrow(()->postService.create(title,content,username));
+        Assertions.assertDoesNotThrow(()->postService.createPost(title,content,username));
     }
 
     @Test
@@ -46,7 +45,7 @@ class PostServiceTest {
         String username = "테스트_유저명";
         when(userRepository.findByUsername(username)).thenReturn(Optional.empty());     // ← 존재하지 않는 유저명
         when(postRepository.save(any())).thenReturn(mock(PostEntity.class));
-        CustomException errorThrown = Assertions.assertThrows(CustomException.class, ()->postService.create(title,content,username));
+        CustomException errorThrown = Assertions.assertThrows(CustomException.class, ()->postService.createPost(title,content,username));
         Assertions.assertEquals(errorThrown.getCode(), CustomErrorCode.USERNAME_NOT_FOUND);
     }
 }

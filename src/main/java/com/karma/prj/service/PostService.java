@@ -16,13 +16,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class PostService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
 
     /**
      * 포스트 작성요청
@@ -32,7 +31,7 @@ public class PostService {
      * @return 저장된 post id
      */
     @Transactional
-    public Long create(String title, String content, String username){
+    public Long createPost(String title, String content, String username){
         UserEntity user = userRepository.findByUsername(username).orElseThrow(()->{
             throw CustomException.of(CustomErrorCode.USERNAME_NOT_FOUND);
         });
@@ -66,7 +65,7 @@ public class PostService {
      * @return 저장된 포스트 id
      */
     @Transactional
-    public Long modify(Long postId, String title, String content, String username){
+    public Long modifyPost(Long postId, String title, String content, String username){
         UserEntity user = userRepository.findByUsername(username).orElseThrow(()->{
             throw CustomException.of(CustomErrorCode.USERNAME_NOT_FOUND);
         });
@@ -89,7 +88,7 @@ public class PostService {
      * @return 저장된 포스트 id
      */
     @Transactional
-    public Long delete(Long postId, String username){
+    public Long deletePost(Long postId, String username){
         UserEntity user = userRepository.findByUsername(username).orElseThrow(()->{
             throw CustomException.of(CustomErrorCode.USERNAME_NOT_FOUND);
         });
@@ -102,5 +101,80 @@ public class PostService {
         }
         postRepository.deleteById(postId);
         return postId;
+    }
+
+    /**
+     * 댓글 조회
+     * @param pageable
+     * @param postId
+     * @return 댓글 Dto Page
+     */
+    @Transactional(readOnly = true)
+    public Page<CommentDto> getComments(Long postId, Pageable pageable){
+        PostEntity post = postRepository.findById(postId).orElseThrow(()->{
+            throw CustomException.of(CustomErrorCode.POST_NOT_FOUND);
+        });
+        return commentRepository.findAllByPost(post, pageable).map(CommentEntity::dto);
+    }
+
+    /**
+     * 댓글작성
+     * @param postId
+     * @param content
+     * @param username
+     * @return
+     */
+    @Transactional
+    public CommentDto createComment(Long postId, String content, String username){
+        UserEntity user = userRepository.findByUsername(username).orElseThrow(()->{
+            throw CustomException.of(CustomErrorCode.USERNAME_NOT_FOUND);
+        });
+        PostEntity post = postRepository.findById(postId).orElseThrow(()->{
+            throw CustomException.of(CustomErrorCode.POST_NOT_FOUND);
+        });
+        return CommentEntity.dto(commentRepository.save(CommentEntity.of(content, user, post)));
+    }
+
+    /**
+     * 댓글 수정
+     * @param postId
+     * @param commentId
+     * @param content 수정할 댓글내용
+     * @param username 자기가 작성한 댓글인지 확인하기 위해 authentication에서 추출한 username
+     * @return 댓글 Dto
+     */
+    @Transactional
+    public CommentDto modifyComment(Long postId, Long commentId, String content, String username){
+        PostEntity post = postRepository.findById(postId).orElseThrow(()->{
+            throw CustomException.of(CustomErrorCode.POST_NOT_FOUND);
+        });
+        CommentEntity comment = commentRepository.findById(commentId).orElseThrow(()->{
+            throw CustomException.of(CustomErrorCode.COMMENT_NOT_FOUND);
+        });
+        if (!comment.getUser().getUsername().equals(username)){
+            throw CustomException.of(CustomErrorCode.NOT_GRANTED_ACCESS);
+        }
+        comment.setContent(content);
+        return CommentEntity.dto(commentRepository.save(comment));
+    }
+
+    /**
+     * 댓글 삭제
+     * @param postId
+     * @param commentId
+     * @param username 자기가 작성한 댓글인지 확인하기 위해 authentication에서 추출한 username
+     */
+    @Transactional
+    public void deleteComment(Long postId, Long commentId, String username){
+        PostEntity post = postRepository.findById(postId).orElseThrow(()->{
+            throw CustomException.of(CustomErrorCode.POST_NOT_FOUND);
+        });
+        CommentEntity comment = commentRepository.findById(commentId).orElseThrow(()->{
+            throw CustomException.of(CustomErrorCode.COMMENT_NOT_FOUND);
+        });
+        if (!comment.getUser().getUsername().equals(username)){
+            throw CustomException.of(CustomErrorCode.NOT_GRANTED_ACCESS);
+        }
+        commentRepository.deleteById(commentId);
     }
 }
