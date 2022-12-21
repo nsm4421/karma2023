@@ -64,7 +64,7 @@ cors:
   allowed-headers: '*'
   max-age: 3600
 jwt:
-  secret-key: "[DEV]비밀번호 암호화를 위한 비밀키"
+  secret-key: ${DEV_JWT_SECRET_KEY}
   duration: 6048000000 # 7일
 ---
 # production

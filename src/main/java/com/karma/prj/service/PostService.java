@@ -38,9 +38,7 @@ public class PostService {
      */
     @Transactional
     public Long createPost(String title, String content, String username){
-        UserEntity user = userRepository.findByUsername(username).orElseThrow(()->{
-            throw CustomException.of(CustomErrorCode.USERNAME_NOT_FOUND);
-        });
+        UserEntity user = findByUsernameOrElseThrow(username);
         return postRepository.save(PostEntity.of(title, content, user)).getId();
     }
 
@@ -51,7 +49,7 @@ public class PostService {
      */
     @Transactional(readOnly = true)
     public PostDto getPost(Long postId){
-        return PostEntity.dto(postRepository.findById(postId).orElseThrow(()->{throw CustomException.of(CustomErrorCode.POST_NOT_FOUND);}));
+        return PostEntity.dto(findByPostIdOrElseThrow(postId));
     }
 
     /**
@@ -60,6 +58,18 @@ public class PostService {
     @Transactional(readOnly = true)
     public Page<PostDto> getPosts(Pageable pageable){
         return postRepository.findAll(pageable).map(PostEntity::dto);
+    }
+
+    /**
+     * 포스팅 조회 by 유저
+     * @param pageable
+     * @param username 조회할 작성자
+     * @return PostDto 페이지
+     */
+    @Transactional(readOnly = true)
+    public Page<PostDto> getPostsByUser(Pageable pageable, String username){
+        UserEntity user = findByUsernameOrElseThrow(username);
+        return postRepository.findAllByUser(pageable, user).map(PostEntity::dto);
     }
 
     /**
@@ -72,12 +82,8 @@ public class PostService {
      */
     @Transactional
     public Long modifyPost(Long postId, String title, String content, String username){
-        UserEntity user = userRepository.findByUsername(username).orElseThrow(()->{
-            throw CustomException.of(CustomErrorCode.USERNAME_NOT_FOUND);
-        });
-        PostEntity post = postRepository.findById(postId).orElseThrow(()->{
-            throw CustomException.of(CustomErrorCode.POST_NOT_FOUND);
-        });
+        UserEntity user = findByUsernameOrElseThrow(username);
+        PostEntity post = findByPostIdOrElseThrow(postId);
         if (!post.getUser().getUsername().equals(username)){
             // 포스트 작성자와 수정 요청한 사람이 일치하는지 확인
             throw CustomException.of(CustomErrorCode.NOT_GRANTED_ACCESS);
@@ -95,12 +101,8 @@ public class PostService {
      */
     @Transactional
     public Long deletePost(Long postId, String username){
-        UserEntity user = userRepository.findByUsername(username).orElseThrow(()->{
-            throw CustomException.of(CustomErrorCode.USERNAME_NOT_FOUND);
-        });
-        PostEntity post = postRepository.findById(postId).orElseThrow(()->{
-            throw CustomException.of(CustomErrorCode.POST_NOT_FOUND);
-        });
+        findByUsernameOrElseThrow(username);
+        PostEntity post = findByPostIdOrElseThrow(postId);
         if (!post.getUser().getUsername().equals(username)){
             // 포스트 작성자와 삭제 요청한 사람이 일치하는지 확인
             throw CustomException.of(CustomErrorCode.NOT_GRANTED_ACCESS);
@@ -117,9 +119,7 @@ public class PostService {
      */
     @Transactional(readOnly = true)
     public Page<CommentDto> getComments(Long postId, Pageable pageable){
-        PostEntity post = postRepository.findById(postId).orElseThrow(()->{
-            throw CustomException.of(CustomErrorCode.POST_NOT_FOUND);
-        });
+        PostEntity post = findByPostIdOrElseThrow(postId);
         return commentRepository.findAllByPost(post, pageable).map(CommentEntity::dto);
     }
 
@@ -132,12 +132,8 @@ public class PostService {
      */
     @Transactional
     public CommentDto createComment(Long postId, String content, String username){
-        UserEntity user = userRepository.findByUsername(username).orElseThrow(()->{
-            throw CustomException.of(CustomErrorCode.USERNAME_NOT_FOUND);
-        });
-        PostEntity post = postRepository.findById(postId).orElseThrow(()->{
-            throw CustomException.of(CustomErrorCode.POST_NOT_FOUND);
-        });
+        UserEntity user = findByUsernameOrElseThrow(username);
+        PostEntity post = findByPostIdOrElseThrow(postId);
         return CommentEntity.dto(commentRepository.save(CommentEntity.of(content, user, post)));
     }
 
@@ -151,12 +147,8 @@ public class PostService {
      */
     @Transactional
     public CommentDto modifyComment(Long postId, Long commentId, String content, String username){
-        postRepository.findById(postId).orElseThrow(()->{
-            throw CustomException.of(CustomErrorCode.POST_NOT_FOUND);
-        });
-        CommentEntity comment = commentRepository.findById(commentId).orElseThrow(()->{
-            throw CustomException.of(CustomErrorCode.COMMENT_NOT_FOUND);
-        });
+        findByPostIdOrElseThrow(postId);
+        CommentEntity comment = findByCommentIdOrElseThrow(commentId);
         if (!comment.getUser().getUsername().equals(username)){
             throw CustomException.of(CustomErrorCode.NOT_GRANTED_ACCESS);
         }
@@ -172,12 +164,8 @@ public class PostService {
      */
     @Transactional
     public void deleteComment(Long postId, Long commentId, String username){
-        postRepository.findById(postId).orElseThrow(()->{
-            throw CustomException.of(CustomErrorCode.POST_NOT_FOUND);
-        });
-        CommentEntity comment = commentRepository.findById(commentId).orElseThrow(()->{
-            throw CustomException.of(CustomErrorCode.COMMENT_NOT_FOUND);
-        });
+        findByPostIdOrElseThrow(postId);
+        CommentEntity comment = findByCommentIdOrElseThrow(commentId);
         if (!comment.getUser().getUsername().equals(username)){
             throw CustomException.of(CustomErrorCode.NOT_GRANTED_ACCESS);
         }
@@ -191,9 +179,7 @@ public class PostService {
      */
     @Transactional(readOnly = true)
     public Map<String, Long> getLikeCount(Long postId){
-        PostEntity post = postRepository.findById(postId).orElseThrow(()->{
-            throw CustomException.of(CustomErrorCode.POST_NOT_FOUND);
-        });
+        PostEntity post = findByPostIdOrElseThrow(postId);
         return Map.of(
                 "LIKE", likeRepository.getLikeCountByPostAndLikeType(post, LikeType.LIKE),
                 "HATE", likeRepository.getLikeCountByPostAndLikeType(post, LikeType.HATE)
@@ -208,21 +194,35 @@ public class PostService {
      */
     @Transactional
     public void likePost(Long postId, LikeType likeType, String username){
-        UserEntity user = userRepository.findByUsername(username).orElseThrow(()->{
-            throw CustomException.of(CustomErrorCode.USERNAME_NOT_FOUND);
-        });
-        PostEntity post = postRepository.findById(postId).orElseThrow(()->{
-            throw CustomException.of(CustomErrorCode.POST_NOT_FOUND);
-        });
+        UserEntity user = findByUsernameOrElseThrow(username);
+        PostEntity post = findByPostIdOrElseThrow(postId);
         likeRepository.findByUserAndPostAndLikeType(user, post, likeType).ifPresent(it->{
             if (it.getLikeType().equals(likeType)){
                 // 이미 좋아요를 누르고 좋아요를 누른 경우 or 이미 싫어요를 누르고 싫어요를 누른 경우 → 에러
                 throw CustomException.of(CustomErrorCode.ALREADY_LIKED);
             } else {
-                // 좋아요를 누르고 싫어오를 누른 경우 or 이미 싫어요를 누르고 좋아요를 누른 경우 → 삭제
+                // 좋아요를 누르고 싫어요를 누른 경우 → 좋아요 삭제
+                // 싫어요를 누르고 좋아요를 누른 경우 → 싫어요 삭제
                 likeRepository.deleteById(it.getId());
             }
         });
         likeRepository.save(LikeEntity.of(user, post, likeType));
+    }
+
+    private UserEntity findByUsernameOrElseThrow(String username){
+        return userRepository.findByUsername(username).orElseThrow(()->{
+            throw CustomException.of(CustomErrorCode.USERNAME_NOT_FOUND);
+        });
+    }
+    private PostEntity findByPostIdOrElseThrow(Long postId){
+        return postRepository.findById(postId).orElseThrow(()->{
+            throw CustomException.of(CustomErrorCode.POST_NOT_FOUND);
+        });
+    }
+
+    private CommentEntity findByCommentIdOrElseThrow(Long commentId){
+        return commentRepository.findById(commentId).orElseThrow(()->{
+            throw CustomException.of(CustomErrorCode.COMMENT_NOT_FOUND);
+        });
     }
 }

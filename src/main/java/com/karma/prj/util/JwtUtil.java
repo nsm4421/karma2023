@@ -92,7 +92,7 @@ public class JwtUtil extends OncePerRequestFilter {
 
         try {
             String usernameFromJwt = claims.get("username", String.class);
-            UserEntity user = userService.findByUsername(usernameFromJwt);
+            UserEntity user = userService.findByUsernameOrElseThrow(usernameFromJwt);
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                     user, null,
                     user.getAuthorities()

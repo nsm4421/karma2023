@@ -19,54 +19,74 @@ import org.springframework.web.bind.annotation.*;
 public class PostController {
     private final PostService postService;
 
+    // 포스팅 단건조회
     @GetMapping("/post/{postId}")
     public CustomResponse<PostDto> getPost(@PathVariable Long postId){
         return CustomResponse.success(postService.getPost(postId));
     }
+
+    // 포스팅 페이지 조회
     @GetMapping("/post")
     public CustomResponse<Page<PostDto>> getPosts(@PageableDefault Pageable pageable){
         return CustomResponse.success(postService.getPosts(pageable));
     }
+
+    // 포스팅 페이지 조회 by 유저
+    @GetMapping("/post")
+    public CustomResponse<Page<PostDto>> getPostsByUser(@PageableDefault Pageable pageable, @RequestParam("username") String username){
+        return CustomResponse.success(postService.getPostsByUser(pageable, username));
+    }
+
+    // 포스팅 작성
     @PostMapping("/post")
     public CustomResponse<Long> createPost(@RequestBody CreatePostRequest req, Authentication authentication){
         return CustomResponse.success(postService.createPost(req.getTitle(), req.getContent(), authentication.getName()));
     }
 
+    // 포스팅 수정
     @PutMapping("/post/{postId}")
     public CustomResponse<Long> modifyPost(@PathVariable Long postId, @RequestBody ModifyPostRequest req, Authentication authentication){
         return CustomResponse.success(postService.modifyPost(postId, req.getTitle(), req.getContent(), authentication.getName()));
     }
+
+    // 포스팅 삭제
     @DeleteMapping("/post/{postId}")
     public CustomResponse<Long> deletePost(@PathVariable Long postId, Authentication authentication){
         return CustomResponse.success(postService.deletePost(postId, authentication.getName()));
     }
 
+    // 댓글 조회
     @GetMapping("/comment/{postId}")
     public CustomResponse<Page<CommentDto>> getComment(@PathVariable Long postId, @PageableDefault Pageable pageable){
         return CustomResponse.success(postService.getComments(postId, pageable));
     }
 
+    // 댓글 작성
     @PostMapping("/comment")
     public CustomResponse<CommentDto> createPost(@RequestBody CreateCommentRequest req, Authentication authentication){
         return CustomResponse.success(postService.createComment(req.getPostId(), req.getContent(), authentication.getName()));
     }
 
+    // 댓글 수정
     @PutMapping("/comment")
     public CustomResponse<CommentDto> modifyPost(@RequestBody ModifyCommentRequest req, Authentication authentication){
         return CustomResponse.success(postService.modifyComment(req.getPostId(), req.getCommentId(), req.getContent(), authentication.getName()));
     }
 
+    // 댓글 삭제
     @DeleteMapping("/comment")
     public CustomResponse<Void> deletePost(@RequestBody DeleteCommentRequest req, Authentication authentication){
         postService.deleteComment(req.getPostId(), req.getCommentId(), authentication.getName());
         return CustomResponse.success();
     }
 
+    // 좋아요 & 싫어요 개수 가져오기
     @GetMapping("/like/{postId}")
     public CustomResponse<GetLikeResponse> getLikeCount(@PathVariable Long postId){
         return CustomResponse.success(GetLikeResponse.from(postId, postService.getLikeCount(postId)));
     }
 
+    // 좋아요 & 싫어요 요청
     @PostMapping("/like")
     public CustomResponse<Void> likePost(@RequestBody LikePostRequest req, Authentication authentication){
         postService.likePost(req.getPostId(), req.getLikeType(), authentication.getName());

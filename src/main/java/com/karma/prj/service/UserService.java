@@ -31,30 +31,13 @@ public class UserService {
      */
     @Transactional
     public UserDto register(String email, String username, String nickname, String password){
-        // 중복체크 - 유저명, 닉네임, 이메일
-        userRepository.findByUsername(username).ifPresent(it->{
-            throw CustomException.of(
-                    CustomErrorCode.DUPLICATED_USERNAME,
-                    String.format("Username [%s] is duplicated...", username)
-            );
-        });
-        userRepository.findByNickname(nickname).ifPresent(it->{
-            throw CustomException.of(
-                    CustomErrorCode.DUPLICATED_USERNAME,
-                    String.format("Nickname [%s] is duplicated...", nickname)
-            );
-        });
-        userRepository.findByEmail(email).ifPresent(it->{
-            throw CustomException.of(
-                    CustomErrorCode.DUPLICATED_USERNAME,
-                    String.format("Email [%s] is duplicated...", email)
-            );
-        });
+        // 중복체크
+        checkDuplicated(_field.EMAIL, email);
+        checkDuplicated(_field.NICKNAME, nickname);
+        checkDuplicated(_field.USERNAME, username);
         // 비밀번호 인코딩
         String encodedPassword = bCryptPasswordEncoder.encode(password);
-        // DB 저장
-        UserEntity user = userRepository.save(UserEntity.of(email, username, nickname, encodedPassword, RoleType.USER, null, null));
-        return UserEntity.dto(user);
+        return UserEntity.dto(userRepository.save(UserEntity.of(email, username, nickname, encodedPassword, RoleType.USER, null, null)));
     }
 
     /**
@@ -66,8 +49,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public String login(String username, String password){
         // 존재하는 회원여부
-        UserEntity user = userRepository.findByUsername(username)
-                .orElseThrow(()->{throw CustomException.of(CustomErrorCode.USERNAME_NOT_FOUND);});
+        UserEntity user = findByUsernameOrElseThrow(username);
         // 비밀번호 일치여부 확인
         if (!bCryptPasswordEncoder.matches(password, user.getPassword())){
             throw CustomException.of(CustomErrorCode.INVALID_PASSWORD);
@@ -75,10 +57,52 @@ public class UserService {
         return JwtUtil.generateToken(username, secretKey, duration);
     }
 
+
+    /**
+     * 중복체크
+     * @param f 중복체크할 필드
+     * @param value 중복체크할 값
+     */
+    private void checkDuplicated(_field f, String value){
+       switch (f){
+           case EMAIL -> {
+               // 중복체크 - 유저명, 닉네임, 이메일
+               userRepository.findByUsername(value).ifPresent(it->{
+                   throw CustomException.of(
+                           CustomErrorCode.DUPLICATED_USERNAME,
+                           String.format("Username [%s] is duplicated...", value)
+                   );
+               });
+           }
+           case USERNAME -> {
+               userRepository.findByEmail(value).ifPresent(it->{
+                   throw CustomException.of(
+                           CustomErrorCode.DUPLICATED_USERNAME,
+                           String.format("Email [%s] is duplicated...", value)
+                   );
+               });
+           }
+           case NICKNAME -> {
+               userRepository.findByNickname(value).ifPresent(it->{
+                   throw CustomException.of(
+                           CustomErrorCode.DUPLICATED_NICKNAME,
+                           String.format("Nickname [%s] is duplicated...", value)
+                   );
+               });
+           }
+       }
+    }
+
+    /**
+     * 중복체크할 필드
+     */
+    private enum _field{
+        USERNAME, NICKNAME, EMAIL;
+    }
+
     @Transactional(readOnly = true)
-    public UserEntity findByUsername(String username){
-        return userRepository.findByUsername(username).orElseThrow(()->{
-            throw CustomException.of(CustomErrorCode.USERNAME_NOT_FOUND);
-        });
+    public UserEntity findByUsernameOrElseThrow(String username){
+        return userRepository.findByUsername(username)
+                .orElseThrow(()->{throw CustomException.of(CustomErrorCode.USERNAME_NOT_FOUND);});
     }
 }
