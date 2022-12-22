@@ -65,6 +65,7 @@ class UserControllerTest {
                 .andExpect(status().is(CustomErrorCode.DUPLICATED_USERNAME.getStatus().value()));
     }
 
+
     @Test
     @DisplayName("[Login]Success Login")
     @WithAnonymousUser
@@ -79,21 +80,5 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(new LoginRequest(username, password))))
                 .andExpect(status().isOk());
-    }
-
-    @Test
-    @DisplayName("[Login]Success fail due to wrong password")
-    @WithAnonymousUser
-    public void 잘못된_비밀번호() throws Exception {
-        String username = "테스트용 유저명";
-        String email = "테스트용 이메일";
-        String nickname = "테스트용 닉네임";
-        String password = "테스트용 비밀번호";
-        userService.register(email, username, nickname, password);
-
-        mockmvc.perform(post("/api/v1/user/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsBytes(new LoginRequest(username, password+"test"))))
-                .andExpect(status().is(CustomErrorCode.INVALID_PASSWORD.getStatus().value()));
     }
 }

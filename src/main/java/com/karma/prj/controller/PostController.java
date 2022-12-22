@@ -25,15 +25,13 @@ public class PostController {
         return CustomResponse.success(postService.getPost(postId));
     }
 
+
     // 포스팅 페이지 조회
     @GetMapping("/post")
-    public CustomResponse<Page<PostDto>> getPosts(@PageableDefault Pageable pageable){
-        return CustomResponse.success(postService.getPosts(pageable));
-    }
-
-    // 포스팅 페이지 조회 by 유저
-    @GetMapping("/post")
     public CustomResponse<Page<PostDto>> getPostsByUser(@PageableDefault Pageable pageable, @RequestParam("username") String username){
+        if (username==null){
+            return CustomResponse.success(postService.getPosts(pageable));
+        }
         return CustomResponse.success(postService.getPostsByUser(pageable, username));
     }
 

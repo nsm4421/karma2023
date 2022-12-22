@@ -9,6 +9,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,6 +25,7 @@ import java.util.Set;
 @Setter
 @Table(name = "\"user\"")
 @SQLDelete(sql = "UPDATE \"user\" SET removed_at = NOW() WHERE id=?")
+@EntityListeners(AuditingEntityListener.class)
 @Where(clause = "removed_at is NULL")
 public class UserEntity implements UserDetails {
 

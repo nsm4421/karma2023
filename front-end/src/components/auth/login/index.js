@@ -31,9 +31,9 @@ const Boxs = styled(Box)`
   padding-bottom: 40px !important;
 `;
 
-const Register = () => {
+const Login = () => {
 
-    const endPoint = "/api/v1/user/register";
+    const endPoint = "/api/v1/user/login";
     const navigator = useNavigate();
 
     // ---------- states  ---------- //
@@ -77,8 +77,11 @@ const Register = () => {
         e.preventDefault();
         await axios
         .post(endPoint, {username, password})
-        .then((res) => {                
-            navigator("/post");
+        .then((res) => {      
+            return res.data.result
+        })
+        .then((token)=>{
+            localStorage.setItem("karma-token", `Bearer ${token}`);
         })
         .catch((err) => {
             console.log(err);
@@ -164,4 +167,4 @@ const Register = () => {
     );
 };
 
-export default Register;
+export default Login;
