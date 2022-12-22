@@ -22,6 +22,7 @@ public enum CustomErrorCode {
     INVALID_TOKEN(HttpStatus.FORBIDDEN, "Token is invalid..."),
     // conflict
     ALREADY_LIKED(HttpStatus.CONFLICT, "User Already like post"),
+    CHATTING_SERVER_ERROR(HttpStatus.CONFLICT, "Error occurs on chatting"),
     // internal server error
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error...")
     ;
