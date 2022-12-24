@@ -15,27 +15,32 @@ public class NotificationEntity extends AuditingFields {
     private Long id;
     @ManyToOne @JoinColumn(name = "user_id")
     private UserEntity user;
+
+    @ManyToOne @JoinColumn(name = "post_id")
+    private PostEntity post;
     @Enumerated(EnumType.STRING)
     private NotificationType notificationType;
     @Column(columnDefinition = "TEXT")
     private String message;
 
-    private NotificationEntity(UserEntity user, NotificationType notificationType, String message) {
+    private NotificationEntity(UserEntity user, PostEntity post, NotificationType notificationType, String message) {
         this.user = user;
+        this.post = post;
         this.notificationType = notificationType;
         this.message = message;
     }
 
     protected NotificationEntity(){}
 
-    public static NotificationEntity of(UserEntity user, NotificationType notificationType, String message) {
-        return new NotificationEntity(user, notificationType, message);
+    public static NotificationEntity of(UserEntity user, PostEntity post, NotificationType notificationType, String message) {
+        return new NotificationEntity(user, post, notificationType, message);
     }
 
     public static NotificationDto dto(NotificationEntity entity) {
         return NotificationDto.of(
                 entity.getId(),
                 UserEntity.dto(entity.getUser()),
+                PostEntity.dto(entity.getPost()),
                 entity.getNotificationType(),
                 entity.getMessage(),
                 entity.getCreatedAt(),

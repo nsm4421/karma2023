@@ -2,6 +2,7 @@ package com.karma.prj.controller;
 
 import com.karma.prj.controller.request.LoginRequest;
 import com.karma.prj.controller.request.RegisterRequest;
+import com.karma.prj.controller.response.GetNotificationResponse;
 import com.karma.prj.model.dto.NotificationDto;
 import com.karma.prj.model.util.CustomResponse;
 import com.karma.prj.service.UserService;
@@ -41,14 +42,14 @@ public class UserController {
      * 알람 가져오기
      * @param authentication 인증 context
      * @param pageable 페이지
-     * @return Notification Dto Page
+     * @return GetNotificationResponse Page
      */
     @GetMapping("/notification")
-    public CustomResponse<Page<NotificationDto>> getNotification(
+    public CustomResponse<Page<GetNotificationResponse>> getNotification(
             Authentication authentication,
             @PageableDefault Pageable pageable
     ){
-        return CustomResponse.success(userService.getNotification(authentication.getName(), pageable));
+        return CustomResponse.success(userService.getNotification(authentication.getName(), pageable).map(GetNotificationResponse::from));
     }
 
     /**
@@ -60,7 +61,7 @@ public class UserController {
     @DeleteMapping("/notification/{notificationId}")
     public CustomResponse<Void> deleteNotification(
             Authentication authentication,
-            @PathVariable Long notificationId
+            @RequestParam("notificationId") Long notificationId
     ){
         if (notificationId == null){
             userService.deleteNotificationById(authentication.getName(), notificationId);

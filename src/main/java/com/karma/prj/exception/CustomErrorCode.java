@@ -25,6 +25,7 @@ public enum CustomErrorCode {
     ALREADY_LIKED(HttpStatus.CONFLICT, "User Already like post"),
     CHATTING_SERVER_ERROR(HttpStatus.CONFLICT, "Error occurs on chatting"),
     // internal server error
+    ERROR_ON_CREATE_NOTIFICATION(HttpStatus.INTERNAL_SERVER_ERROR, "Error ocuurs on creating notification"),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error...")
     ;
     private final HttpStatus status;

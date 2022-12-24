@@ -4,16 +4,12 @@ import com.karma.prj.exception.CustomErrorCode;
 import com.karma.prj.exception.CustomException;
 import com.karma.prj.model.dto.CommentDto;
 import com.karma.prj.model.dto.PostDto;
-import com.karma.prj.model.entity.CommentEntity;
-import com.karma.prj.model.entity.LikeEntity;
-import com.karma.prj.model.entity.PostEntity;
-import com.karma.prj.model.entity.UserEntity;
+import com.karma.prj.model.entity.*;
 import com.karma.prj.model.util.LikeType;
-import com.karma.prj.repository.CommentRepository;
-import com.karma.prj.repository.LikeRepository;
-import com.karma.prj.repository.PostRepository;
-import com.karma.prj.repository.UserRepository;
+import com.karma.prj.model.util.NotificationType;
+import com.karma.prj.repository.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PostService {
@@ -28,6 +25,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
     private final LikeRepository likeRepository;
+    private final NotificationRepository notificationRepository;
 
     /**
      * 포스트 작성요청
@@ -128,12 +126,20 @@ public class PostService {
      * @param postId
      * @param content
      * @param username
-     * @return
+     * @return Comment Dto
      */
     @Transactional
     public CommentDto createComment(Long postId, String content, String username){
-        UserEntity user = findByUsernameOrElseThrow(username);
         PostEntity post = findByPostIdOrElseThrow(postId);
+        UserEntity user = findByUsernameOrElseThrow(username);  // 댓쓴이
+        UserEntity author = post.getUser();                     // 글쓴이
+        // 댓글작성
+        try {
+            notificationRepository.save(NotificationEntity.of(author, post, NotificationType.NEW_COMMENT_ON_POST,
+                    String.format("%s님이 댓글을 달았습니다", user.getNickname())));
+        } catch (RuntimeException e){
+            log.error("댓글작성알림 에러",CustomException.of(CustomErrorCode.ERROR_ON_CREATE_NOTIFICATION));
+        }
         return CommentEntity.dto(commentRepository.save(CommentEntity.of(content, user, post)));
     }
 
@@ -194,8 +200,9 @@ public class PostService {
      */
     @Transactional
     public void likePost(Long postId, LikeType likeType, String username){
-        UserEntity user = findByUsernameOrElseThrow(username);
         PostEntity post = findByPostIdOrElseThrow(postId);
+        UserEntity user = findByUsernameOrElseThrow(username);  // like 누른사람
+        UserEntity author = post.getUser();                     // 글쓴이
         likeRepository.findByUserAndPostAndLikeType(user, post, likeType).ifPresent(it->{
             if (it.getLikeType().equals(likeType)){
                 // 이미 좋아요를 누르고 좋아요를 누른 경우 or 이미 싫어요를 누르고 싫어요를 누른 경우 → 에러
@@ -206,6 +213,13 @@ public class PostService {
                 likeRepository.deleteById(it.getId());
             }
         });
+        // 댓글작성
+        try {
+            notificationRepository.save(NotificationEntity.of(author, post, NotificationType.NEW_LIKE_ON_POST,
+                    String.format("%s님이 댓글을 달았습니다", user.getNickname())));
+        } catch (RuntimeException e){
+            log.error("댓글작성알림 에러",CustomException.of(CustomErrorCode.ERROR_ON_CREATE_NOTIFICATION));
+        }
         likeRepository.save(LikeEntity.of(user, post, likeType));
     }
 
@@ -224,5 +238,11 @@ public class PostService {
         return commentRepository.findById(commentId).orElseThrow(()->{
             throw CustomException.of(CustomErrorCode.COMMENT_NOT_FOUND);
         });
+    }
+
+    @Transactional(readOnly = true)
+    private NotificationEntity findByNotificationIdOrElseThrow(Long notification){
+        return notificationRepository.findById(notification)
+                .orElseThrow(()->{throw CustomException.of(CustomErrorCode.NOTIFICATION_NOT_FOUND);});
     }
 }
