@@ -42,7 +42,6 @@ const Login = () => {
     
     const theme = createTheme();
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);  
-    const [isPasswordConfirmVisible, setIsPasswordConfirmVisible] = useState(false);  
     const [isValid, setIsValid] = useState(false);
     const [loginErrorMessage, setRegisterErrorMessage] = useState('');
 
@@ -81,7 +80,8 @@ const Login = () => {
             return res.data.result
         })
         .then((token)=>{
-            localStorage.setItem("karma-token", `Bearer ${token}`);
+            localStorage.setItem("token", `Bearer ${token}`);
+            navigator("/post")
         })
         .catch((err) => {
             console.log(err);
@@ -129,7 +129,7 @@ const Login = () => {
 
                         {/* ----- 비밀번호  ----- */}
                         <Grid item xs={10}>
-                            <Tooltip title="숫자+영문자+특수문자 8자리 이상으로 작명해주세요">
+                            <Tooltip title="비밀번호를 입력해주세요">
                                 <TextField
                                 required
                                 fullWidth

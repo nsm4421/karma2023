@@ -28,10 +28,13 @@ public class PostController {
 
     // 포스팅 페이지 조회
     @GetMapping("/post")
-    public CustomResponse<Page<PostDto>> getPostsByUser(@PageableDefault Pageable pageable, @RequestParam("username") String username){
-        if (username==null){
-            return CustomResponse.success(postService.getPosts(pageable));
-        }
+    public CustomResponse<Page<PostDto>> getPosts(@PageableDefault Pageable pageable){
+        return CustomResponse.success(postService.getPosts(pageable));
+    }
+
+    // 특정 유저가 쓴 조회
+    @GetMapping("/post/{username}")
+    public CustomResponse<Page<PostDto>> getPostsByUser(@PageableDefault Pageable pageable, @PathVariable String username){
         return CustomResponse.success(postService.getPostsByUser(pageable, username));
     }
 
