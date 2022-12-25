@@ -4,6 +4,7 @@ import Post from './components/post/index';
 import WritePost from './components/post/write/index';
 import Register from './components/auth/register/index';
 import Login from './components/auth/login/index';
+import DetailPost from './components/post/detail';
 
 const App = () => {
   return (
@@ -13,6 +14,7 @@ const App = () => {
       <Route path="/register" element={<Register/>}></Route>
       <Route path="/login" element={<Login/>}></Route>
       <Route path="/post" element={<Post/>}></Route>
+      <Route path="/post/:id" element={<DetailPost/>}></Route>
       <Route path="/post/write" element={<WritePost/>}></Route>
     </Routes>
   </div>

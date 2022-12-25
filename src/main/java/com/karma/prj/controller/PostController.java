@@ -2,6 +2,7 @@ package com.karma.prj.controller;
 
 import com.karma.prj.controller.request.*;
 import com.karma.prj.controller.response.GetLikeResponse;
+import com.karma.prj.controller.response.GetPostResponse;
 import com.karma.prj.model.dto.CommentDto;
 import com.karma.prj.model.dto.PostDto;
 import com.karma.prj.model.util.CustomResponse;
@@ -21,15 +22,15 @@ public class PostController {
 
     // 포스팅 단건조회
     @GetMapping("/post/{postId}")
-    public CustomResponse<PostDto> getPost(@PathVariable Long postId){
-        return CustomResponse.success(postService.getPost(postId));
+    public CustomResponse<GetPostResponse> getPost(@PathVariable Long postId){
+        return CustomResponse.success(GetPostResponse.from(postService.getPost(postId)));
     }
 
 
     // 포스팅 페이지 조회
     @GetMapping("/post")
-    public CustomResponse<Page<PostDto>> getPosts(@PageableDefault Pageable pageable){
-        return CustomResponse.success(postService.getPosts(pageable));
+    public CustomResponse<Page<GetPostResponse>> getPosts(@PageableDefault Pageable pageable){
+        return CustomResponse.success(postService.getPosts(pageable).map(GetPostResponse::from));
     }
 
     // 특정 유저가 쓴 조회

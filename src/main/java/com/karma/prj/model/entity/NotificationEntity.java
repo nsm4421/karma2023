@@ -1,7 +1,6 @@
 package com.karma.prj.model.entity;
 
 import com.karma.prj.model.dto.NotificationDto;
-import com.karma.prj.model.dto.UserDto;
 import com.karma.prj.model.util.AuditingFields;
 import com.karma.prj.model.util.NotificationType;
 import jakarta.persistence.*;
@@ -9,6 +8,7 @@ import lombok.Getter;
 
 @Entity
 @Getter
+@Table(name = "notification")
 public class NotificationEntity extends AuditingFields {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
