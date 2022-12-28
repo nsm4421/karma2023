@@ -22,9 +22,9 @@ public class LikeEntity extends AuditingFields {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "user_id")
     private UserEntity user;
-    @ManyToOne @JoinColumn(name = "post_id")
+    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "post_id")
     private PostEntity post;
     @Enumerated(EnumType.STRING)
     private LikeType likeType;

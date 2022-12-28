@@ -13,23 +13,19 @@ public class NotificationDto {
     private NotificationType notificationType;
     private String message;
     private LocalDateTime createdAt;
-    private LocalDateTime modifiedAt;
-    private LocalDateTime removedAt;
 
-    private NotificationDto(Long id, UserDto user, PostDto post, NotificationType notificationType, String message, LocalDateTime createdAt, LocalDateTime modifiedAt, LocalDateTime removedAt) {
+    private NotificationDto(Long id, UserDto user, PostDto post, NotificationType notificationType, String message, LocalDateTime createdAt) {
         this.id = id;
         this.user = user;
         this.post = post;
         this.notificationType = notificationType;
         this.message = message;
         this.createdAt = createdAt;
-        this.modifiedAt = modifiedAt;
-        this.removedAt = removedAt;
     }
 
     protected NotificationDto(){}
 
-    public static NotificationDto of(Long id, UserDto user, PostDto post, NotificationType notificationType, String message, LocalDateTime createdAt, LocalDateTime modifiedAt, LocalDateTime removedAt) {
-        return new NotificationDto(id, user, post, notificationType, message, createdAt, modifiedAt, removedAt);
+    public static NotificationDto of(Long id, UserDto user, PostDto post, NotificationType notificationType, String message, LocalDateTime createdAt) {
+        return new NotificationDto(id, user, post, notificationType, message, createdAt);
     }
 }

@@ -13,6 +13,7 @@ public enum CustomErrorCode {
     DUPLICATED_EMAIL(HttpStatus.CONFLICT, "Email is duplicated..."),
     // not found
     USERNAME_NOT_FOUND(HttpStatus.NOT_FOUND, "Username is not found..."),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User is not found..."),
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "Post is not found..."),
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "Comment is not found..."),
     NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "Notification is not found..."),

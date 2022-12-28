@@ -5,6 +5,7 @@ import com.karma.prj.controller.response.GetLikeResponse;
 import com.karma.prj.controller.response.GetPostResponse;
 import com.karma.prj.model.dto.CommentDto;
 import com.karma.prj.model.dto.PostDto;
+import com.karma.prj.model.entity.UserEntity;
 import com.karma.prj.model.util.CustomResponse;
 import com.karma.prj.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -42,19 +43,22 @@ public class PostController {
     // 포스팅 작성
     @PostMapping("/post")
     public CustomResponse<Long> createPost(@RequestBody CreatePostRequest req, Authentication authentication){
-        return CustomResponse.success(postService.createPost(req.getTitle(), req.getContent(), authentication.getName()));
+        UserEntity user = (UserEntity) authentication.getPrincipal();
+        return CustomResponse.success(postService.createPost(req.getTitle(), req.getContent(), user));
     }
 
     // 포스팅 수정
     @PutMapping("/post/{postId}")
     public CustomResponse<Long> modifyPost(@PathVariable Long postId, @RequestBody ModifyPostRequest req, Authentication authentication){
-        return CustomResponse.success(postService.modifyPost(postId, req.getTitle(), req.getContent(), authentication.getName()));
+        UserEntity user = (UserEntity) authentication.getPrincipal();
+        return CustomResponse.success(postService.modifyPost(postId, req.getTitle(), req.getContent(), user));
     }
 
     // 포스팅 삭제
     @DeleteMapping("/post/{postId}")
     public CustomResponse<Long> deletePost(@PathVariable Long postId, Authentication authentication){
-        return CustomResponse.success(postService.deletePost(postId, authentication.getName()));
+        UserEntity user = (UserEntity) authentication.getPrincipal();
+        return CustomResponse.success(postService.deletePost(postId, user.getId()));
     }
 
     // 댓글 조회
@@ -66,19 +70,22 @@ public class PostController {
     // 댓글 작성
     @PostMapping("/comment")
     public CustomResponse<CommentDto> createPost(@RequestBody CreateCommentRequest req, Authentication authentication){
-        return CustomResponse.success(postService.createComment(req.getPostId(), req.getContent(), authentication.getName()));
+        UserEntity user = (UserEntity) authentication.getPrincipal();
+        return CustomResponse.success(postService.createComment(req.getPostId(), req.getContent(), user));
     }
 
     // 댓글 수정
     @PutMapping("/comment")
     public CustomResponse<CommentDto> modifyPost(@RequestBody ModifyCommentRequest req, Authentication authentication){
-        return CustomResponse.success(postService.modifyComment(req.getPostId(), req.getCommentId(), req.getContent(), authentication.getName()));
+        UserEntity user = (UserEntity) authentication.getPrincipal();
+        return CustomResponse.success(postService.modifyComment(req.getPostId(), req.getCommentId(), req.getContent(), user));
     }
 
     // 댓글 삭제
     @DeleteMapping("/comment")
     public CustomResponse<Void> deletePost(@RequestBody DeleteCommentRequest req, Authentication authentication){
-        postService.deleteComment(req.getPostId(), req.getCommentId(), authentication.getName());
+        UserEntity user = (UserEntity) authentication.getPrincipal();
+        postService.deleteComment(req.getPostId(), req.getCommentId(), user);
         return CustomResponse.success();
     }
 
@@ -91,7 +98,8 @@ public class PostController {
     // 좋아요 & 싫어요 요청
     @PostMapping("/like")
     public CustomResponse<Void> likePost(@RequestBody LikePostRequest req, Authentication authentication){
-        postService.likePost(req.getPostId(), req.getLikeType(), authentication.getName());
+        UserEntity user = (UserEntity) authentication.getPrincipal();
+        postService.likePost(req.getPostId(), req.getLikeType(), user);
         return CustomResponse.success();
     }
 }

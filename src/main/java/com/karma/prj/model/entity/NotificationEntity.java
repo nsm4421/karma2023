@@ -10,13 +10,12 @@ import lombok.Getter;
 @Getter
 @Table(name = "notification")
 public class NotificationEntity extends AuditingFields {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "user_id")
     private UserEntity user;
 
-    @ManyToOne @JoinColumn(name = "post_id")
+    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "post_id")
     private PostEntity post;
     @Enumerated(EnumType.STRING)
     private NotificationType notificationType;
@@ -43,9 +42,7 @@ public class NotificationEntity extends AuditingFields {
                 PostEntity.dto(entity.getPost()),
                 entity.getNotificationType(),
                 entity.getMessage(),
-                entity.getCreatedAt(),
-                entity.getModifiedAt(),
-                entity.getRemovedAt()
+                entity.getCreatedAt()
         );
     }
 }

@@ -31,12 +31,11 @@ public class PostService {
      * 포스트 작성요청
      * @param title : 제목
      * @param content : 본문
-     * @param username : 로그인한 유저명
+     * @param user : 로그인한 유저
      * @return 저장된 post id
      */
     @Transactional
-    public Long createPost(String title, String content, String username){
-        UserEntity user = findByUsernameOrElseThrow(username);
+    public Long createPost(String title, String content, UserEntity user){
         return postRepository.save(PostEntity.of(title, content, user)).getId();
     }
 
@@ -75,14 +74,13 @@ public class PostService {
      * @param postId 수정요청한 포스트 id
      * @param title 제목
      * @param content 본문
-     * @param username 로그인한 유저명
+     * @param user 로그인한 유저
      * @return 저장된 포스트 id
      */
     @Transactional
-    public Long modifyPost(Long postId, String title, String content, String username){
-        UserEntity user = findByUsernameOrElseThrow(username);
+    public Long modifyPost(Long postId, String title, String content, UserEntity user){
         PostEntity post = findByPostIdOrElseThrow(postId);
-        if (!post.getUser().getUsername().equals(username)){
+        if (!post.getUser().getUsername().equals(user.getUsername())){
             // 포스트 작성자와 수정 요청한 사람이 일치하는지 확인
             throw CustomException.of(CustomErrorCode.NOT_GRANTED_ACCESS);
         }
@@ -92,20 +90,22 @@ public class PostService {
     }
 
     /**
-     * 포스트 삭제요청
+     * 포스트 삭제요청 - 포스팅, 댓글, 좋아요, 알림 삭제
      * @param postId 삭제요청한 포스트 id
-     * @param username 로그인한 유저명
+     * @param userId 로그인한 유저 id
      * @return 저장된 포스트 id
      */
     @Transactional
-    public Long deletePost(Long postId, String username){
-        findByUsernameOrElseThrow(username);
+    public Long deletePost(Long postId, Long userId){
         PostEntity post = findByPostIdOrElseThrow(postId);
-        if (!post.getUser().getUsername().equals(username)){
+        if (!post.getUser().getId().equals(userId)){
             // 포스트 작성자와 삭제 요청한 사람이 일치하는지 확인
             throw CustomException.of(CustomErrorCode.NOT_GRANTED_ACCESS);
         }
-        postRepository.deleteById(postId);
+        postRepository.deleteByPostId(postId);
+        commentRepository.deleteAllByPost(post);
+        likeRepository.deleteAllByPost(post);
+        notificationRepository.deleteAllByPost(post);
         return postId;
     }
 
@@ -123,15 +123,11 @@ public class PostService {
 
     /**
      * 댓글작성
-     * @param postId
-     * @param content
-     * @param username
      * @return Comment Dto
      */
     @Transactional
-    public CommentDto createComment(Long postId, String content, String username){
+    public CommentDto createComment(Long postId, String content, UserEntity user){
         PostEntity post = findByPostIdOrElseThrow(postId);
-        UserEntity user = findByUsernameOrElseThrow(username);  // 댓쓴이
         UserEntity author = post.getUser();                     // 글쓴이
         // 댓글작성
         try {
@@ -145,17 +141,12 @@ public class PostService {
 
     /**
      * 댓글 수정
-     * @param postId
-     * @param commentId
-     * @param content 수정할 댓글내용
-     * @param username 자기가 작성한 댓글인지 확인하기 위해 authentication에서 추출한 username
-     * @return 댓글 Dto
      */
     @Transactional
-    public CommentDto modifyComment(Long postId, Long commentId, String content, String username){
+    public CommentDto modifyComment(Long postId, Long commentId, String content, UserEntity user){
         findByPostIdOrElseThrow(postId);
         CommentEntity comment = findByCommentIdOrElseThrow(commentId);
-        if (!comment.getUser().getUsername().equals(username)){
+        if (!comment.getUser().getId().equals(user.getId())){
             throw CustomException.of(CustomErrorCode.NOT_GRANTED_ACCESS);
         }
         comment.setContent(content);
@@ -164,15 +155,12 @@ public class PostService {
 
     /**
      * 댓글 삭제
-     * @param postId
-     * @param commentId
-     * @param username 자기가 작성한 댓글인지 확인하기 위해 authentication에서 추출한 username
      */
     @Transactional
-    public void deleteComment(Long postId, Long commentId, String username){
+    public void deleteComment(Long postId, Long commentId, UserEntity user){
         findByPostIdOrElseThrow(postId);
         CommentEntity comment = findByCommentIdOrElseThrow(commentId);
-        if (!comment.getUser().getUsername().equals(username)){
+        if (!comment.getUser().getId().equals(user.getId())){
             throw CustomException.of(CustomErrorCode.NOT_GRANTED_ACCESS);
         }
         commentRepository.deleteById(commentId);
@@ -181,7 +169,6 @@ public class PostService {
     /**
      * 좋아요 & 싫어요 개수 가져오기
      * @param postId 좋아요 & 싫어요 포스트 id
-
      */
     @Transactional(readOnly = true)
     public Map<String, Long> getLikeCount(Long postId){
@@ -196,12 +183,11 @@ public class PostService {
      * 좋아요 & 싫어요 요청
      * @param postId 좋아요 & 싫어요 포스트 id
      * @param likeType LIKE(좋아요), HATE(싫어요)
-     * @param username 유저명
+     * @param user like 누른사람
      */
     @Transactional
-    public void likePost(Long postId, LikeType likeType, String username){
+    public void likePost(Long postId, LikeType likeType, UserEntity user){
         PostEntity post = findByPostIdOrElseThrow(postId);
-        UserEntity user = findByUsernameOrElseThrow(username);  // like 누른사람
         UserEntity author = post.getUser();                     // 글쓴이
         likeRepository.findByUserAndPostAndLikeType(user, post, likeType).ifPresent(it->{
             if (it.getLikeType().equals(likeType)){
@@ -213,36 +199,38 @@ public class PostService {
                 likeRepository.deleteById(it.getId());
             }
         });
-        // 댓글작성
-        try {
-            notificationRepository.save(NotificationEntity.of(author, post, NotificationType.NEW_LIKE_ON_POST,
-                    String.format("%s님이 댓글을 달았습니다", user.getNickname())));
-        } catch (RuntimeException e){
-            log.error("댓글작성알림 에러",CustomException.of(CustomErrorCode.ERROR_ON_CREATE_NOTIFICATION));
-        }
         likeRepository.save(LikeEntity.of(user, post, likeType));
+        // 알림기능
+        switch (likeType){
+            case LIKE -> {
+                notificationRepository.save(NotificationEntity.of(author, post, NotificationType.NEW_LIKE_ON_POST,
+                        String.format("%s님이 게시글 %s에 좋아요를 눌렀습니다", user.getNickname(), post.getTitle())));
+            }
+            case HATE -> {
+                notificationRepository.save(NotificationEntity.of(author, post, NotificationType.NEW_LIKE_ON_POST,
+                        String.format("%s님이 게시글 %s에 싫어요를 눌렀습니다", user.getNickname(), post.getTitle())));
+            }
+        }
     }
 
+    @Transactional(readOnly = true)
     private UserEntity findByUsernameOrElseThrow(String username){
         return userRepository.findByUsername(username).orElseThrow(()->{
             throw CustomException.of(CustomErrorCode.USERNAME_NOT_FOUND);
         });
     }
+
+    @Transactional(readOnly = true)
     private PostEntity findByPostIdOrElseThrow(Long postId){
         return postRepository.findById(postId).orElseThrow(()->{
             throw CustomException.of(CustomErrorCode.POST_NOT_FOUND);
         });
     }
 
+    @Transactional(readOnly = true)
     private CommentEntity findByCommentIdOrElseThrow(Long commentId){
         return commentRepository.findById(commentId).orElseThrow(()->{
             throw CustomException.of(CustomErrorCode.COMMENT_NOT_FOUND);
         });
-    }
-
-    @Transactional(readOnly = true)
-    private NotificationEntity findByNotificationIdOrElseThrow(Long notification){
-        return notificationRepository.findById(notification)
-                .orElseThrow(()->{throw CustomException.of(CustomErrorCode.NOTIFICATION_NOT_FOUND);});
     }
 }

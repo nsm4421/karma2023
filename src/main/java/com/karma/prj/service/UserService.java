@@ -65,26 +65,24 @@ public class UserService {
 
     /**
      * 알림 가져오기
-     * @param username 알림을 가져올 유저명
+     * @param userId 알림을 가져올 유저 id
      * @param pageable 페이지
      * @return Notification Dto Page
      */
     @Transactional(readOnly = true)
-    public Page<NotificationDto> getNotification(String username, Pageable pageable){
-        UserEntity user = findByUsernameOrElseThrow(username);
-        return notificationRepository.findAllByUser(user, pageable).map(NotificationEntity::dto);
+    public Page<NotificationDto> getNotification(Long userId, Pageable pageable){
+        return notificationRepository.findAllByUserId(userId, pageable).map(NotificationEntity::dto);
     }
 
     /**
      * 알림 삭제하기
-     * @param username 알림을 가져올 유저명
+     * @param userId 알림을 가져올 유저 id
      * @return 삭제한 알림 id
      */
     @Transactional
-    public void deleteNotificationById(String username, Long notificationId){
-        UserEntity user = findByUsernameOrElseThrow(username);
+    public void deleteNotificationById(Long userId, Long notificationId){
         NotificationEntity notification = findByNotificationIdOrElseThrow(notificationId);
-        if (!notification.getUser().getUsername().equals(user.getUsername())){
+        if (!notification.getUser().getId().equals(userId)){
             throw CustomException.of(CustomErrorCode.NOT_GRANTED_ACCESS);
         }
         notificationRepository.delete(notification);
@@ -92,13 +90,12 @@ public class UserService {
 
     /**
      * 알림 삭제하기
-     * @param username 알림을 가져올 유저명
+     * @param userId 알림을 가져올 유저 id
      * @return 삭제한 알림 id
      */
     @Transactional
-    public void deleteAllNotification(String username){
-        UserEntity user = findByUsernameOrElseThrow(username);
-        notificationRepository.deleteAllByUser(user);
+    public void deleteAllNotification(Long userId){
+        notificationRepository.deleteAllByUserId(userId);
     }
 
     /**

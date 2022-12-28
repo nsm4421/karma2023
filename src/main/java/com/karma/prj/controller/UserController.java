@@ -3,7 +3,9 @@ package com.karma.prj.controller;
 import com.karma.prj.controller.request.LoginRequest;
 import com.karma.prj.controller.request.RegisterRequest;
 import com.karma.prj.controller.response.GetNotificationResponse;
-import com.karma.prj.model.dto.NotificationDto;
+import com.karma.prj.exception.CustomErrorCode;
+import com.karma.prj.exception.CustomException;
+import com.karma.prj.model.entity.UserEntity;
 import com.karma.prj.model.util.CustomResponse;
 import com.karma.prj.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +51,8 @@ public class UserController {
             Authentication authentication,
             @PageableDefault Pageable pageable
     ){
-        return CustomResponse.success(userService.getNotification(authentication.getName(), pageable).map(GetNotificationResponse::from));
+        UserEntity user = (UserEntity) authentication.getPrincipal();
+        return CustomResponse.success(userService.getNotification(user.getId(), pageable).map(GetNotificationResponse::from));
     }
 
     /**
@@ -61,13 +64,24 @@ public class UserController {
     @DeleteMapping("/notification/{notificationId}")
     public CustomResponse<Void> deleteNotification(
             Authentication authentication,
-            @RequestParam("notificationId") Long notificationId
+            @PathVariable Long notificationId
     ){
-        if (notificationId == null){
-            userService.deleteNotificationById(authentication.getName(), notificationId);
-        } else {
-            userService.deleteAllNotification(authentication.getName());
-        }
+        UserEntity user = (UserEntity) authentication.getPrincipal();
+        userService.deleteNotificationById(user.getId(), notificationId);
+        return CustomResponse.success();
+    }
+
+    /**
+     * 알림 전체 삭제하기
+     * @param authentication 인증 context
+     * @return 삭제한 알림 id
+     */
+    @DeleteMapping("/notification")
+    public CustomResponse<Void> deleteAllNotification(
+            Authentication authentication
+    ){
+        UserEntity user = (UserEntity) authentication.getPrincipal();
+        userService.deleteAllNotification(user.getId());
         return CustomResponse.success();
     }
 }
