@@ -8,6 +8,7 @@ import com.karma.prj.model.entity.NotificationEntity;
 import com.karma.prj.model.entity.UserEntity;
 import com.karma.prj.model.util.RoleType;
 import com.karma.prj.repository.NotificationRepository;
+import com.karma.prj.repository.UserCacheRepository;
 import com.karma.prj.repository.UserRepository;
 import com.karma.prj.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final UserCacheRepository userCacheRepository;
     @Value("${jwt.secret-key}") private String secretKey;
     @Value("${jwt.duration}") private Long duration;
 
@@ -47,7 +49,7 @@ public class UserService {
     }
 
     /**
-     * 로그인
+     * 로그인 & 캐싱
      * @param username 유저명
      * @param password 비밀번호
      * @return JWT 토큰값
@@ -60,6 +62,9 @@ public class UserService {
         if (!bCryptPasswordEncoder.matches(password, user.getPassword())){
             throw CustomException.of(CustomErrorCode.INVALID_PASSWORD);
         }
+        // 캐싱
+        userCacheRepository.setUserByUsername(user);
+        // JWT 반환
         return JwtUtil.generateToken(username, secretKey, duration);
     }
 
@@ -143,10 +148,13 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public UserEntity findByUsernameOrElseThrow(String username){
-        return userRepository.findByUsername(username)
-                .orElseThrow(()->{throw CustomException.of(CustomErrorCode.USERNAME_NOT_FOUND);});
+        // redis cache 조회 후 없으면
+        return userCacheRepository.getUserByUsername(username).orElseGet(
+                // DB 조회 후 없으면 에러
+                ()-> userRepository.findByUsername(username).orElseThrow(
+                        ()->{throw CustomException.of(CustomErrorCode.USERNAME_NOT_FOUND);})
+        );
     }
-
     @Transactional(readOnly = true)
     private NotificationEntity findByNotificationIdOrElseThrow(Long notification){
         return notificationRepository.findById(notification)

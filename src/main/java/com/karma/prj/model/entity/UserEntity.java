@@ -1,5 +1,7 @@
 package com.karma.prj.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.karma.prj.model.dto.UserDto;
 import com.karma.prj.model.util.RoleType;
 import jakarta.persistence.*;
@@ -27,6 +29,7 @@ import java.util.Set;
 @SQLDelete(sql = "UPDATE \"user\" SET removed_at = NOW() WHERE id=?")
 @EntityListeners(AuditingEntityListener.class)
 @Where(clause = "removed_at is NULL")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserEntity implements UserDetails {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,11 +43,11 @@ public class UserEntity implements UserDetails {
     private String password;
     @Enumerated(EnumType.STRING)
     private RoleType role;
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @CreatedDate @Column(updatable = false, name = "created_at")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @CreatedDate @Column(updatable = false, name = "created_at") @JsonIgnore
     private LocalDateTime createdAt;
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @LastModifiedDate @Column(name = "modified_at")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @LastModifiedDate @Column(name = "modified_at") @JsonIgnore
     private LocalDateTime modifiedAt;
-    @Column(name = "removed_at") @Setter
+    @Column(name = "removed_at") @Setter @JsonIgnore
     private LocalDateTime removedAt;
 
     private UserEntity(String email, String username, String nickname, String password, RoleType role, LocalDateTime createdAt, LocalDateTime removedAt) {
@@ -75,27 +78,27 @@ public class UserEntity implements UserDetails {
         );
     }
 
-    @Override
+    @Override @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Set.of(new SimpleGrantedAuthority(role.name()));
     }
 
-    @Override
+    @Override @JsonIgnore
     public boolean isAccountNonExpired() {
         return true;
     }
 
-    @Override
+    @Override @JsonIgnore
     public boolean isAccountNonLocked() {
         return true;
     }
 
-    @Override
+    @Override @JsonIgnore
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
-    @Override
+    @Override @JsonIgnore
     public boolean isEnabled() {
         return true;
     }
