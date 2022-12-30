@@ -22,12 +22,16 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
+import java.util.Set;
 
 @Slf4j
 @RequiredArgsConstructor
 public class JwtUtil extends OncePerRequestFilter {
     private final UserService userService;
     private final String secretKey;
+    // 인증토큰이 json 형태로 넘어오지 않고, param 안에 있는 요청 경로
+    // 예) axios.post("api/v1/notification/connect?token=~~~~~")
+    private final static Set<String> URL_TOKEN_IN_PARAM = Set.of("api/v1/notification/connect");
 
     /**
      * JWT 생성
@@ -67,20 +71,25 @@ public class JwtUtil extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        // 헤더가 유효한지 체크
-        final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (header == null) {
-            log.error("Header is null...");
-            filterChain.doFilter(request, response);
-            return;
-        } else if (!header.startsWith("Bearer ")) {
-            log.error("Authorization Header does not start with Bearer...");
-            filterChain.doFilter(request, response);
-            return;
+        final String jwt;
+        if (URL_TOKEN_IN_PARAM.contains(request.getRequestURI())){
+            jwt = request.getQueryString().split("=")[1].trim();
+        } else {
+            // 헤더가 유효한지 체크
+            final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+            if (header == null) {
+                log.error("Header is null...");
+                filterChain.doFilter(request, response);
+                return;
+            } else if (!header.startsWith("Bearer ")) {
+                log.error("Authorization Header does not start with Bearer...");
+                filterChain.doFilter(request, response);
+                return;
+            }
+            // 인증토큰에서 JWT 분리
+            jwt = header.split(" ")[1].trim();
         }
 
-        // 인증토큰에서 JWT 분리
-        final String jwt = header.split(" ")[1].trim();
         Claims claims = extractClaimsFromJwt(jwt, secretKey);
         
         // 토큰 유효기간 체크

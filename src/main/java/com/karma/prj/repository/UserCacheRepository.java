@@ -27,6 +27,6 @@ public class UserCacheRepository {
         return Optional.ofNullable(user);
     }
     private static String getKey(String username){
-        return String.format("USER__%s", username);
+        return String.format("USER__USERNAME__%s", username);
     }
 }

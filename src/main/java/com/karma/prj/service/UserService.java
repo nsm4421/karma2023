@@ -2,19 +2,14 @@ package com.karma.prj.service;
 
 import com.karma.prj.exception.CustomErrorCode;
 import com.karma.prj.exception.CustomException;
-import com.karma.prj.model.dto.NotificationDto;
 import com.karma.prj.model.dto.UserDto;
-import com.karma.prj.model.entity.NotificationEntity;
 import com.karma.prj.model.entity.UserEntity;
 import com.karma.prj.model.util.RoleType;
-import com.karma.prj.repository.NotificationRepository;
 import com.karma.prj.repository.UserCacheRepository;
 import com.karma.prj.repository.UserRepository;
 import com.karma.prj.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    private final NotificationRepository notificationRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserCacheRepository userCacheRepository;
     @Value("${jwt.secret-key}") private String secretKey;
@@ -68,40 +62,6 @@ public class UserService {
         return JwtUtil.generateToken(username, secretKey, duration);
     }
 
-    /**
-     * 알림 가져오기
-     * @param userId 알림을 가져올 유저 id
-     * @param pageable 페이지
-     * @return Notification Dto Page
-     */
-    @Transactional(readOnly = true)
-    public Page<NotificationDto> getNotification(Long userId, Pageable pageable){
-        return notificationRepository.findAllByUserId(userId, pageable).map(NotificationEntity::dto);
-    }
-
-    /**
-     * 알림 삭제하기
-     * @param userId 알림을 가져올 유저 id
-     * @return 삭제한 알림 id
-     */
-    @Transactional
-    public void deleteNotificationById(Long userId, Long notificationId){
-        NotificationEntity notification = findByNotificationIdOrElseThrow(notificationId);
-        if (!notification.getUser().getId().equals(userId)){
-            throw CustomException.of(CustomErrorCode.NOT_GRANTED_ACCESS);
-        }
-        notificationRepository.delete(notification);
-    }
-
-    /**
-     * 알림 삭제하기
-     * @param userId 알림을 가져올 유저 id
-     * @return 삭제한 알림 id
-     */
-    @Transactional
-    public void deleteAllNotification(Long userId){
-        notificationRepository.deleteAllByUserId(userId);
-    }
 
     /**
      * 중복체크
@@ -155,9 +115,5 @@ public class UserService {
                         ()->{throw CustomException.of(CustomErrorCode.USERNAME_NOT_FOUND);})
         );
     }
-    @Transactional(readOnly = true)
-    private NotificationEntity findByNotificationIdOrElseThrow(Long notification){
-        return notificationRepository.findById(notification)
-                .orElseThrow(()->{throw CustomException.of(CustomErrorCode.NOTIFICATION_NOT_FOUND);});
-    }
+
 }
