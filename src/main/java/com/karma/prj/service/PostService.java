@@ -6,6 +6,7 @@ import com.karma.prj.model.dto.CommentDto;
 import com.karma.prj.model.dto.PostDto;
 import com.karma.prj.model.entity.*;
 import com.karma.prj.model.util.LikeType;
+import com.karma.prj.model.util.NotificationEvent;
 import com.karma.prj.model.util.NotificationType;
 import com.karma.prj.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -129,17 +130,15 @@ public class PostService {
     @Transactional
     public CommentDto createComment(Long postId, String content, UserEntity user){
         PostEntity post = findByPostIdOrElseThrow(postId);
-        UserEntity author = post.getUser();                     // 글쓴이
-        try {
-            // 댓글작성
-            NotificationEntity notification = notificationRepository.save(NotificationEntity.of(author, post, NotificationType.NEW_COMMENT_ON_POST,
-                    String.format("%s님이 댓글을 달았습니다", user.getNickname())));
-            // 알림전송
-            notificationService.sendNotification(author.getId(), notification.getId());
-        } catch (RuntimeException e){
-            log.error("댓글작성알림 에러",CustomException.of(CustomErrorCode.ERROR_ON_CREATE_NOTIFICATION));
-        }
-        return CommentEntity.dto(commentRepository.save(CommentEntity.of(content, user, post)));
+        UserEntity author = post.getUser();                     // user : 댓쓴이 / author : 글쓴이
+        CommentDto commentDto = CommentEntity.dto(commentRepository.save(CommentEntity.of(content, user, post)));   // 댓글작성
+        // 알림생성
+        NotificationEntity notification = notificationRepository.save(
+                NotificationEntity.of(author, post, NotificationType.NEW_COMMENT_ON_POST,
+                String.format("%s님이 댓글을 달았습니다", user.getNickname())));
+        // 알림전송
+        notificationService.sendNotification(NotificationEvent.from(notification));
+        return commentDto;
     }
 
     /**
@@ -208,7 +207,7 @@ public class PostService {
         String message = String.format("[%s]님이 게시글 [%s]에 %s를 눌렀습니다", user.getNickname(), post.getTitle() ,likeType==LikeType.LIKE?"좋아요":"싫어요");
         NotificationEntity notification = notificationRepository.save(NotificationEntity.of(author, post, NotificationType.NEW_LIKE_ON_POST, message));
         // 알림 보내기
-        notificationService.sendNotification(author.getId(), notification.getId());
+        notificationService.sendNotification(NotificationEvent.from(notification));
     }
 
     @Transactional(readOnly = true)
