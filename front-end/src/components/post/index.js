@@ -9,7 +9,7 @@ import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 
-const Post = ()=>{
+const PostList = ()=>{
     const endPoint = '/api/v1/post'
     const [page, setPage] = useState(0);
     const [posts, setPosts] = useState([]);
@@ -21,7 +21,6 @@ const Post = ()=>{
                 Authorization:localStorage.getItem("token")
             }
         }).then((res)=>{
-            console.log(res);
             return res.data.result.content
         }).then((c)=>{
             setPosts(c);
@@ -54,7 +53,7 @@ const Post = ()=>{
                 posts.map((p, i)=>{
                     return (
                         <Box sx={{marginTop:'5vh'}} key={i}>
-                            <PostingCard id={p.id} title={p.title} nickname={p.nickname} content={p.content}/>
+                            <PostingCard post={p}/>
                         </Box>
                     )
                 })
@@ -66,29 +65,36 @@ const Post = ()=>{
 }
 
 
-const PostingCard = ({id, title, nickname, content}) => {
-    const endPoint = `/post/${id}`;
+const PostingCard = ({post}) => {
+    const endPoint = `/post/${post.id}`;
     return (
         <Card sx={{ minWidth: 275 }}>
             <CardContent>
                 <CardActions sx={{justifyContent:"space-between"}}>
                     {/* 제목 */}
                     <Typography variant="h5" component="span">
-                        <Link to={endPoint}> {title}</Link>
+                        <Link to={endPoint}> {post.title}</Link>
                     </Typography>
                     {/* 닉네임(작성자) */}
                     <Typography variant="span" component="span" color="text.secondary">
-                        {nickname}
+                        {post.nickname}
                     </Typography>
                 </CardActions>
-                
-                {/* 본문 - 100글자까지만 보여주고 ... 붙이기 */}
-                <Box sx={{padding:'1vh'}}>
-                    <Typography variant="body2">{content.slice(0, 100)}...</Typography>
-                </Box>
+
+                <CardActions sx={{justifyContent:"space-between"}}>
+                    {/* 본문 - 100글자까지만 보여주고 ... 붙이기 */}
+                    <Box sx={{padding:'1vh'}}>
+                        <Typography variant="body2">{post.content.slice(0, 100)}...</Typography>
+                    </Box>
+                    {/* 닉네임(작성자) */}
+                    <Typography variant="span" component="span" color="text.secondary">
+                        {post.createdAt}
+                    </Typography>
+                </CardActions>
+                {/* TODO : 페이징 기능 */}
             </CardContent>
         </Card>
     );
   }
 
-export default Post;
+export default PostList;

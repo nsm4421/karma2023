@@ -18,6 +18,8 @@ import styled from 'styled-components';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import Tooltip from '@mui/material/Tooltip';
 import { VisibilityRounded } from '@mui/icons-material';
+import { useRecoilState } from 'recoil';
+import { userState } from '../../../recoil/user';
 
 // ---------- styled components  ---------- //
 const FormHelperTexts = styled(FormHelperText)`
@@ -44,6 +46,7 @@ const Login = () => {
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);  
     const [isValid, setIsValid] = useState(false);
     const [loginErrorMessage, setRegisterErrorMessage] = useState('');
+    const [user, setUser] = useRecoilState(userState);
 
     // ---------- hook  ---------- //
     useEffect(()=>{
@@ -76,13 +79,17 @@ const Login = () => {
         e.preventDefault();
         await axios
         .post(endPoint, {username, password})
+        // 로그인 성공시
         .then((res) => {      
-            return res.data.result
+            const token = `Bearer ${res.data.result}`;
+            // 전역변수 user 세팅
+            setUser({...user, token})
+            // localstorage에 token 저장
+            localStorage.setItem("token", token);
+            // 포스팅 페이지로 이동
+            window.location.href="/post"
         })
-        .then((token)=>{
-            localStorage.setItem("token", `Bearer ${token}`);
-            navigator("/post")
-        })
+        // 로그인 실패시
         .catch((err) => {
             console.log(err);
             switch (err.response.data.statusCode){
@@ -95,7 +102,6 @@ const Login = () => {
                 default:
                     setRegisterErrorMessage('로그인에 실패하였습니다...');
             }
-            
         });
     };
 

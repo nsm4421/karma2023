@@ -6,48 +6,63 @@ import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useRecoilState } from 'recoil';
+import { userState } from '../../recoil/user';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
+// Custom Settings
 const appName = "Karma"
-const pages = [
-  {
-    title:"회원가입", 
-    link:"/register"
-  },
-  {
-    title:"로그인", 
-    link:"/login"
-  },
-  {
-    title:"포스팅", 
-    link:"/post"
-  },  
+const pagesNotLogined = [
+  {label:"login", link:"/login"},
+  {label:"register", link:"/register"},
 ]
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
+const pagesLogined = [
+  {label:"post", link:"/post"}
+]
+
+// Component to export
 const Nav = () => {
+  const [user, setUser] = useRecoilState(userState);
+  const [pages, setPages] = useState([{}]);
   const [anchorElNav, setAnchorElNav] = useState(null);
-  const [anchorElUser, setAnchorElUser] = useState(null);
+
+  useEffect(()=>{
+    // localStorage에서 token값 꺼내기
+    const token = localStorage.getItem("token");
+    // token이 없으면 초기화
+    if (!token){
+      setPages(pagesNotLogined);
+      setUser({nickname:null, token: null});
+      localStorage.removeItem("token");
+      return;
+    }    
+    // token이 유효한지 요청
+    const endPoint = "/api/v1/user/nickname";
+    axios.get(endPoint, {
+      headers:{
+        Authorization : localStorage.getItem("token")
+      }
+    }).then((res)=>{
+      return res.data.result
+    }).then((nickname)=>{
+      setPages(pagesLogined);
+      setUser({token, nickname});
+    }).catch((err)=>{
+      console.log(err);
+    })
+  }, [])
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
-
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
   };
 
   return (
@@ -55,23 +70,22 @@ const Nav = () => {
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="/"
-            sx={{
-              mr: 2,
-              display: { xs: 'none', md: 'flex' },
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            {appName}
-          </Typography>
+          <Link to="/">
+            <Typography
+              variant="h6"
+              noWrap
+              sx={{
+                mr: 2,
+                display: { xs: 'none', md: 'flex' },
+                fontFamily: 'monospace',
+                fontWeight: 700,
+                letterSpacing: '.3rem',
+                color: 'white',
+                textDecoration: 'none',
+              }}>
+              {appName}
+            </Typography>
+          </Link>
 
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
@@ -101,15 +115,14 @@ const Nav = () => {
               sx={{
                 display: { xs: 'block', md: 'none' },
               }}
-            >            
-              {/* 화면 너비가 넓을 때 네비게이션 메뉴 */}
-              {pages.map((page, i) => (
-                <MenuItem key={i} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center"><Link to={page.link}>{page.title}</Link></Typography>
-                </MenuItem>
+            >
+              {pages.map((page, idx) => (
+                <Link to={page.link} key={idx}>
+                  <MenuItem onClick={handleCloseNavMenu}>
+                    <Typography textAlign="center">{page.label}</Typography>
+                  </MenuItem>
+                </Link>
               ))}
-              {/* ---------------- */}
-
             </Menu>
           </Box>
           <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
@@ -130,53 +143,27 @@ const Nav = () => {
             }}
           >
             {appName}
-          </Typography>          
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+          </Typography>
 
-          {/* 화면 너비가 줄었을 때 네비게이션 메뉴 */}
-            {pages.map((page, i) => (
-              <Button
-                key={i}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-              <Link to={page.link}> {page.title}</Link>
-              </Button>
-            
+          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+            {pages.map((page, idx) => (
+              <Link to={page.link} sx={{color: 'white'}}>
+                <Button
+                  key={idx}
+                  onClick={handleCloseNavMenu}
+                  sx={{ my: 2, color: 'white', display: 'block' }}>
+                  {page.label}
+                </Button>
+              </Link>
             ))}
-          {/* ---------------- */}
-          
           </Box>
+          
           <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {/* TODO : 오른쪽 메뉴 */}
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-              {/* ---------------- */}
-            </Menu>
+            {
+              user.nickname
+              ? `${user.nickname} 님 환영합니다`
+              : null
+            }
           </Box>
         </Toolbar>
       </Container>
