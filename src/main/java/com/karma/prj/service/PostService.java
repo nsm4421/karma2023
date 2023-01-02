@@ -128,7 +128,7 @@ public class PostService {
      * @return Comment Dto
      */
     @Transactional
-    public CommentDto createComment(Long postId, String content, UserEntity user){
+    public void createComment(Long postId, String content, UserEntity user){
         PostEntity post = findByPostIdOrElseThrow(postId);
         UserEntity author = post.getUser();                     // user : 댓쓴이 / author : 글쓴이
         CommentDto commentDto = CommentEntity.dto(commentRepository.save(CommentEntity.of(content, user, post)));   // 댓글작성
@@ -138,7 +138,6 @@ public class PostService {
                 String.format("%s님이 댓글을 달았습니다", user.getNickname())));
         // 알림전송
         notificationService.sendNotification(NotificationEvent.from(notification));
-        return commentDto;
     }
 
     /**

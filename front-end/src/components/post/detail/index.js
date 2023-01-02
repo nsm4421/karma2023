@@ -1,7 +1,6 @@
 import { styled } from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
-import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import Collapse from '@mui/material/Collapse';
@@ -9,16 +8,18 @@ import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { red } from '@mui/material/colors';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import ShareIcon from '@mui/icons-material/Share';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import CloseIcon from '@mui/icons-material/Close';
+import SendIcon from '@mui/icons-material/Send';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Container } from '@mui/system';
 import axios from 'axios';
+import { userState } from '../../../recoil/user';
+import { useRecoilState } from 'recoil';
+import { Box, Button, Grid, TextField, Tooltip } from '@mui/material';
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -33,43 +34,58 @@ const ExpandMore = styled((props) => {
 
 const DetailPost = () => {
 
-    const {postId} = useParams();
+    const params = useParams();
+    const [user, setUser] = useRecoilState(userState);
+    // 포스팅
+    const [title, setTitle] = useState("");
+    const [content, setContent] = useState("");
+    const [author, setAuthor] = useState("");
+    const [createdAt, setCreatedAt] = useState("");
+    // 좋아요 & 싫어요
     const [emotion, setEmotion] = useState("");
     const [likeCount, setLikeCount] = useState({LIKE:0, DISLIKE:0});
-    const [expanded, setExpanded] = useState(false);
+    // 댓글
     const [comments, setComments] = useState([]);
+    const [userComment, setUserComment] = useState("");
+    // 기타
+    const [expanded, setExpanded] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     
     useEffect(()=>{
-        getLikeCount();
-    }, [])
-
-    useEffect(()=>{
+        const endPoint = `/api/v1/post/detail?pid=${params.id}`;
         axios
-            .get(`/api/v1/post/${postId}`, {
+            .get(endPoint, {
                 headers:{
-                    token:localStorage.getItem("token")
+                    Authorization:user.token??localStorage.getItem("token")
                 }
             })
             .then((res)=>{
-                console.log(res);
+                return res.data.result
+            })
+            .then((res)=>{
+                setTitle(res.title);
+                setContent(res.content);
+                setAuthor(res.nickname);
+                setCreatedAt(res.createdAt);
             })
             .catch((err)=>{
+                // alert("포스팅을 가져오는데 에러가 발생했습니다..."+endPoint)
                 console.log(err);
             });
-    }, [postId])
+    }, [])
 
-    // ------- Request  ------- 
+    // ------- Rest API  ------- 
     // TODO : 댓글 페이지네이션
-    const getCommentRequest = async ({page}) => {
+    const getCommentRequest = async () => {
+        const endPoint = `/api/v1/comment/${params.id}`
         await axios
-            .get(`/api/v1/comment/${postId}`, {
+            .get(endPoint, {
                 headers:{
-                    token:localStorage.getItem("token")
+                    Authorization:user.token??localStorage.getItem("token")
                 }
             })
             .then((res)=>{
-                console.log(res);
-                setComments(res.response.data);
+                setComments([...res.data.result.content]);
             })
             .catch((err)=>{
                 console.log(err);
@@ -78,9 +94,9 @@ const DetailPost = () => {
 
     // 좋아요 & 싫어요 개수
     const getLikeCount = async () => {
-        await axios.get(`/api/v1/like/${postId}`, {
+        await axios.get(`/api/v1/like/${params.id}`, {
             headers:{
-                token:localStorage.getItem("token")
+                Authorization:user.token??localStorage.getItem("token")
             }
         })
         .then((res)=>{
@@ -94,42 +110,56 @@ const DetailPost = () => {
         });
     }   
 
+    const submitComment = async () => {
+        setIsLoading(true);
+        const endPoint = `/api/v1/comment`
+        await axios.post(endPoint, 
+            {postId:params.id, content:userComment}, 
+            {
+                headers:{
+                    Authorization:user.token??localStorage.getItem("token")
+                }
+            }).then((res)=>{
+                getCommentRequest();
+                setUserComment("");
+            }).catch((err)=>{
+                console.log(err);
+            }).finally(()=>{
+                setIsLoading(false);
+            })
+    }
+
     // 좋아요 & 싫어요 요청
-    const sendLikeRequest = async ({likeType}) => {
-        await axios.post("/api/v1/like", {postId, likeType}, {
+    const sendLikeRequest = async (likeType) => {
+        await axios.post("/api/v1/like", {postId:params.id, likeType}, {
             headers:{
-                token:localStorage.getItem("token")
+                Authorization:user.token??localStorage.getItem("token")
             }
         });
     }   
 
     // ------- handeler  -------
-    // 좋아요 
-    const handleLike = (e) => {
-        sendLikeRequest(postId, "LIKE")
-        if (emotion === "LIKE"){
-            setEmotion("");
-        } else {
-            setEmotion("LIKE")
-        }
-    }
-    // 싫어요
-    const handleDisLike = (e) => {
-        sendLikeRequest(postId, "DISLIKE")
-        if (emotion === "DISLIKE"){
-            setEmotion("");
-        } else {
-            setEmotion("DISLIKE")
-        }
-    }
+  
     // 댓글창 열기
     const handleExpandClick = () => {
         setExpanded(!expanded);
         getCommentRequest();
     };
 
+    // 댓글 최대 500자
+    const handleUserComment = (e) => {
+        e.preventDefault();
+        setUserComment(e.target.value.slice(0, 500));
+    }
+
+    // 댓글 입력
+    const handleSumbitComment = (e) => {
+        e.preventDefault();
+        submitComment();
+    }
+
     return (
-        <Container>
+        <Container sx={{mt:'5vh'}}>
             <Card>
                 {/* 작성자 & 작성시간 */}
                 <CardHeader
@@ -140,11 +170,11 @@ const DetailPost = () => {
                     }
                     action={
                     <IconButton aria-label="settings">
-                        <MoreVertIcon />
+                        <CloseIcon />
                     </IconButton>
                     }
-                    title="유저"
-                    subheader="작성시간"
+                    title={author}
+                    subheader={createdAt}
                 />
 
                 {/* TODO : 이미지 */}
@@ -158,49 +188,82 @@ const DetailPost = () => {
                 {/* 본문 */}
                 <CardContent>
                     <Typography variant="body2" color="text.secondary">
-                        
+                        {content}
                     </Typography>
                 </CardContent>
 
-                {/* 본문 */}
+
                 <CardActions disableSpacing>
                     {/* 좋아요 아이콘 */}
-                    <IconButton onClick={handleLike}>
+                    {/* <IconButton onClick={handleLike}>
                         <ThumbUpIcon sx={{color:(emotion==="LIKE")?"red":"gray"}}/> {likeCount.LIKE}
-                    </IconButton>
+                    </IconButton> */}
                     {/* 싫어요 아이콘 */}
-                    <IconButton onClick={handleDisLike}>
+                    {/* <IconButton onClick={handleDisLike}>
                         <ThumbDownIcon sx={{color:(emotion==="DISLIKE")?"blue":"gray"}}/> {likeCount.DISLIKE}
-                    </IconButton>
+                    </IconButton> */}
 
                     <ExpandMore
-                    expand={expanded}
-                    onClick={handleExpandClick}
-                    aria-expanded={expanded}>
-                    <ExpandMoreIcon />
+                        expand={expanded}
+                        onClick={handleExpandClick}
+                        aria-expanded={expanded}>
+                        <ExpandMoreIcon />
                     </ExpandMore>
                 </CardActions>
                 
-                {/* 댓글 */}
                 <Collapse in={expanded} timeout="auto" unmountOnExit>
+                    <Box sx={{ flexGrow: 1, padding:'1vh' }}>
+                        {/* 댓글 입력창 */}
+                        <Grid container spacing={2}>
+                            <Grid item xs={11}>     
+                                <Tooltip title="500자 내외로 댓글을 작성해주세요">
+                                    <TextField label={userComment?`${userComment.length}/500`:"댓글"} sx={{width:'100%'}}
+                                    variant="standard" multiline onChange={handleUserComment} value={userComment}/>                          
+                                </Tooltip>                 
+                            </Grid>
+                             {/* 댓글 전송 */}
+                            <Grid item xs={1}>
+                                <Tooltip title="댓글작성">
+                                    <IconButton onClick={handleSumbitComment} disabled={isLoading} sx={{color:isLoading?"gray":"blue"}}>
+                                        <SendIcon/>
+                                    </IconButton>
+                                </Tooltip>
+                            </Grid>
+                        </Grid>
+                    </Box>
                     <CardContent>
-                        <Typography paragraph>
-                            
-                        </Typography>
+
+                    {/* 댓글 */}
+                            {
+                                comments.map((c, i)=>{
+                                    return (
+                                        <Typography paragraph key={i}>
+                                            <Typography variant="span" component="div">
+                                                <strong>{c.content}</strong>
+                                            </Typography>
+                                            <Grid container>
+                                                <Grid item xs={4}>
+                                                    <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                                                        by {c.nickname}
+                                                    </Typography>
+                                                </Grid>
+                                                <Grid item xs={4}>
+                                                </Grid>
+                                                <Grid item xs={4}>
+                                                    <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                                                        {c.createdAt}
+                                                    </Typography>
+                                                </Grid>
+                                            </Grid>                                          
+                                        </Typography>
+                                    )
+                                })
+                            }
                     </CardContent>
                 </Collapse>
             </Card>
         </Container>
   );
-}
-
-const sendLikeRequest = async ({postId, likeType}) => {
-    const endPoint = "/api/v1/like"
-    await axios.post(endPoint, {postId, likeType}, {
-        headers:{
-            token:localStorage.getItem("token")
-        }
-    });
 }
 
 

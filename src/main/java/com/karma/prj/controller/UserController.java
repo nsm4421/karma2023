@@ -2,7 +2,6 @@ package com.karma.prj.controller;
 
 import com.karma.prj.controller.request.LoginRequest;
 import com.karma.prj.controller.request.RegisterRequest;
-import com.karma.prj.controller.response.LoginSuccessResponse;
 import com.karma.prj.model.entity.UserEntity;
 import com.karma.prj.model.util.CustomResponse;
 import com.karma.prj.service.UserService;
@@ -10,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor

@@ -22,8 +22,8 @@ public class PostController {
     private final PostService postService;
 
     // 포스팅 단건조회
-    @GetMapping("/post/{postId}")
-    public CustomResponse<GetPostResponse> getPost(@PathVariable Long postId){
+    @GetMapping("/post/id")
+    public CustomResponse<GetPostResponse> getPost(@RequestParam("pid") Long postId){
         return CustomResponse.success(GetPostResponse.from(postService.getPost(postId)));
     }
 
@@ -69,9 +69,10 @@ public class PostController {
 
     // 댓글 작성
     @PostMapping("/comment")
-    public CustomResponse<CommentDto> createPost(@RequestBody CreateCommentRequest req, Authentication authentication){
+    public CustomResponse<Void> createComment(@RequestBody CreateCommentRequest req, Authentication authentication){
         UserEntity user = (UserEntity) authentication.getPrincipal();
-        return CustomResponse.success(postService.createComment(req.getPostId(), req.getContent(), user));
+        postService.createComment(req.getPostId(), req.getContent(), user);
+        return CustomResponse.success();
     }
 
     // 댓글 수정

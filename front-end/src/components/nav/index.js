@@ -147,9 +147,8 @@ const Nav = () => {
 
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page, idx) => (
-              <Link to={page.link} sx={{color: 'white'}}>
-                <Button
-                  key={idx}
+              <Link key={idx} to={page.link} sx={{color: 'white'}}>
+                <Button                  
                   onClick={handleCloseNavMenu}
                   sx={{ my: 2, color: 'white', display: 'block' }}>
                   {page.label}
