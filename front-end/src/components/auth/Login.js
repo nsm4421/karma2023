@@ -19,7 +19,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import Tooltip from '@mui/material/Tooltip';
 import { VisibilityRounded } from '@mui/icons-material';
 import { useRecoilState } from 'recoil';
-import { userState } from '../../../recoil/user';
+import { userState } from '../../recoil/user';
 
 // ---------- styled components  ---------- //
 const FormHelperTexts = styled(FormHelperText)`

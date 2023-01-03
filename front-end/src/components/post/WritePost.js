@@ -2,10 +2,11 @@ import axios from "axios";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import CreateIcon from '@mui/icons-material/Create';
-import { Button, TextField, Typography } from "@mui/material";
+import { Button, Modal, TextField, Typography } from "@mui/material";
 import { Box, Container } from "@mui/system";
 import DynamicFeedIcon from '@mui/icons-material/DynamicFeed';
 import UploadIcon from '@mui/icons-material/Upload';
+import DetailPost from "./DetailPost";
 
 const WritePost = () => {
     const endPoint = "/api/v1/post";
@@ -46,7 +47,9 @@ const WritePost = () => {
     return (
         <>
         <Container>
-
+            <Modal>
+                <DetailPost/>
+            </Modal>
             <Box sx={{marginTop:'5vh', display:'flex', justifyContent:'space-between', alignContent:'center'}}>
                 <Typography variant="h5" component="h5">
                     <CreateIcon/> 포스팅 작성하기
