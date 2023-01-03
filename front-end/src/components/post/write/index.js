@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import CreateIcon from '@mui/icons-material/Create';
 import { Button, TextField, Typography } from "@mui/material";
 import { Box, Container } from "@mui/system";
@@ -21,9 +21,6 @@ const WritePost = () => {
     }
     const handleContent = (e) => {
         setContent(e.target.value.slice(0, 2000));
-    }
-    const handleGoToPostPage = (e) => {
-        navigator("/post")
     }
     const handleSubmit = async (e) =>{
         e.preventDefault();
@@ -55,9 +52,11 @@ const WritePost = () => {
                     <CreateIcon/> 포스팅 작성하기
                 </Typography>
                 <Box>
-                    <Button variant="contained" color="success" onClick={handleGoToPostPage} sx={{marginRight:'10px'}}>
-                        <DynamicFeedIcon sx={{marginRight:'10px'}}/>포스팅 페이지로
-                    </Button>
+                    <Link to="/post">
+                        <Button variant="contained" color="success" sx={{marginRight:'10px'}}>
+                            <DynamicFeedIcon sx={{marginRight:'10px'}}/>포스팅 페이지로
+                        </Button>
+                    </Link>
                     <Button variant="contained" color="error" type="submit" onClick={handleSubmit} disabled={isLoading}>
                         <UploadIcon sx={{marginRight:'10px'}}/>제출
                     </Button>

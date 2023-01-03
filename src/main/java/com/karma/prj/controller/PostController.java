@@ -11,6 +11,7 @@ import com.karma.prj.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -22,21 +23,22 @@ public class PostController {
     private final PostService postService;
 
     // 포스팅 단건조회
-    @GetMapping("/post/id")
+    @GetMapping("/post/detail")
     public CustomResponse<GetPostResponse> getPost(@RequestParam("pid") Long postId){
         return CustomResponse.success(GetPostResponse.from(postService.getPost(postId)));
     }
 
-
     // 포스팅 페이지 조회
     @GetMapping("/post")
-    public CustomResponse<Page<GetPostResponse>> getPosts(@PageableDefault Pageable pageable){
+    public CustomResponse<Page<GetPostResponse>> getPosts(
+            @PageableDefault(size = 20, sort = "createdAt",direction = Sort.Direction.DESC) Pageable pageable
+    ){
         return CustomResponse.success(postService.getPosts(pageable).map(GetPostResponse::from));
     }
 
     // 특정 유저가 쓴 조회
-    @GetMapping("/post/{username}")
-    public CustomResponse<Page<PostDto>> getPostsByUser(@PageableDefault Pageable pageable, @PathVariable String username){
+    @GetMapping("/post/username")
+    public CustomResponse<Page<PostDto>> getPostsByUser(@PageableDefault Pageable pageable, @RequestParam("nickname") String username){
         return CustomResponse.success(postService.getPostsByUser(pageable, username));
     }
 
@@ -48,7 +50,7 @@ public class PostController {
     }
 
     // 포스팅 수정
-    @PutMapping("/post/{postId}")
+    @PutMapping("/post")
     public CustomResponse<Long> modifyPost(@PathVariable Long postId, @RequestBody ModifyPostRequest req, Authentication authentication){
         UserEntity user = (UserEntity) authentication.getPrincipal();
         return CustomResponse.success(postService.modifyPost(postId, req.getTitle(), req.getContent(), user));

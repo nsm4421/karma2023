@@ -1,63 +1,78 @@
 import { Box, Container } from "@mui/system";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Button, Typography } from "@mui/material";
+import { Link } from "react-router-dom";
+import { Button, Pagination, Stack, Typography } from "@mui/material";
 import CreateIcon from '@mui/icons-material/Create';
 import DynamicFeedIcon from '@mui/icons-material/DynamicFeed';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
+import { useRecoilState } from "recoil";
+import { userState } from "../../recoil/user";
 
 const PostList = ()=>{
-    const endPoint = '/api/v1/post'
-    const [page, setPage] = useState(0);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [totalPage, setTotalPage] = useState(0);
     const [posts, setPosts] = useState([]);
-    const navigator = useNavigate();
+    const [user, setUser] = useRecoilState(userState);
     
     useEffect(()=>{
+        // 서버요청
+        const endPoint = `/api/v1/post?page=${currentPage}`    
         axios.get(endPoint, {
             headers:{
-                Authorization:localStorage.getItem("token")
+                Authorization:user.token??localStorage.getItem("token")
             }
         }).then((res)=>{
-            return res.data.result.content
-        }).then((c)=>{
-            setPosts(c);
+            return res.data.result
+        }).then((res)=>{
+            setCurrentPage(res.pageable.pageNumber);    // 현재 페이지수
+            setTotalPage(res.totalPages);               // 전체 페이지수    
+            setPosts([...res.content]);                 // 포스팅 정보
         })
         .catch((err)=>{
             console.log(err);
         })
-    }, [page])
+    }, [currentPage])                                   // 페이지수 변경되는 경우 hook 실행
 
-    const handleGoToWritePage = (e) =>{
-        navigator("/post/write")    
+    const handlePage = (e) => {
+        setCurrentPage((parseInt(e.target.outerText)??1)-1);
     }
 
     return (
         <>
         <Container>
-
             <Box sx={{marginTop:'5vh', display:'flex', justifyContent:'space-between', alignContent:'center'}}>
                 <Typography variant="h5" component="h5">
                     <DynamicFeedIcon/> 포스팅     
                 </Typography>
                 <Box>
-                    <Button variant="contained" color="success" onClick={handleGoToWritePage} sx={{marginRight:'10px'}}>
-                        <CreateIcon sx={{marginRight:'10px'}}/>포스팅 쓰기
-                    </Button>
+                    <Link to="/post/write">
+                        <Button variant="contained" color="success" sx={{marginRight:'10px'}}>
+                                <CreateIcon sx={{marginRight:'10px'}}/>포스팅 쓰기
+                        </Button>
+                    </Link>
                 </Box>
             </Box>
+
+            {/* 포스팅 */}    
+            <Box>                   
+                {
+                    posts.map((p, i)=>{
+                        return (
+                            <Box sx={{marginTop:'5vh'}} key={i}>
+                                <PostingCard post={p}/>
+                            </Box>
+                        )
+                    })
+                }
+            </Box> 
             
-            {
-                posts.map((p, i)=>{
-                    return (
-                        <Box sx={{marginTop:'5vh'}} key={i}>
-                            <PostingCard post={p}/>
-                        </Box>
-                    )
-                })
-            }
+            {/* 페이지 */}
+            <Box sx={{justifyContent:"center", display:"flex", marginTop:"5vh"}}>            
+                <Pagination count={totalPage} defaultPage={1} boundaryCount={10} color="primary" size="large" sx={{margin: '2vh'}} onChange={handlePage}/>
+            </Box>
 
         </Container>
         </>
