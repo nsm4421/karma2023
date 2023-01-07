@@ -64,8 +64,11 @@ public class PostController {
     }
 
     // 댓글 조회
-    @GetMapping("/comment/{postId}")
-    public CustomResponse<Page<CommentDto>> getComment(@PathVariable Long postId, @PageableDefault Pageable pageable){
+    @GetMapping("/comment")
+    public CustomResponse<Page<CommentDto>> getComment(
+            @RequestParam("pid") Long postId,
+            @PageableDefault(size = 10, sort = "createdAt",direction = Sort.Direction.DESC) Pageable pageable
+    ){
         return CustomResponse.success(postService.getComments(postId, pageable));
     }
 

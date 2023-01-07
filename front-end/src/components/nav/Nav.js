@@ -18,12 +18,13 @@ import axios from 'axios';
 // Custom Settings
 const appName = "Karma"
 const pagesNotLogined = [
-  {label:"login", link:"/login"},
   {label:"register", link:"/register"},
+  {label:"login", link:"/login"},
 ]
 
 const pagesLogined = [
-  {label:"post", link:"/post"}
+  {label:"post", link:"/post"},
+  {label:"logout", link:"/logout"}
 ]
 
 // Component to export
@@ -157,9 +158,9 @@ const Nav = () => {
             ))}
           </Box>
           
-          <Box sx={{ flexGrow: 0 }}>
+          <Box sx={{ flexGrow: 0, alignItems:"center" }}>          
             {
-              user.nickname
+              user.nickname & !anchorElNav
               ? `${user.nickname} 님 환영합니다`
               : null
             }

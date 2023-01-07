@@ -1,11 +1,9 @@
-import { Button, Dialog, DialogContent, DialogTitle, Modal, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import { Box } from '@mui/system';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import DetailPost from './DetailPost';
 import FullScreenDialog from './FullScreenDialog';
 
 const PostCard = ({post}) => {
@@ -41,7 +39,6 @@ const PostCard = ({post}) => {
                         {post.createdAt}
                     </Typography>
                 </CardActions>
-                {/* TODO : 페이징 기능 */}
             </CardContent>
         </Card>
     );
