@@ -14,7 +14,9 @@ import org.springframework.stereotype.Repository;
 public interface PostRepository extends JpaRepository<PostEntity, Long> {
     Page<PostEntity> findAll(Pageable pageable);
     Page<PostEntity> findAllByUser(Pageable pageable, UserEntity userEntity);
-    Page<PostEntity> findByHashtags(Pageable pageable, String hashtag);
+    Page<PostEntity> findAllByHashtags(Pageable pageable, String hashtag);
+    Page<PostEntity> findAllByTitleContaining(Pageable pageable, String title);
+    Page<PostEntity> findAllByContentContaining(Pageable pageable, String content);
     @Modifying
     @Query(value = "UPDATE PostEntity entity SET removed_at = NOW() where entity.id = :postId", nativeQuery = true)
     void deleteByPostId(@Param("postId") Long postId);

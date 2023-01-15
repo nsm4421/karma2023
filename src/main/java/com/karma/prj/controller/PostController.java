@@ -4,9 +4,9 @@ import com.karma.prj.controller.request.*;
 import com.karma.prj.controller.response.GetLikeResponse;
 import com.karma.prj.controller.response.GetPostResponse;
 import com.karma.prj.model.dto.CommentDto;
-import com.karma.prj.model.dto.PostDto;
 import com.karma.prj.model.entity.UserEntity;
 import com.karma.prj.model.util.CustomResponse;
+import com.karma.prj.model.util.SearchType;
 import com.karma.prj.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -36,19 +36,20 @@ public class PostController {
         return CustomResponse.success(postService.getPosts(pageable).map(GetPostResponse::from));
     }
 
-    // 특정 해쉬태크고로 조회
-    @GetMapping("/post/hashtag")
-    public CustomResponse<Page<GetPostResponse>> getPostsByHashtag(
-            @RequestParam("hashtag") String hashtag,
-            @PageableDefault(size = 20, sort = "createdAt",direction = Sort.Direction.DESC) Pageable pageable
+    /**
+     * 검색기능
+     * @param searchType : 검색타입 - title, hashtag, content, user
+     * @param searchValue : 검색어
+     * @param pageable
+     */
+    @GetMapping("/post/search")
+    public CustomResponse<Page<GetPostResponse>> getPostBySearch(
+            @RequestParam("searchType") SearchType searchType,
+            @RequestParam("searchValue") String searchValue,
+            @PageableDefault(size = 20, sort = "createdAt",direction = Sort.Direction.DESC) Pageable pageable,
+            Authentication authentication
     ){
-        return CustomResponse.success(postService.getPostsByHashtag(pageable, hashtag).map(GetPostResponse::from));
-    }
-
-    // 특정 유저가 쓴 조회
-    @GetMapping("/post/username")
-    public CustomResponse<Page<PostDto>> getPostsByUser(@PageableDefault Pageable pageable, @RequestParam("nickname") String username){
-        return CustomResponse.success(postService.getPostsByUser(pageable, username));
+        return CustomResponse.success(postService.getPostBySearch(pageable, searchType, searchValue).map(GetPostResponse::from));
     }
 
     // 포스팅 작성
@@ -68,9 +69,10 @@ public class PostController {
 
     // 포스팅 삭제
     @DeleteMapping("/post/{postId}")
-    public CustomResponse<Long> deletePost(@PathVariable Long postId, Authentication authentication){
+    public CustomResponse<Void> deletePost(@PathVariable Long postId, Authentication authentication){
         UserEntity user = (UserEntity) authentication.getPrincipal();
-        return CustomResponse.success(postService.deletePost(postId, user.getId()));
+        postService.deletePost(postId, user.getId());
+        return CustomResponse.success();
     }
 
     // 댓글 조회

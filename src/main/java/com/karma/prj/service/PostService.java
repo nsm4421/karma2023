@@ -8,6 +8,7 @@ import com.karma.prj.model.entity.*;
 import com.karma.prj.model.util.LikeType;
 import com.karma.prj.model.util.NotificationEvent;
 import com.karma.prj.model.util.NotificationType;
+import com.karma.prj.model.util.SearchType;
 import com.karma.prj.repository.*;
 import com.karma.prj.util.HashtagParser;
 import lombok.RequiredArgsConstructor;
@@ -55,34 +56,30 @@ public class PostService {
     }
 
     /**
-     * 포스트 조회
+     * 포스트 List 조회
      */
     @Transactional(readOnly = true)
     public Page<PostDto> getPosts(Pageable pageable){
         return postRepository.findAll(pageable).map(PostEntity::dto);
     }
 
-    /**
-     * 포스팅 조회 by 유저
-     * @param pageable
-     * @param username 조회할 작성자
-     * @return PostDto 페이지
-     */
-    @Transactional(readOnly = true)
-    public Page<PostDto> getPostsByUser(Pageable pageable, String username){
-        UserEntity user = findByUsernameOrElseThrow(username);
-        return postRepository.findAllByUser(pageable, user).map(PostEntity::dto);
-    }
 
     /**
-     * 포스팅 조회 by 해쉬태그
-     * @param pageable
-     * @param hashtag 조회할 해쉬태그
-     * @return PostDto 페이지
+     * 포스팅 검색
+     * @param pageable 
+     * @param searchType : 검색타입 - title, hashtag, content, user
+     * @param searchValue : 검색어
+     * @return Page<PostDto>
      */
     @Transactional(readOnly = true)
-    public Page<PostDto> getPostsByHashtag(Pageable pageable, String hashtag){
-        return postRepository.findByHashtags(pageable, hashtag).map(PostEntity::dto);
+    public Page<PostDto> getPostBySearch(Pageable pageable, SearchType searchType, String searchValue){
+         Page<PostEntity> searched = switch (searchType){
+            case NICKNAME -> postRepository.findAllByUser(pageable, findByNicknameOrElseThrow(searchValue));
+            case TITLE -> postRepository.findAllByTitleContaining(pageable, searchValue);
+            case HASHTAG -> postRepository.findAllByHashtags(pageable, searchValue);
+            case CONTENT -> postRepository.findAllByContentContaining(pageable, searchValue);
+        };
+        return searched.map(PostEntity::dto);
     }
 
     /**
@@ -91,7 +88,6 @@ public class PostService {
      * @param title 제목
      * @param content 본문
      * @param user 로그인한 유저
-     * @return 저장된 포스트 id
      */
     @Transactional
     public void modifyPost(Long postId, String title, String content, UserEntity user, String hashtags){
@@ -110,10 +106,9 @@ public class PostService {
      * 포스트 삭제요청 - 포스팅, 댓글, 좋아요, 알림 삭제
      * @param postId 삭제요청한 포스트 id
      * @param userId 로그인한 유저 id
-     * @return 저장된 포스트 id
      */
     @Transactional
-    public Long deletePost(Long postId, Long userId){
+    public void deletePost(Long postId, Long userId){
         PostEntity post = findByPostIdOrElseThrow(postId);
         if (!post.getUser().getId().equals(userId)){
             // 포스트 작성자와 삭제 요청한 사람이 일치하는지 확인
@@ -123,7 +118,6 @@ public class PostService {
         commentRepository.deleteAllByPost(post);
         likeRepository.deleteAllByPost(post);
         notificationRepository.deleteAllByPost(post);
-        return postId;
     }
 
     /**
@@ -227,6 +221,13 @@ public class PostService {
     @Transactional(readOnly = true)
     private UserEntity findByUsernameOrElseThrow(String username){
         return userRepository.findByUsername(username).orElseThrow(()->{
+            throw CustomException.of(CustomErrorCode.USERNAME_NOT_FOUND);
+        });
+    }
+
+    @Transactional(readOnly = true)
+    private UserEntity findByNicknameOrElseThrow(String nickname){
+        return userRepository.findByNickname(nickname).orElseThrow(()->{
             throw CustomException.of(CustomErrorCode.USERNAME_NOT_FOUND);
         });
     }
