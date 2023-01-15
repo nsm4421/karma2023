@@ -45,6 +45,7 @@ const DetailPost = ({postId}) => {
     const [content, setContent] = useState("");
     const [author, setAuthor] = useState("");
     const [createdAt, setCreatedAt] = useState("");
+    const [hashtags, setHashtags] = useState([""]);
     // 좋아요 & 싫어요
     const [emotion, setEmotion] = useState("");
     const [likeCount, setLikeCount] = useState({LIKE:0, DISLIKE:0});
@@ -58,16 +59,17 @@ const DetailPost = ({postId}) => {
     const [isLoading, setIsLoading] = useState(false);
     
     // ------- hooks  -------  
-    useEffect(()=>{
+    useEffect(()=>{                                         // 포스팅 정보 가져오기
         getPostRequest().then((res)=>{
             setTitle(res.title);
             setContent(res.content);
             setAuthor(res.nickname);
             setCreatedAt(res.createdAt);
+            setHashtags(res.hashtags);
         })
     }, [])
 
-    useEffect(()=>{
+    useEffect(()=>{                                         // 댓글창 열기 / 닫기
         if (expanded){
             getCommentRequest().then((res)=>{
                 setComments([...res.content]);              // 댓글
@@ -77,7 +79,7 @@ const DetailPost = ({postId}) => {
         }
     }, [expanded, isLoading])
 
-    useEffect(()=>{
+    useEffect(()=>{                                     // 댓글 페이지 넘기기
         getCommentRequest().then((res)=>{
             setComments([...res.content]);              // 댓글
             setCurrentPage(res.pageable.pageNumber);    // 페이지
@@ -119,23 +121,13 @@ const DetailPost = ({postId}) => {
             });
     }
 
-    // 좋아요 & 싫어요 개수
+    // TODO : 좋아요 & 싫어요 개수
     const getLikeCountRequest = async () => {
         // const endPoint = `/api/v1/like/pid=${postId}`;
         // return await axios.get(endPoint, {
         //     headers:{
         //         Authorization:user.token??localStorage.getItem("token")
         //     }
-        // })
-        // .then((res)=>{
-        //     return res.data.result
-        // })
-        // .then((data)=>{
-        //     return {LIKE:data.likeCount, DISLIKE:data.dislikeCount};
-        // })
-        // .catch((err)=>{
-        //     console.log(err);
-        // });
     }   
 
     // 댓글작성 요청
@@ -146,7 +138,7 @@ const DetailPost = ({postId}) => {
             headers:{Authorization:user.token??localStorage.getItem("token")}})
     }
 
-    // 좋아요 & 싫어요 요청
+    // TODO : 좋아요 & 싫어요 요청
     const sendLikeRequest = async (likeType) => {
         const endPoint = "/api/v1/like";
         const data = {postId, likeType}
@@ -185,7 +177,7 @@ const DetailPost = ({postId}) => {
     }
 
     const handleLike = () => {
-
+        // TODO 
     }
 
     const handleCommentPage = (e) => {
@@ -205,7 +197,7 @@ const DetailPost = ({postId}) => {
                 subheader={createdAt}
             />
 
-            {/* TODO : 이미지 */}
+            {/* TODO : 이미지 삽입기능 */}
             {/* <CardMedia
                 component="img"
                 height="194"
@@ -218,17 +210,29 @@ const DetailPost = ({postId}) => {
                 <TextField value={content} sx={{width:"100%"}} multiline variant='filled'/>
                 <Divider />
             </CardContent>
-     
 
+            {/* 해쉬태그 */}           
+            <Box sx={{display:'flex', width:'100%', padding:'1vh'}} color="primary">
+                {hashtags.map((h, i)=>{
+                    return(
+                        <Typography variant="span" component="span" color="primary" key={i} sx={{marginLeft:"2vh"}}>
+                            #{h}
+                        </Typography>
+                    )
+                })}           
+                <Divider />   
+            </Box>
+          
             <CardActions disableSpacing>    
+                {/* TODO : 좋아요/싫어요 기능 */}
                 {/* 좋아요 아이콘 */}
                 <IconButton onClick={handleLike}>
                     <ThumbUpIcon sx={{color:(emotion==="LIKE")?"red":"gray"}}/> {likeCount.LIKE}
                 </IconButton>
                 {/* 싫어요 아이콘 */}
-                {/* <IconButton onClick={handleDisLike}>
-                    <ThumbDownIcon sx={{color:(emotion==="DISLIKE")?"blue":"gray"}}/> {likeCount.DISLIKE}
-                </IconButton> */}
+                <IconButton onClick={handleLike}>
+                    <ThumbDownIcon sx={{color:(emotion==="LIKE")?"red":"gray"}}/> {likeCount.LIKE}
+                </IconButton>
 
                 <ExpandMore
                     expand={expanded}
@@ -286,7 +290,7 @@ const DetailPost = ({postId}) => {
                             })
                         } 
 
-                {/* Pagination */}
+                {/* 댓글페이지 */}
                 <Box sx={{justifyContent:"center", display:"flex", marginTop:"5vh"}}>
                     <Pagination count={totalPage} defaultPage={currentPage+1} boundaryCount={5} onChange={handleCommentPage}
                         color="primary" size="large" sx={{margin: '2vh'}}/>

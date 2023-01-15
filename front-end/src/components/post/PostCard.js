@@ -1,4 +1,4 @@
-import { Typography } from '@mui/material';
+import { Button, Typography } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -39,6 +39,16 @@ const PostCard = ({post}) => {
                         {post.createdAt}
                     </Typography>
                 </CardActions>
+                {/* 해쉬태그 */}
+                <Box sx={{float:'right'}}>
+                    {post.hashtags.map((h, i)=>{
+                        return(
+                            <Typography variant="span" component="span" color="primary" key={i} sx={{marginRight:"2vh"}}>
+                                #{h}
+                            </Typography>
+                        )
+                    })}
+                </Box>
             </CardContent>
         </Card>
     );

@@ -55,6 +55,7 @@ const Nav = () => {
       setPages(pagesLogined);
       setUser({token, nickname});
     }).catch((err)=>{
+      localStorage.removeItem("token");   // 기존 토큰으로 로그인 실패시 토큰 제거
       console.log(err);
     })
   }, [])

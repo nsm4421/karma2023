@@ -9,6 +9,7 @@ import com.karma.prj.model.util.LikeType;
 import com.karma.prj.model.util.NotificationEvent;
 import com.karma.prj.model.util.NotificationType;
 import com.karma.prj.repository.*;
+import com.karma.prj.util.HashtagParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -28,17 +29,19 @@ public class PostService {
     private final LikeRepository likeRepository;
     private final NotificationRepository notificationRepository;
     private final NotificationService notificationService;
+    private final HashtagParser hashtagParser;
 
     /**
      * 포스트 작성요청
      * @param title : 제목
      * @param content : 본문
      * @param user : 로그인한 유저
+     * @param hashtags : 해쉬태그
      * @return 저장된 post id
      */
     @Transactional
-    public Long createPost(String title, String content, UserEntity user){
-        return postRepository.save(PostEntity.of(title, content, user)).getId();
+    public Long createPost(String title, String content, UserEntity user, String hashtags){
+        return postRepository.save(PostEntity.of(title, content, user, hashtagParser.stringToSet(hashtags))).getId();
     }
 
     /**
@@ -72,6 +75,17 @@ public class PostService {
     }
 
     /**
+     * 포스팅 조회 by 해쉬태그
+     * @param pageable
+     * @param hashtag 조회할 해쉬태그
+     * @return PostDto 페이지
+     */
+    @Transactional(readOnly = true)
+    public Page<PostDto> getPostsByHashtag(Pageable pageable, String hashtag){
+        return postRepository.findByHashtags(pageable, hashtag).map(PostEntity::dto);
+    }
+
+    /**
      * 포스트 수정요청
      * @param postId 수정요청한 포스트 id
      * @param title 제목
@@ -80,7 +94,7 @@ public class PostService {
      * @return 저장된 포스트 id
      */
     @Transactional
-    public Long modifyPost(Long postId, String title, String content, UserEntity user){
+    public void modifyPost(Long postId, String title, String content, UserEntity user, String hashtags){
         PostEntity post = findByPostIdOrElseThrow(postId);
         if (!post.getUser().getUsername().equals(user.getUsername())){
             // 포스트 작성자와 수정 요청한 사람이 일치하는지 확인
@@ -88,7 +102,8 @@ public class PostService {
         }
         post.setTitle(title);
         post.setContent(content);
-        return postRepository.save(PostEntity.of(title, content, user)).getId();
+        post.setHashtags(hashtagParser.stringToSet(hashtags));
+        postRepository.save(post);
     }
 
     /**

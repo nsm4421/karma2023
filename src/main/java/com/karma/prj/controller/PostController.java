@@ -36,6 +36,15 @@ public class PostController {
         return CustomResponse.success(postService.getPosts(pageable).map(GetPostResponse::from));
     }
 
+    // 특정 해쉬태크고로 조회
+    @GetMapping("/post/hashtag")
+    public CustomResponse<Page<GetPostResponse>> getPostsByHashtag(
+            @RequestParam("hashtag") String hashtag,
+            @PageableDefault(size = 20, sort = "createdAt",direction = Sort.Direction.DESC) Pageable pageable
+    ){
+        return CustomResponse.success(postService.getPostsByHashtag(pageable, hashtag).map(GetPostResponse::from));
+    }
+
     // 특정 유저가 쓴 조회
     @GetMapping("/post/username")
     public CustomResponse<Page<PostDto>> getPostsByUser(@PageableDefault Pageable pageable, @RequestParam("nickname") String username){
@@ -46,14 +55,15 @@ public class PostController {
     @PostMapping("/post")
     public CustomResponse<Long> createPost(@RequestBody CreatePostRequest req, Authentication authentication){
         UserEntity user = (UserEntity) authentication.getPrincipal();
-        return CustomResponse.success(postService.createPost(req.getTitle(), req.getContent(), user));
+        return CustomResponse.success(postService.createPost(req.getTitle(), req.getContent(), user, req.getHashtags()));
     }
 
     // 포스팅 수정
-    @PutMapping("/post")
-    public CustomResponse<Long> modifyPost(@PathVariable Long postId, @RequestBody ModifyPostRequest req, Authentication authentication){
+    @PutMapping("/post/{postId}")
+    public CustomResponse<Void> modifyPost(@PathVariable Long postId, @RequestBody ModifyPostRequest req, Authentication authentication){
         UserEntity user = (UserEntity) authentication.getPrincipal();
-        return CustomResponse.success(postService.modifyPost(postId, req.getTitle(), req.getContent(), user));
+        postService.modifyPost(postId, req.getTitle(), req.getContent(), user, req.getHashtags());
+        return CustomResponse.success();
     }
 
     // 포스팅 삭제
@@ -96,8 +106,8 @@ public class PostController {
     }
 
     // 좋아요 & 싫어요 개수 가져오기
-    @GetMapping("/like/{postId}")
-    public CustomResponse<GetLikeResponse> getLikeCount(@PathVariable Long postId){
+    @GetMapping("/like")
+    public CustomResponse<GetLikeResponse> getLikeCount(@RequestParam("pid") Long postId){
         return CustomResponse.success(GetLikeResponse.from(postId, postService.getLikeCount(postId)));
     }
 

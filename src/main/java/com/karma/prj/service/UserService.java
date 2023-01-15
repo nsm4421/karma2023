@@ -117,5 +117,4 @@ public class UserService {
                         ()->{throw CustomException.of(CustomErrorCode.USERNAME_NOT_FOUND);})
         );
     }
-
 }
