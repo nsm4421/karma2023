@@ -56,18 +56,9 @@ public class PostService {
     }
 
     /**
-     * 포스트 List 조회
-     */
-    @Transactional(readOnly = true)
-    public Page<PostDto> getPosts(Pageable pageable){
-        return postRepository.findAll(pageable).map(PostEntity::dto);
-    }
-
-
-    /**
      * 포스팅 검색
      * @param pageable 
-     * @param searchType : 검색타입 - title, hashtag, content, user
+     * @param searchType : 검색타입 - none, title, hashtag, content, user
      * @param searchValue : 검색어
      * @return Page<PostDto>
      */
@@ -78,6 +69,7 @@ public class PostService {
             case TITLE -> postRepository.findAllByTitleContaining(pageable, searchValue);
             case HASHTAG -> postRepository.findAllByHashtags(pageable, searchValue);
             case CONTENT -> postRepository.findAllByContentContaining(pageable, searchValue);
+            case NONE -> postRepository.findAll(pageable);
         };
         return searched.map(PostEntity::dto);
     }
@@ -216,13 +208,6 @@ public class PostService {
         NotificationEntity notification = notificationRepository.save(NotificationEntity.of(author, post, NotificationType.NEW_LIKE_ON_POST, message));
         // 알림 보내기
         notificationService.sendNotification(NotificationEvent.from(notification));
-    }
-
-    @Transactional(readOnly = true)
-    private UserEntity findByUsernameOrElseThrow(String username){
-        return userRepository.findByUsername(username).orElseThrow(()->{
-            throw CustomException.of(CustomErrorCode.USERNAME_NOT_FOUND);
-        });
     }
 
     @Transactional(readOnly = true)

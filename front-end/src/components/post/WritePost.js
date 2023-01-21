@@ -31,8 +31,12 @@ const WritePost = () => {
     }
     const handleHashtag = (i) => (e) => {
         let newHashtag = [...hashtags]
-        const matched = e.target.value.match(/^[\wㄱ-힣]+$/g);                            // 한글,숫자,영어
-        newHashtag[i] = matched?matched[0].slice(0, MAX_HASHTAG_LENGTH):hashtags[i];     // 최대 10자
+        if (e.target.value === ""){
+            newHashtag[i] = ""
+        } else {
+            const matched = e.target.value.match(/^[\wㄱ-힣]+$/g);                            // 한글,숫자,영어
+            newHashtag[i] = matched?matched[0].slice(0, MAX_HASHTAG_LENGTH):hashtags[i];     // 최대 10자
+        }
         setHashtags(newHashtag);
     }
     const addHashtag = () => {
@@ -150,7 +154,7 @@ const WritePost = () => {
                     <Typography variant="span" component="span" sx={{color:'gray'}}>
                         ({numHashtags} / 5)
                     </Typography>
-                    {/* 해쉬태그 추가/삭제히기 */}
+                    {/* 해쉬태그 추가/삭제하기 */}
                     <IconButton sx={{height:'100%'}}>
                         <AddCircleOutlineRoundedIcon onClick={addHashtag}/>
                     </IconButton>

@@ -28,26 +28,17 @@ public class PostController {
         return CustomResponse.success(GetPostResponse.from(postService.getPost(postId)));
     }
 
-    // 포스팅 페이지 조회
-    @GetMapping("/post")
-    public CustomResponse<Page<GetPostResponse>> getPosts(
-            @PageableDefault(size = 20, sort = "createdAt",direction = Sort.Direction.DESC) Pageable pageable
-    ){
-        return CustomResponse.success(postService.getPosts(pageable).map(GetPostResponse::from));
-    }
-
     /**
      * 검색기능
-     * @param searchType : 검색타입 - title, hashtag, content, user
+     * @param searchType : 검색타입 - none, title, hashtag, content, user
      * @param searchValue : 검색어
      * @param pageable
      */
-    @GetMapping("/post/search")
+    @GetMapping("/post")
     public CustomResponse<Page<GetPostResponse>> getPostBySearch(
             @RequestParam("searchType") SearchType searchType,
             @RequestParam("searchValue") String searchValue,
-            @PageableDefault(size = 20, sort = "createdAt",direction = Sort.Direction.DESC) Pageable pageable,
-            Authentication authentication
+            @PageableDefault(size = 20, sort = "createdAt",direction = Sort.Direction.DESC) Pageable pageable
     ){
         return CustomResponse.success(postService.getPostBySearch(pageable, searchType, searchValue).map(GetPostResponse::from));
     }

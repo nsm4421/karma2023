@@ -159,10 +159,10 @@ const Nav = () => {
             ))}
           </Box>
           
-          <Box sx={{ flexGrow: 0, alignItems:"center" }}>          
+          <Box sx={{ flexGrow: 0, alignItems:"center" }}>     
             {
-              user.nickname & !anchorElNav
-              ? `${user.nickname} 님 환영합니다`
+              user.nickname 
+              ? user.nickname
               : null
             }
           </Box>
