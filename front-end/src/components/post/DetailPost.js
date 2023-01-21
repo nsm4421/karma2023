@@ -38,61 +38,36 @@ const ExpandMore = styled((props) => {
 
 const DetailPost = ({postId}) => {
 
-    // ------- States  -------         
+    /**
+     * States
+     * 포스팅 - title, content, author, createAt, hashtags
+     * 좋아요, 싫어요 - likeCount, hateCount, emotionType(LIKE, HATE, NONE)
+     * 댓글 - comments, userComment
+     * 페이지 - totalPage, expand
+     */         
     const [user, setUser] = useRecoilState(userState);
-    // 포스팅
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [author, setAuthor] = useState("");
     const [createdAt, setCreatedAt] = useState("");
     const [hashtags, setHashtags] = useState([""]);
-    // 좋아요 & 싫어요
-    const [emotion, setEmotion] = useState("");
-    const [likeCount, setLikeCount] = useState({LIKE:0, DISLIKE:0});
-    // 댓글
+    const [likeCount, setLikeCount] = useState(0);
+    const [hateCount, setHateCount] = useState(0);
+    const [emotionType, setEmotionType] = useState(null);
+    const [emotionActionType, setEmotionActionType] = useState(null);
     const [comments, setComments] = useState([]);
     const [userComment, setUserComment] = useState("");
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPage, setTotalPage] = useState(1);
-    // 기타
     const [expanded, setExpanded] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     
-    // ------- hooks  -------  
-    useEffect(()=>{                                         // 포스팅 정보 가져오기
-        getPostRequest().then((res)=>{
-            setTitle(res.title);
-            setContent(res.content);
-            setAuthor(res.nickname);
-            setCreatedAt(res.createdAt);
-            setHashtags(res.hashtags);
-        })
-    }, [])
-
-    useEffect(()=>{                                         // 댓글창 열기 / 닫기
-        if (expanded){
-            getCommentRequest().then((res)=>{
-                setComments([...res.content]);              // 댓글
-                setCurrentPage(res.pageable.pageNumber);    // 페이지
-                setTotalPage(res.totalPages);               // 전체페이지
-            });
-        }
-    }, [expanded, isLoading])
-
-    useEffect(()=>{                                     // 댓글 페이지 넘기기
-        getCommentRequest().then((res)=>{
-            setComments([...res.content]);              // 댓글
-            setCurrentPage(res.pageable.pageNumber);    // 페이지
-            setTotalPage(res.totalPages);               // 전체페이지
-        });
-    }, [currentPage])
-
-    // ------- Rest API  ------- 
-
-    // 포스팅 가져오기
-    const getPostRequest = async () => {
+    // ------- hooks  ------- //
+    
+    // 포스팅 정보 가져오기
+    useEffect(()=>{                                         
         const endPoint = `/api/v1/post/detail?pid=${postId}`;
-        return await axios
+        axios
             .get(endPoint, {
                 headers:{
                     Authorization:user.token??localStorage.getItem("token")
@@ -100,52 +75,39 @@ const DetailPost = ({postId}) => {
             }).then((res)=>{
                 return res.data.result
             }).then((res)=>{
-                return res;
+                setTitle(res.title);
+                setContent(res.content);
+                setAuthor(res.nickname);
+                setCreatedAt(res.createdAt);
+                setHashtags(res.hashtags);
+                handleLikeCount();
             }).catch((err)=>{
-                console.log("getPostRequest : ", err);
-        });
-    }
+                console.log("useEffect 포스팅 정보 가져오기",err);
+            })
+    }, [])
 
-    // 댓글 가져오기
-    const getCommentRequest = async () => {
+    // 댓글창 
+    useEffect(()=>{                                         
         const endPoint = `/api/v1/comment?pid=${postId}&page=${currentPage}`
-        return await axios
-            .get(endPoint, {
-                headers:{
-                    Authorization:user.token??localStorage.getItem("token")
-                }
-            }).then((res)=>{
-                return res.data.result;                
-            }).catch((err)=>{
-                console.log(err);
-            });
-    }
+        // 댓글창이 열린경우
+        if (expanded){
+            axios
+                .get(endPoint, {
+                    headers:{
+                        Authorization:user.token??localStorage.getItem("token")
+                    }
+                }).then((res)=>{
+                    return res.data.result;                
+                }).then((res)=>{
+                    setComments([...res.content]);              // 댓글
+                    setCurrentPage(res.pageable.pageNumber);    // 페이지
+                    setTotalPage(res.totalPages);               // 전체페이지
+                }).catch((err)=>{
+                    console.log("useEffect 댓글 정보 가져오기",err);
+                });
+        }
+    }, [expanded, isLoading, currentPage])
 
-    // TODO : 좋아요 & 싫어요 개수
-    const getLikeCountRequest = async () => {
-        // const endPoint = `/api/v1/like/pid=${postId}`;
-        // return await axios.get(endPoint, {
-        //     headers:{
-        //         Authorization:user.token??localStorage.getItem("token")
-        //     }
-    }   
-
-    // 댓글작성 요청
-    const submitCommentRequest = async () => {
-        const endPoint = `/api/v1/comment`
-        const data = {postId, content:userComment}
-        await axios.post(endPoint, data, {
-            headers:{Authorization:user.token??localStorage.getItem("token")}})
-    }
-
-    // TODO : 좋아요 & 싫어요 요청
-    const sendLikeRequest = async (likeType) => {
-        const endPoint = "/api/v1/like";
-        const data = {postId, likeType}
-        await axios.post(endPoint, data, {
-            headers:{Authorization:user.token??localStorage.getItem("token")}
-        });
-    }   
 
     // ------- handeler  -------
 
@@ -160,24 +122,64 @@ const DetailPost = ({postId}) => {
     }
 
     // 댓글 입력
-    const handleSumbitComment = (e) => {
+    const handleSumbitComment = async (e) => {
+        const endPoint = `/api/v1/comment`
         setIsLoading(true);
-        submitCommentRequest().then(()=>{
-            // 댓글 작성 성공시 댓글 다시 불러오기
-            getCommentRequest().then((res)=>{
-                setComments([...res.content]);              // 댓글
-                setCurrentPage(res.pageable.pageNumber);    // 페이지
-                setTotalPage(res.totalPages);               // 전체페이지
-            });
-            setUserComment("");
-        }).catch((err)=>{
-            console.log(err);
-        })
-        setIsLoading(false);
+        await axios.post(endPoint, {postId, content:userComment}, {
+                headers:{
+                    Authorization:user.token??localStorage.getItem("token")
+                }
+            }).then((res)=>{
+                setUserComment("");
+            }).catch((err)=>{
+                console.log("handleSumbitComment",err);
+            }).finally(()=>{
+                setIsLoading(false);
+            })
     }
 
-    const handleLike = () => {
-        // TODO 
+    const handleLikeCount = async () => {
+        const endPoint = `/api/v1/emotion?pid=${postId}`;
+        await axios.get(endPoint, {
+            headers:{
+                Authorization:user.token??localStorage.getItem("token")
+            }
+        }).then((res)=>{
+            return res.data.result;
+        }).then((res)=>{
+            setLikeCount(res.likeCount);
+            setHateCount(res.hateCount);
+            setEmotionType(res.emotionType);
+        }).catch((err)=>{
+            console.log("감정표현 정보가져오기",err);
+        })
+    }
+ 
+    const handleLike = (type) => async (e) => {
+        let data = {};
+        const endPoint = `api/v1/emotion?pid=${postId}`;
+        setIsLoading(true);
+        if (emotionType === "NONE"){
+            data = {emotionType:type, emotionActionType:"NEW"};
+            setEmotionType(type);
+        } else if (type === emotionType){
+            data = {emotionType:type, emotionActionType:"CANCEL"};
+            setEmotionType("NONE");
+        } else {
+            data = {emotionType:type, emotionActionType:"SWITCH"};
+            setEmotionType(type==="LIKE"?"HATE":"LIKE");
+        }
+        await axios.post(endPoint, data, {
+            headers:{
+                Authorization:user.token??localStorage.getItem("token")
+            }
+        }).then((res)=>{
+            handleLikeCount();
+        }).catch((err)=>{
+            console.log("handleLike",err);
+        }).finally(()=>{
+            setIsLoading(false);
+        })
     }
 
     const handleCommentPage = (e) => {
@@ -224,14 +226,13 @@ const DetailPost = ({postId}) => {
             </Box>
           
             <CardActions disableSpacing>    
-                {/* TODO : 좋아요/싫어요 기능 */}
                 {/* 좋아요 아이콘 */}
-                <IconButton onClick={handleLike}>
-                    <ThumbUpIcon sx={{color:(emotion==="LIKE")?"red":"gray"}}/> {likeCount.LIKE}
+                <IconButton onClick={handleLike("LIKE")}>
+                    <ThumbUpIcon sx={{color:(emotionType==="LIKE")?"red":"gray"}}/> {likeCount}
                 </IconButton>
                 {/* 싫어요 아이콘 */}
-                <IconButton onClick={handleLike}>
-                    <ThumbDownIcon sx={{color:(emotion==="LIKE")?"red":"gray"}}/> {likeCount.LIKE}
+                <IconButton onClick={handleLike("HATE")}>
+                    <ThumbDownIcon sx={{color:(emotionType==="HATE")?"blue":"gray"}}/> {hateCount}
                 </IconButton>
 
                 <ExpandMore

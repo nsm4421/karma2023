@@ -17,7 +17,7 @@ public enum CustomErrorCode {
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "Post is not found..."),
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "Comment is not found..."),
     NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "Notification is not found..."),
-    NOT_LIKED(HttpStatus.NOT_FOUND, "Not liked..."),
+    EMOTION_NOT_FOUND(HttpStatus.NOT_FOUND, "Not liked..."),
     // auth failure
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "Password is wrong..."),
     NOT_GRANTED_ACCESS(HttpStatus.UNAUTHORIZED, "Access denied due to grant..."),

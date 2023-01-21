@@ -1,24 +1,21 @@
 package com.karma.prj.model.entity;
 
-import com.karma.prj.model.dto.LikeDto;
-import com.karma.prj.model.dto.PostDto;
+import com.karma.prj.model.dto.EmotionDto;
 import com.karma.prj.model.util.AuditingFields;
-import com.karma.prj.model.util.LikeType;
+import com.karma.prj.model.util.EmotionType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
-import java.util.List;
-
 @Setter
 @Getter
 @Entity
-@Table(name = "\"like\"")
-@SQLDelete(sql = "UPDATE \"like\" SET removed_at = NOW() WHERE id=?")
+@Table(name = "emotion")
+@SQLDelete(sql = "UPDATE emotion SET removed_at = NOW() WHERE id=?")
 @Where(clause = "removed_at is NULL")
-public class LikeEntity extends AuditingFields {
+public class EmotionEntity extends AuditingFields {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,25 +24,25 @@ public class LikeEntity extends AuditingFields {
     @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "post_id")
     private PostEntity post;
     @Enumerated(EnumType.STRING)
-    private LikeType likeType;
+    private EmotionType emotionType;
 
-    private LikeEntity(UserEntity user, PostEntity post, LikeType likeType) {
+    private EmotionEntity(UserEntity user, PostEntity post, EmotionType emotionType) {
         this.user = user;
         this.post = post;
-        this.likeType = likeType;
+        this.emotionType = emotionType;
     }
 
-    protected LikeEntity(){}
+    protected EmotionEntity(){}
 
-    public static LikeEntity of(UserEntity user, PostEntity post, LikeType likeType) {
-        return new LikeEntity(user, post, likeType);
+    public static EmotionEntity of(UserEntity user, PostEntity post, EmotionType emotionType) {
+        return new EmotionEntity(user, post, emotionType);
     }
 
-    public static LikeDto dto(LikeEntity entity){
-        return LikeDto.of(
+    public static EmotionDto dto(EmotionEntity entity){
+        return EmotionDto.of(
                 entity.getUser().getUsername(),
                 entity.getPost().getId(),
-                entity.getLikeType()
+                entity.getEmotionType()
         );
     }
 }

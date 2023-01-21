@@ -1,7 +1,7 @@
 package com.karma.prj.controller;
 
 import com.karma.prj.controller.request.*;
-import com.karma.prj.controller.response.GetLikeResponse;
+import com.karma.prj.controller.response.EmotionResponse;
 import com.karma.prj.controller.response.GetPostResponse;
 import com.karma.prj.model.dto.CommentDto;
 import com.karma.prj.model.entity.UserEntity;
@@ -98,17 +98,22 @@ public class PostController {
         return CustomResponse.success();
     }
 
-    // 좋아요 & 싫어요 개수 가져오기
-    @GetMapping("/like")
-    public CustomResponse<GetLikeResponse> getLikeCount(@RequestParam("pid") Long postId){
-        return CustomResponse.success(GetLikeResponse.from(postId, postService.getLikeCount(postId)));
+    // 좋아요 & 싫어요 개수 가져오기 & 유저가 해당 포스팅을 좋아하는지 여부
+    @GetMapping("/emotion")
+    public CustomResponse<EmotionResponse> getEmotionInfo(@RequestParam("pid") Long postId, Authentication authentication){
+        UserEntity user = (UserEntity) authentication.getPrincipal();
+        return CustomResponse.success(EmotionResponse.from(postService.getEmotionInfo(user, postId)));
     }
 
     // 좋아요 & 싫어요 요청
-    @PostMapping("/like")
-    public CustomResponse<Void> likePost(@RequestBody LikePostRequest req, Authentication authentication){
+    @PostMapping("/emotion")
+    public CustomResponse<Void> handleEmotion(
+            @RequestParam("pid") Long postId,
+            @RequestBody EmotionRequest req,
+            Authentication authentication
+    ){
         UserEntity user = (UserEntity) authentication.getPrincipal();
-        postService.likePost(req.getPostId(), req.getLikeType(), user);
+        postService.handleEmotion(user, postId, req.getEmotionType(), req.getEmotionActionType());
         return CustomResponse.success();
     }
 }

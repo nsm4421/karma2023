@@ -5,10 +5,7 @@ import com.karma.prj.exception.CustomException;
 import com.karma.prj.model.dto.CommentDto;
 import com.karma.prj.model.dto.PostDto;
 import com.karma.prj.model.entity.*;
-import com.karma.prj.model.util.LikeType;
-import com.karma.prj.model.util.NotificationEvent;
-import com.karma.prj.model.util.NotificationType;
-import com.karma.prj.model.util.SearchType;
+import com.karma.prj.model.util.*;
 import com.karma.prj.repository.*;
 import com.karma.prj.util.HashtagParser;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +24,7 @@ public class PostService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
-    private final LikeRepository likeRepository;
+    private final EmotionRepository emotionRepository;
     private final NotificationRepository notificationRepository;
     private final NotificationService notificationService;
     private final HashtagParser hashtagParser;
@@ -108,7 +105,7 @@ public class PostService {
         }
         postRepository.deleteByPostId(postId);
         commentRepository.deleteAllByPost(post);
-        likeRepository.deleteAllByPost(post);
+        emotionRepository.deleteAllByPost(post);
         notificationRepository.deleteAllByPost(post);
     }
 
@@ -169,45 +166,56 @@ public class PostService {
     }
 
     /**
-     * 좋아요 & 싫어요 개수 가져오기
+     * 좋아요 & 싫어요 개수, 포스팅 좋아요 & 싫어요 여부
      * @param postId 좋아요 & 싫어요 포스트 id
      */
     @Transactional(readOnly = true)
-    public Map<String, Long> getLikeCount(Long postId){
+    public Map<String, Object> getEmotionInfo(UserEntity user, Long postId){
         PostEntity post = findByPostIdOrElseThrow(postId);
+        EmotionEntity like = emotionRepository.findByUserAndPost(user, post).orElse(EmotionEntity.of(user, post, EmotionType.NONE));
         return Map.of(
-                "LIKE", likeRepository.getLikeCountByPostAndLikeType(post, LikeType.LIKE),
-                "HATE", likeRepository.getLikeCountByPostAndLikeType(post, LikeType.HATE)
+                "LIKE", emotionRepository.countByPostAndEmotionType(post, EmotionType.LIKE),
+                "HATE", emotionRepository.countByPostAndEmotionType(post, EmotionType.HATE),
+                "EMOTION", like.getEmotionType()
         );
     }
 
     /**
      * 좋아요 & 싫어요 요청
      * @param postId 좋아요 & 싫어요 포스트 id
-     * @param likeType LIKE(좋아요), HATE(싫어요)
+     * @param emotionType LIKE(좋아요), HATE(싫어요)
      * @param user like 누른사람
      */
     @Transactional
-    public void likePost(Long postId, LikeType likeType, UserEntity user){
+    public void handleEmotion(UserEntity user, Long postId, EmotionType emotionType, EmotionActionType emotionActionType){
         PostEntity post = findByPostIdOrElseThrow(postId);
-        UserEntity author = post.getUser();                     // 글쓴이
-        likeRepository.findByUserAndPostAndLikeType(user, post, likeType).ifPresent(it->{
-            if (it.getLikeType().equals(likeType)){
-                // 이미 좋아요를 누르고 좋아요를 누른 경우 or 이미 싫어요를 누르고 싫어요를 누른 경우 → 에러
-                throw CustomException.of(CustomErrorCode.ALREADY_LIKED);
-            } else {
-                // 좋아요를 누르고 싫어요를 누른 경우 → 좋아요 삭제
-                // 싫어요를 누르고 좋아요를 누른 경우 → 싫어요 삭제
-                likeRepository.deleteById(it.getId());
+        switch (emotionActionType){
+            case NEW -> {
+                emotionRepository.findByUserAndPost(user, post).ifPresent(it->{
+                    throw CustomException.of(CustomErrorCode.ALREADY_LIKED);
+                });
+                emotionRepository.save(EmotionEntity.of(user, post, emotionType));
+                UserEntity author = post.getUser();                     // 글쓴이
+                // 알림 저장
+                String message = String.format("[%s]님이 게시글 [%s]에 %s를 눌렀습니다", user.getNickname(), post.getTitle() , emotionType == EmotionType.LIKE?"좋아요":"싫어요");
+                NotificationEntity notification = notificationRepository.save(NotificationEntity.of(author, post, NotificationType.NEW_LIKE_ON_POST, message));
+                // 알림 보내기
+                notificationService.sendNotification(NotificationEvent.from(notification));
             }
-        });
-        // 좋아요 저장
-        likeRepository.save(LikeEntity.of(user, post, likeType));
-        // 알림 저장
-        String message = String.format("[%s]님이 게시글 [%s]에 %s를 눌렀습니다", user.getNickname(), post.getTitle() ,likeType==LikeType.LIKE?"좋아요":"싫어요");
-        NotificationEntity notification = notificationRepository.save(NotificationEntity.of(author, post, NotificationType.NEW_LIKE_ON_POST, message));
-        // 알림 보내기
-        notificationService.sendNotification(NotificationEvent.from(notification));
+            case SWITCH -> {
+                emotionRepository
+                    .findByUserAndPostAndEmotionType(user, post, emotionType.getOpposite())
+                    .ifPresent(it ->{
+                        it.setEmotionType(emotionType);
+                        emotionRepository.save(it);
+                    });
+            }
+            case CANCEL -> {
+                emotionRepository.findByUserAndPost(user, post).ifPresent(it->{
+                    emotionRepository.deleteById(it.getId());
+                });
+            }
+        }
     }
 
     @Transactional(readOnly = true)
