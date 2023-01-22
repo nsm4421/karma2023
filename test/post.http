@@ -3,26 +3,42 @@
 POST http://localhost:8080/api/v1/post
 Content-Type: application/json
 Accept-Encoding: UTF-8
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3RVc2VybmFtZSIsImlhdCI6MTY3MTM0ODYzMiwiZXhwIjoxNjc3Mzk2NjMyfQ.wQnBi0CdyFZzE7hHn3DCcKPyoSu9yJea_-EcyPR2ku0
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6Iu2FjOyKpO2KuCIsImlhdCI6MTY3NDMwMzE4OCwiZXhwIjoxNjgwMzUxMTg4fQ.OYISw2EUDUlLqpFCJS8AKqpn-qp8NE7V4saNoYZ0__A
 
 {
-    "title":"testTitle",
-    "content":"testContent"
+    "title":"테스트하기2",
+    "content":"테스트하기2",
+    "hashtags":"#테스트2#test2"
 }
 
 ### 포스트조회
 
-GET http://localhost:8080/api/v1/post/1
+GET http://localhost:8080/api/v1/post
 Content-Type: application/json
 Accept-Encoding: UTF-8
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3RVc2VybmFtZSIsImlhdCI6MTY3MTM0ODYzMiwiZXhwIjoxNjc3Mzk2NjMyfQ.wQnBi0CdyFZzE7hHn3DCcKPyoSu9yJea_-EcyPR2ku0
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6Iu2FjOyKpO2KuO2VmOq4sCIsImlhdCI6MTY3NDI4NDcxMSwiZXhwIjoxNjgwMzMyNzExfQ.PMxgmsmZ7NOEL_UIg65qC1C_AfKOvb24SXLNMrcn5fA
+
+### 포스트조회
+
+GET http://localhost:8080/api/v1/post/detail?pid=21
+Content-Type: application/json
+Accept-Encoding: UTF-8
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3RVc2VybmFtZSIsImlhdCI6MTY3Mzc2MDc5NywiZXhwIjoxNjc5ODA4Nzk3fQ.wM1bhdmOyppfprskYbAdW9QETSqreig2ZzxAuDc00Nw
+
+### 해쉬태그로 포스트 조회
+
+GET http://localhost:8080/api/v1/post/hashtag?hashtag=테스
+Content-Type: application/json
+Accept-Encoding: UTF-8
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3RVc2VybmFtZSIsImlhdCI6MTY3Mzc1OTM0OCwiZXhwIjoxNjc5ODA3MzQ4fQ.37WxCVfna95egSU_tfFxcp9X9eUG9NFV9UvhgcW8W-A
+
 
 ### 포스트수정
 
-PUT  http://localhost:8080/api/v1/post/1
+PUT  http://localhost:8080/api/v1/post/12
 Content-Type: application/json
 Accept-Encoding: UTF-8
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3RVc2VybmFtZSIsImlhdCI6MTY3MTM0ODYzMiwiZXhwIjoxNjc3Mzk2NjMyfQ.wQnBi0CdyFZzE7hHn3DCcKPyoSu9yJea_-EcyPR2ku0
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImEiLCJpYXQiOjE2NzMwOTEzNTEsImV4cCI6MTY3OTEzOTM1MX0.wK2obKjXTA-S-qJTB-Im-8GT0uYJS1_4PdMfZeyEx_Y
 
 {
     "title":"testTitle_Modify",
@@ -32,7 +48,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3RVc2VybmFtZSIsI
 
 ### 포스팅 삭제
 
-DELETE   http://localhost:8080/api/v1/post/1
+DELETE  http://localhost:8080/api/v1/post/1
 Content-Type: application/json
 Accept-Encoding: UTF-8
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3RVc2VybmFtZSIsImlhdCI6MTY3MTM0ODYzMiwiZXhwIjoxNjc3Mzk2NjMyfQ.wQnBi0CdyFZzE7hHn3DCcKPyoSu9yJea_-EcyPR2ku0
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6Iu2FjOyKpO2KuO2VmOq4sCIsImlhdCI6MTY3NDI4NDcxMSwiZXhwIjoxNjgwMzMyNzExfQ.PMxgmsmZ7NOEL_UIg65qC1C_AfKOvb24SXLNMrcn5fA
+
+### 좋아요

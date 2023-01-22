@@ -1,0 +1,38 @@
+### 회원가입
+
+POST http://localhost:8080/api/v1/user/register
+Content-Type: application/json
+Accept-Encoding: UTF-8
+
+{
+    "email":"test1",
+    "username":"test1",
+    "nickname":"test1",
+    "password":"test1"
+}
+
+### 회원가입
+
+POST http://localhost:8080/api/v1/user/register
+Content-Type: application/json
+Accept-Encoding: UTF-8
+
+{
+    "email":"test2",
+    "username":"test2",
+    "nickname":"test2",
+    "password":"test2"
+}
+
+### 회원가입
+
+POST http://localhost:8080/api/v1/user/register
+Content-Type: application/json
+Accept-Encoding: UTF-8
+
+{
+    "email":"test3",
+    "username":"test3",
+    "nickname":"test3",
+    "password":"test3"
+}
