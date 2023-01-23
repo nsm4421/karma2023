@@ -9,11 +9,13 @@ import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { Link } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { userState } from '../../recoil/user';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Tooltip } from '@mui/material';
 
 // Custom Settings
 const appName = "Karma"
@@ -26,6 +28,25 @@ const pagesLogined = [
   {label:"post", link:"/post"},
   {label:"logout", link:"/logout"}
 ]
+
+// Icon Button
+const IconBtn = ({nickname}) => {
+
+  if (nickname){
+    return (
+      <Tooltip title="마이페이지">
+        <Box sx={{ flexGrow: 0, alignItems:"center"}}>    
+            <Link to="/mypage">
+              <IconButton sx={{color:"white", fontSize:'1vw', display:"flex"}}>
+                <AccountCircleIcon sx={{marginRight:"10px"}}/>
+                <Typography variant='span'>{nickname}</Typography>
+              </IconButton>
+            </Link> 
+        </Box>
+      </Tooltip>
+    );
+  };
+}
 
 // Component to export
 const Nav = () => {
@@ -98,7 +119,7 @@ const Nav = () => {
               onClick={handleOpenNavMenu}
               color="inherit"
             >
-              <MenuIcon />
+            <MenuIcon />
             </IconButton>
             <Menu
               id="menu-appbar"
@@ -159,13 +180,8 @@ const Nav = () => {
             ))}
           </Box>
           
-          <Box sx={{ flexGrow: 0, alignItems:"center" }}>     
-            {
-              user.nickname 
-              ? user.nickname
-              : null
-            }
-          </Box>
+          {/* 아이콘 버튼 */}
+          <IconBtn nickname={user.nickname}/>
         </Toolbar>
       </Container>
     </AppBar>

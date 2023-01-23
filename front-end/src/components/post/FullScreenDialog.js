@@ -13,6 +13,21 @@ const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
+const IconBtn = ({title, Icon, onClick, label}) => {
+  return (
+    <Tooltip title={title}>
+      <IconButton
+          edge="start"
+          color="inherit"
+            onClick={onClick}
+            aria-label="close">
+          <Icon/>
+          <Typography>{label}</Typography>
+      </IconButton>
+    </Tooltip>
+  )
+}
+
 const FullScreenDialog = ({open, setOpen, post}) => {
 
   const handleClose = () => {
@@ -20,37 +35,31 @@ const FullScreenDialog = ({open, setOpen, post}) => {
   };
 
   return (
-        <Dialog
-          fullScreen
-          open={open}
-          onClose={handleClose}
-          TransitionComponent={Transition}
-        >
-        <AppBar sx={{ position: 'relative' }}>
-            <Toolbar>
-              {/* 제목 */}
-              <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-                  {post.title}
-              </Typography>
+        <>
+          <Dialog
+            fullScreen
+            open={open}
+            onClose={handleClose}
+            TransitionComponent={Transition}>
+              <AppBar sx={{ position: 'relative' }}>
+                  <Toolbar>
+                    {/* 제목 */}
+                    <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+                        {post.title}
+                    </Typography>
 
-              {/* 뒤로가기 아이콘 */}
-              <Tooltip title="포스팅 페이지로 돌아가기">
-                <IconButton
-                    edge="start"
-                    color="inherit"
-                    onClick={handleClose}
-                    aria-label="close">
-                    <UndoIcon/>
-                </IconButton>
-              </Tooltip>
-            </Toolbar>
-        </AppBar>
+                    {/* 아이콘 */}
+                    <IconBtn title="포스팅 페이지로 돌아가기" onClick={handleClose} Icon={UndoIcon} label="돌아가기"/>
 
-        {/*  보여줄 내용 */}
-        <DialogContent>
-            <DetailPost postId={post.id}/>
-        </DialogContent>
-    </Dialog>
+                  </Toolbar>
+              </AppBar>
+
+              {/*  보여줄 내용 */}
+              <DialogContent>
+                  <DetailPost postId={post.id}/>
+              </DialogContent>
+          </Dialog>
+        </>
   );
 }
 

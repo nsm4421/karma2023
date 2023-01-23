@@ -9,11 +9,13 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface CommentRepository extends JpaRepository<CommentEntity, Long> {
     Page<CommentEntity> findAllByPost(PostEntity post, Pageable pageable);
+    @Transactional
     @Modifying
-    @Query(value = "UPDATE CommentEntity entity SET removed_at = NOW() where entity.post = :post", nativeQuery = true)
+    @Query(value = "UPDATE CommentEntity entity SET removedAt = NOW() where entity.post = :post")
     void deleteAllByPost(@Param("post") PostEntity post);
 }

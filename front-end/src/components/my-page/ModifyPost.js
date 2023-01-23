@@ -1,28 +1,61 @@
 import axios from "axios";
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import CreateIcon from '@mui/icons-material/Create';
-import { Button, FormControl, IconButton, InputAdornment, InputLabel, Modal, OutlinedInput, TextField, Tooltip, Typography } from "@mui/material";
+import { Button, FormControl, IconButton, InputAdornment, OutlinedInput, TextField, Tooltip, Typography } from "@mui/material";
 import { Box, Container } from "@mui/system";
-import DynamicFeedIcon from '@mui/icons-material/DynamicFeed';
 import UploadIcon from '@mui/icons-material/Upload';
 import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRounded';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import RemoveCircleOutlineRoundedIcon from '@mui/icons-material/RemoveCircleOutlineRounded';
-import DetailPost from "./DetailPost";
+import { useRecoilState } from "recoil";
+import { userState } from "../../recoil/user";
 
-const WritePost = () => {
+const ModifyPost = () => {
     const MAX_HASHTAG_NUM = 5;
-    const MAX_HASHTAG_LENGTH = 10;
-    const endPoint = "/api/v1/post";
+    const MAX_HASHTAG_LENGTH = 10;    
     const navigator = useNavigate();
     // ------ state ------
+    const params = useParams();
+    let initHashtags = Array(MAX_HASHTAG_NUM).fill("");
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [hashtags, setHashtags] = useState(Array(MAX_HASHTAG_NUM).fill(""));
     const [numHashtags, setNumHashtags] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
+    const [user, setUser] = useRecoilState(userState);
+
+    useEffect(()=>{
+        const endPoint = `/api/v1/post/detail?pid=${params.pid}`;
+        axios.get(
+            endPoint,
+            {
+                headers:{
+                    Authorization : user.token??localStorage.getItem("token")
+                }
+            }
+        ).then((res)=>{
+            return res.data.result;
+        }).then((res)=>{
+            res.hashtags.forEach((v, i, _)=>{
+                initHashtags[i] = v;
+            })
+            setTitle(res.title);
+            setContent(res.content);
+            setHashtags(initHashtags);
+            setNumHashtags(res.hashtags.length);
+        }).catch((err)=>{
+            alert("포스팅 업로드에 실패하였습니다 \n" + (err.response.data.resultCode??"알수 없는 서버 오류"));
+            console.log(err);
+        }).finally(()=>{
+            setIsLoading(false);
+        });
+    }, []);
 
     // ------ handler ------
+    const handleGoBack = (e) => {
+        navigator(-1);
+    }
     const handleTitle = (e) =>{
         setTitle(e.target.value.slice(0, 100));
     }
@@ -46,6 +79,7 @@ const WritePost = () => {
         setNumHashtags(Math.max(0, numHashtags-1));
     }
     const handleSubmit = async (e) =>{
+        const endPoint = "/api/v1/post";
         e.preventDefault();
         if (!title){
             alert("제목을 입력해주세요");
@@ -65,17 +99,17 @@ const WritePost = () => {
             return v;
         }).join("#");
         hashtagString = handleHashtag?"#"+hashtagString:""
-        console.log(hashtagString);
-        await axios.post(
+        console.log({title, content, hashtags:hashtagString, postId:params.pid})
+        await axios.put(
             endPoint,
-            {title, content, hashtags:hashtagString},
+            {title, content, hashtags:hashtagString, postId:params.pid},
             {
                 headers:{
                     Authorization : localStorage.getItem("token")
                 }
             }
         ).then((res)=>{
-            navigator("/post");
+            navigator("/mypage");
         }).catch((err)=>{
             alert("포스팅 업로드에 실패하였습니다 \n" + (err.response.data.resultCode??"알수 없는 서버 오류"));
             console.log(err);
@@ -87,24 +121,18 @@ const WritePost = () => {
     return (
         <>
         <Container>
-            
-            {/* 머릿글 */}
-            <Modal> 
-                <DetailPost/>
-            </Modal>
-
             <Box sx={{marginTop:'5vh', display:'flex', justifyContent:'space-between', alignContent:'center'}}>
                 <Typography variant="h5" component="h5">
-                    <CreateIcon/> 포스팅 작성하기
+                    <CreateIcon/> 포스팅 수정하기
                 </Typography>
                 <Box>
-                    <Link to="/post">
-                        <Button variant="contained" color="success" sx={{marginRight:'10px'}}>
-                            <DynamicFeedIcon sx={{marginRight:'10px'}}/>포스팅 페이지로
-                        </Button>
-                    </Link>
+                    {/* 뒤로가기 */}
+                    <Button variant="contained" color="success" sx={{marginRight:'10px'}} onClick={handleGoBack}>
+                        <ArrowBackIcon sx={{marginRight:'10px'}}/>뒤로가기
+                    </Button>
+                    {/* 수정하기 */}
                     <Button variant="contained" color="error" type="submit" onClick={handleSubmit} disabled={isLoading}>
-                        <UploadIcon sx={{marginRight:'10px'}}/>제출
+                        <UploadIcon sx={{marginRight:'10px'}}/>수정하기
                     </Button>
                 </Box>
             </Box>
@@ -124,8 +152,7 @@ const WritePost = () => {
                     color="warning"
                     maxRows={1}
                     value={title}
-                    focused
-                />  
+                    focused/>  
             </Box>
             
             {/* 본문작성 */}
@@ -143,8 +170,7 @@ const WritePost = () => {
                     color="warning"
                     value={content}
                     multiline
-                    focused
-                />
+                    focused/>
             </Box>
 
              {/* 해쉬태그작성 */}
@@ -185,4 +211,4 @@ const WritePost = () => {
     )
 }
 
-export default WritePost;
+export default ModifyPost;

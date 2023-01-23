@@ -43,6 +43,20 @@ public class PostController {
         return CustomResponse.success(postService.getPostBySearch(pageable, searchType, searchValue).map(GetPostResponse::from));
     }
 
+    /**
+     * 내가 작성한 검색기능
+     */
+    @GetMapping("/post/my")
+    public CustomResponse<Page<GetPostResponse>> getMyPosts(
+            @PageableDefault(size = 20, sort = "createdAt",direction = Sort.Direction.DESC) Pageable pageable,
+            Authentication authentication
+    ){
+        return CustomResponse.success(
+                postService.getMyPosts(pageable, (UserEntity) authentication.getPrincipal())
+                        .map(GetPostResponse::from)
+        );
+    }
+
     // 포스팅 작성
     @PostMapping("/post")
     public CustomResponse<Long> createPost(@RequestBody CreatePostRequest req, Authentication authentication){
@@ -51,16 +65,19 @@ public class PostController {
     }
 
     // 포스팅 수정
-    @PutMapping("/post/{postId}")
-    public CustomResponse<Void> modifyPost(@PathVariable Long postId, @RequestBody ModifyPostRequest req, Authentication authentication){
+    @PutMapping("/post")
+    public CustomResponse<Void> modifyPost(
+            @RequestBody ModifyPostRequest req,
+            Authentication authentication
+    ){
         UserEntity user = (UserEntity) authentication.getPrincipal();
-        postService.modifyPost(postId, req.getTitle(), req.getContent(), user, req.getHashtags());
+        postService.modifyPost(req.getPostId(), req.getTitle(), req.getContent(), user, req.getHashtags());
         return CustomResponse.success();
     }
 
     // 포스팅 삭제
-    @DeleteMapping("/post/{postId}")
-    public CustomResponse<Void> deletePost(@PathVariable Long postId, Authentication authentication){
+    @DeleteMapping("/post")
+    public CustomResponse<Void> deletePost(@RequestParam("pid") Long postId, Authentication authentication){
         UserEntity user = (UserEntity) authentication.getPrincipal();
         postService.deletePost(postId, user.getId());
         return CustomResponse.success();

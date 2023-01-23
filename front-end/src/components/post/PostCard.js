@@ -34,7 +34,7 @@ const PostCard = ({post}) => {
                     <Box sx={{padding:'1vh'}}>
                         <Typography variant="body2">{post.content.length>=50?post.content.slice(0,50)+" ...":post.content}</Typography>
                     </Box>
-                    {/* 닉네임(작성자) */}
+                    {/* 작성일자 */}
                     <Typography variant="span" component="span" color="text.secondary">
                         {post.createdAt}
                     </Typography>

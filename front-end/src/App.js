@@ -5,9 +5,11 @@ import WritePost from './components/post/WritePost';
 import Register from './components/auth/Register';
 import Login from './components/auth/Login';
 import Home from './components/Home';
+import MyPage from './components/my-page/MyPage';
 import { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
 import { userState } from './recoil/user';
+import ModifyPost from './components/my-page/ModifyPost';
 
 const App = () => {
 
@@ -28,10 +30,12 @@ const App = () => {
       <Nav/>
       <Routes>
         <Route path="/" element={<Home/>}></Route>
+        <Route path="/mypage" element={<MyPage/>}></Route>
         <Route path="/register" element={<Register/>}></Route>
         <Route path="/login" element={<Login/>}></Route>
         <Route path="/post" element={<PostList/>}></Route>
         <Route path="/post/write" element={<WritePost/>}></Route>
+        <Route path="/post/modify/:pid" element={<ModifyPost/>}></Route>
       </Routes>
     </div>
   );

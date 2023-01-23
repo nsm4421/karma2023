@@ -187,121 +187,123 @@ const DetailPost = ({postId}) => {
     }
 
     return (
-        <Card>
-            {/* 작성자 & 작성시간 */}
-            <CardHeader
-                avatar={
-                    <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-                        R
-                    </Avatar>
-                }
-                title={author}
-                subheader={createdAt}
-            />
+        <>
+            <Card>
+                {/* 작성자 & 작성시간 */}
+                <CardHeader
+                    avatar={
+                        <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
+                            R
+                        </Avatar>
+                    }
+                    title={author}
+                    subheader={createdAt}
+                />
 
-            {/* TODO : 이미지 삽입기능 */}
-            {/* <CardMedia
-                component="img"
-                height="194"
-                image="/static/images/cards/paella.jpg"
-                alt="Paella dish"
-            /> */}
+                {/* TODO : 이미지 삽입기능 */}
+                {/* <CardMedia
+                    component="img"
+                    height="194"
+                    image="/static/images/cards/paella.jpg"
+                    alt="Paella dish"
+                /> */}
 
-            {/* 본문 */}
-            <CardContent>
-                <TextField value={content} sx={{width:"100%"}} multiline variant='filled'/>
-                <Divider />
-            </CardContent>
-
-            {/* 해쉬태그 */}           
-            <Box sx={{display:'flex', width:'100%', padding:'1vh'}} color="primary">
-                {hashtags.map((h, i)=>{
-                    return(
-                        <Typography variant="span" component="span" color="primary" key={i} sx={{marginLeft:"2vh"}}>
-                            #{h}
-                        </Typography>
-                    )
-                })}           
-                <Divider />   
-            </Box>
-          
-            <CardActions disableSpacing>    
-                {/* 좋아요 아이콘 */}
-                <IconButton onClick={handleLike("LIKE")}>
-                    <ThumbUpIcon sx={{color:(emotionType==="LIKE")?"red":"gray"}}/> {likeCount}
-                </IconButton>
-                {/* 싫어요 아이콘 */}
-                <IconButton onClick={handleLike("HATE")}>
-                    <ThumbDownIcon sx={{color:(emotionType==="HATE")?"blue":"gray"}}/> {hateCount}
-                </IconButton>
-
-                <ExpandMore
-                    expand={expanded}
-                    onClick={handleExpandClick}
-                    aria-expanded={expanded}>
-                    <ExpandMoreIcon />
-                </ExpandMore>
-            </CardActions>
-            
-            <Collapse in={expanded} timeout="auto" unmountOnExit>
-                <Box sx={{ flexGrow: 1, padding:'1vh' }}>
-                    {/* 댓글 입력창 */}
-                    <Grid container spacing={2}>
-                        <Grid item xs={11}>     
-                            <Tooltip title="500자 내외로 댓글을 작성해주세요">
-                                <TextField label={userComment?`${userComment.length}/500`:"댓글"} sx={{width:'100%'}}
-                                variant="standard" multiline onChange={handleUserComment} value={userComment}/>                          
-                            </Tooltip>                 
-                        </Grid>
-                            {/* 댓글 전송 */}
-                        <Grid item xs={1}>
-                            <Tooltip title="댓글작성">
-                                <IconButton onClick={handleSumbitComment} disabled={isLoading} sx={{color:isLoading?"gray":"blue"}}>
-                                    <SendIcon/>
-                                </IconButton>
-                            </Tooltip>
-                        </Grid>
-                    </Grid>
-                </Box>
-                <CardContent>                              
-                    {/* 댓글 */}
-                        {
-                            comments.map((c, i)=>{
-                                return (
-                                    <Grid container key={i}>
-                                        <Typography variant="strong" component="div">
-                                            <strong>{c.content}</strong>
-                                        </Typography>
-                                        <Grid container>
-                                            <Grid item xs={4}>
-                                                <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                                                    by {c.nickname}
-                                                </Typography>
-                                            </Grid>
-                                            <Grid item xs={4}>
-                                            </Grid>
-                                            <Grid item xs={4}>
-                                                <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                                                    {c.createdAt}
-                                                </Typography>
-                                            </Grid>
-                                        </Grid>                                          
-                                    </Grid>
-                                )
-                            })
-                        } 
-
-                {/* 댓글페이지 */}
-                <Box sx={{justifyContent:"center", display:"flex", marginTop:"5vh"}}>
-                    <Pagination count={totalPage} defaultPage={currentPage+1} boundaryCount={5} onChange={handleCommentPage}
-                        color="primary" size="large" sx={{margin: '2vh'}}/>
-                </Box>
+                {/* 본문 */}
+                <CardContent>
+                    <TextField value={content} sx={{width:"100%"}} multiline variant='filled'/>
+                    <Divider />
                 </CardContent>
 
+                {/* 해쉬태그 */}           
+                <Box sx={{display:'flex', width:'100%', padding:'1vh'}} color="primary">
+                    {hashtags.map((h, i)=>{
+                        return(
+                            <Typography variant="span" component="span" color="primary" key={i} sx={{marginLeft:"2vh"}}>
+                                #{h}
+                            </Typography>
+                        )
+                    })}           
+                    <Divider />   
+                </Box>
+            
+                <CardActions disableSpacing>    
+                    {/* 좋아요 아이콘 */}
+                    <IconButton onClick={handleLike("LIKE")}>
+                        <ThumbUpIcon sx={{color:(emotionType==="LIKE")?"red":"gray"}}/> {likeCount}
+                    </IconButton>
+                    {/* 싫어요 아이콘 */}
+                    <IconButton onClick={handleLike("HATE")}>
+                        <ThumbDownIcon sx={{color:(emotionType==="HATE")?"blue":"gray"}}/> {hateCount}
+                    </IconButton>
+
+                    <ExpandMore
+                        expand={expanded}
+                        onClick={handleExpandClick}
+                        aria-expanded={expanded}>
+                        <ExpandMoreIcon />
+                    </ExpandMore>
+                </CardActions>
                 
-            </Collapse>
-        </Card>
-  );
+                <Collapse in={expanded} timeout="auto" unmountOnExit>
+                    <Box sx={{ flexGrow: 1, padding:'1vh' }}>
+                        {/* 댓글 입력창 */}
+                        <Grid container spacing={2}>
+                            <Grid item xs={11}>     
+                                <Tooltip title="500자 내외로 댓글을 작성해주세요">
+                                    <TextField label={userComment?`${userComment.length}/500`:"댓글"} sx={{width:'100%'}}
+                                    variant="standard" multiline onChange={handleUserComment} value={userComment}/>                          
+                                </Tooltip>                 
+                            </Grid>
+                                {/* 댓글 전송 */}
+                            <Grid item xs={1}>
+                                <Tooltip title="댓글작성">
+                                    <IconButton onClick={handleSumbitComment} disabled={isLoading} sx={{color:isLoading?"gray":"blue"}}>
+                                        <SendIcon/>
+                                    </IconButton>
+                                </Tooltip>
+                            </Grid>
+                        </Grid>
+                    </Box>
+                    <CardContent>                              
+                        {/* 댓글 */}
+                            {
+                                comments.map((c, i)=>{
+                                    return (
+                                        <Grid container key={i}>
+                                            <Typography variant="strong" component="div">
+                                                <strong>{c.content}</strong>
+                                            </Typography>
+                                            <Grid container>
+                                                <Grid item xs={4}>
+                                                    <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                                                        by {c.nickname}
+                                                    </Typography>
+                                                </Grid>
+                                                <Grid item xs={4}>
+                                                </Grid>
+                                                <Grid item xs={4}>
+                                                    <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                                                        {c.createdAt}
+                                                    </Typography>
+                                                </Grid>
+                                            </Grid>                                          
+                                        </Grid>
+                                    )
+                                })
+                            } 
+
+                    {/* 댓글페이지 */}
+                    <Box sx={{justifyContent:"center", display:"flex", marginTop:"5vh"}}>
+                        <Pagination count={totalPage} defaultPage={currentPage+1} boundaryCount={5} onChange={handleCommentPage}
+                            color="primary" size="large" sx={{margin: '2vh'}}/>
+                    </Box>
+                    </CardContent>
+
+                    
+                </Collapse>
+            </Card>
+        </>
+    );
 }
 
 

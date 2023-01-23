@@ -16,8 +16,8 @@ import java.util.Set;
 @Setter
 @Getter
 @Entity
-@Table(name = "\"post\"")
-@SQLDelete(sql = "UPDATE \"post\" SET removed_at = NOW() WHERE id=?")
+@Table(name = "post")
+@SQLDelete(sql = "UPDATE post SET removed_at = NOW() WHERE id=?")
 @Where(clause = "removed_at is NULL")
 public class PostEntity extends AuditingFields {
 

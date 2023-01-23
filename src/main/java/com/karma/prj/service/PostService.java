@@ -72,6 +72,15 @@ public class PostService {
     }
 
     /**
+     * 내가 작성한 포스팅
+     * @return Page<PostDto>
+     */
+    @Transactional(readOnly = true)
+    public Page<PostDto> getMyPosts(Pageable pageable, UserEntity user){
+        return postRepository.findAllByUser(pageable, user).map(PostEntity::dto);
+    }
+
+    /**
      * 포스트 수정요청
      * @param postId 수정요청한 포스트 id
      * @param title 제목
@@ -103,7 +112,7 @@ public class PostService {
             // 포스트 작성자와 삭제 요청한 사람이 일치하는지 확인
             throw CustomException.of(CustomErrorCode.NOT_GRANTED_ACCESS);
         }
-        postRepository.deleteByPostId(postId);
+        postRepository.deleteById(post.getId());
         commentRepository.deleteAllByPost(post);
         emotionRepository.deleteAllByPost(post);
         notificationRepository.deleteAllByPost(post);

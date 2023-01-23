@@ -16,7 +16,7 @@ public interface NotificationRepository extends JpaRepository<NotificationEntity
     Page<NotificationEntity> findAllByUserId(Long userId, Pageable pageable);
     @Transactional
     @Modifying
-    @Query(value = "UPDATE NotificationEntity entity SET removed_at = NOW() where entity.post = :post", nativeQuery = true)
+    @Query(value = "UPDATE NotificationEntity entity SET removedAt = NOW() where entity.post = :post")
     void deleteAllByPost(@Param("post") PostEntity post);
     void deleteAllByUserId(Long userId);
 }

@@ -27,6 +27,6 @@ public class HashtagParser {
         while (matcher.find()) {
             result.add(matcher.group().replace("#", ""));
         }
-        return Set.copyOf(result);
+        return result;
     }
 }
