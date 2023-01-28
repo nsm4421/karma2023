@@ -10,7 +10,7 @@ import java.util.Set;
 
 @Repository
 public interface FollowRepository extends JpaRepository<FollowEntity, Long> {
-    Set<FollowEntity> findByUserFollowed(UserEntity userFollowed);
-    Set<FollowEntity> findByUserFollowing(UserEntity userFollowing);
-    Optional<FollowEntity> findByUserFollowedAndUserFollowing(UserEntity userFollowed, UserEntity userFollowing);
+    Set<FollowEntity> findByLeader_Nickname(String nickname);
+    Set<FollowEntity> findByFollower_Nickname(String nickname);
+    Optional<FollowEntity> findByLeaderAndFollower(UserEntity leader, UserEntity follower);
 }

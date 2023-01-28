@@ -9,7 +9,7 @@ import MyPage from './components/my-page/MyPage';
 import { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
 import { userState } from './recoil/user';
-import ModifyPost from './components/my-page/ModifyPost';
+import ModifyPost from './components/my-page/post/ModifyPost';
 
 const App = () => {
 

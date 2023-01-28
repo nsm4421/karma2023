@@ -5,7 +5,7 @@ import Paper from '@mui/material/Paper';
 import MyPostCard from "./MyPostCard";
 import { Pagination } from "@mui/material";
 import { useRecoilState } from "recoil";
-import { userState } from "../../recoil/user";
+import { userState } from "../../../recoil/user";
 
 const MyPostList = ({nickname})=>{
     /**

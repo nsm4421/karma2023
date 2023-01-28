@@ -18,24 +18,24 @@ public class FollowEntity extends AuditingFields {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH) @JoinColumn
-    private UserEntity userFollowed;
+    private UserEntity leader;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH) @JoinColumn
-    private UserEntity userFollowing;
-    private FollowEntity(UserEntity userFollowed, UserEntity userFollowing) {
-        this.userFollowed = userFollowed;
-        this.userFollowing = userFollowing;
+    private UserEntity follower;
+    private FollowEntity(UserEntity leader, UserEntity follower) {
+        this.leader = leader;
+        this.follower = follower;
     }
 
     protected FollowEntity(){}
 
-    public static FollowEntity of(UserEntity userFollowed, UserEntity userFollowing){
-        return new FollowEntity(userFollowed, userFollowing);
+    public static FollowEntity of(UserEntity leader, UserEntity follower){
+        return new FollowEntity(leader, follower);
     }
 
     public static FollowDto dto(FollowEntity entity){
         return FollowDto.of(
-                UserEntity.dto(entity.getUserFollowed()),
-                UserEntity.dto(entity.getUserFollowing())
+                UserEntity.dto(entity.getLeader()),
+                UserEntity.dto(entity.getFollower())
         );
     }
 }

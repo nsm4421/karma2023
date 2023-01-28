@@ -2,21 +2,19 @@ package com.karma.prj.model.dto;
 
 import lombok.Getter;
 
-import java.util.Set;
-
 @Getter
 public class FollowDto {
-    private UserDto userFollowed;
-    private UserDto userFollowing;
+    private UserDto leader;
+    private UserDto follower;
 
-    private FollowDto(UserDto userFollowed, UserDto userFollowing) {
-        this.userFollowed = userFollowed;
-        this.userFollowing = userFollowing;
+    private FollowDto(UserDto leader, UserDto follower) {
+        this.leader = leader;
+        this.follower = follower;
     }
 
     protected FollowDto(){}
 
-    public static FollowDto of(UserDto userFollowed, UserDto userFollowing){
-        return new FollowDto(userFollowed, userFollowing);
+    public static FollowDto of(UserDto leader, UserDto follower){
+        return new FollowDto(leader, follower);
     }
 }

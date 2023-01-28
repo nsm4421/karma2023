@@ -9,7 +9,7 @@ import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRou
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import RemoveCircleOutlineRoundedIcon from '@mui/icons-material/RemoveCircleOutlineRounded';
 import { useRecoilState } from "recoil";
-import { userState } from "../../recoil/user";
+import { userState } from "../../../recoil/user";
 
 const ModifyPost = () => {
     const MAX_HASHTAG_NUM = 5;

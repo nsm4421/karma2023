@@ -6,10 +6,10 @@ import NotesIcon from '@mui/icons-material/Notes';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Box } from '@mui/system';
 import { useState } from 'react';
-import FullScreenDialog from '../post/FullScreenDialog'
+import FullScreenDialog from '../../post/FullScreenDialog'
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
-import { userState } from '../../recoil/user';
+import { userState } from '../../../recoil/user';
 import axios from 'axios';
 
 const MyPostCard = ({post}) => {

@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum FollowingType {
-    FOLLOWING("특정 유저가 팔로우하는 유저 반환"),
-    FOLLOWED("특정 유저를 팔로우하는 유저 반환");
+    LEADER("팔로잉 당하는 사람"),
+    FOLLOWER("팔로잉 하는 사람");
     private final String description;
 }

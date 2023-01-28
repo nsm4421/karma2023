@@ -17,7 +17,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -71,45 +70,57 @@ public class UserService {
     }
     /**
      * 팔로우 기능
-     * @param targetNickname : 팔로우할 유저의 닉네임
-     * @param userFollowing : 팔로우 유저
+     * @param leaderNickname : 팔로우할 유저의 닉네임
+     * @param follower : 팔로우 유저
      */
     @Transactional
-    public void followUser(String targetNickname, UserEntity userFollowing){
-        // 팔로잉하려는 유저가 존재하는지 확인
-        UserEntity userFollowed = findByNicknameOrElseThrow(targetNickname);
+    public void followUser(String leaderNickname, UserEntity follower){
+        // 자기 자신을 팔로우 하는 경우 에러
+        if (follower.getNickname().equals(leaderNickname)){
+            throw CustomException.of(CustomErrorCode.INTERNAL_SERVER_ERROR, "leader and follower are same...?");
+        }
+        // 팔로잉 당하는 유저가 존재하는지 확인
+        UserEntity leader = findByNicknameOrElseThrow(leaderNickname);
         // 이미 팔로우가 되어 있는지 확인
-        followRepository.findByUserFollowedAndUserFollowing(userFollowed, userFollowing).ifPresent(it->{
+        followRepository.findByLeaderAndFollower(leader, follower).ifPresent(it->{
             throw CustomException.of(CustomErrorCode.ALREADY_FOLLOWING);
         });
         // 팔로우 관계 저장
-        followRepository.save(FollowEntity.of(userFollowed, userFollowing));
+        followRepository.save(FollowEntity.of(leader, follower));
     }
     /**
      * 특정 유저의 팔로잉 관계 조회하기
-     * @param nickname : 특정 유저의 닉네임
+     * @param targetNickname : 특정 유저의 닉네임
      * @param followingType
-     * - FOLLOWED : 특정유저를 팔로잉하는 유저들 조회
-     * - FOLLOWING : 특정유저가 팔로잉하는 유저들 조회
-     * @return User들의 nicknames
+     * - LEADER : 특정 유저를 팔로잉 하는 팔로워들
+     * - FOLLOWER : 특정 유저가 팔로우하는 리더들
+     * @return User Dto
      */
     @Transactional(readOnly = true)
-    public Set<String> getUsersFollow(String nickname, FollowingType followingType){
-        Set<FollowEntity> follows = switch (followingType){
-            case FOLLOWING -> followRepository.findByUserFollowing(findByNicknameOrElseThrow(nickname));
-            case FOLLOWED -> followRepository.findByUserFollowed(findByNicknameOrElseThrow(nickname));
-        };
-        return follows.stream().map(FollowEntity::getUserFollowing).map(UserEntity::getNickname).collect(Collectors.toSet());
+    public Set<UserDto> getUsersFollow(String targetNickname, FollowingType followingType){
+        if (followingType.equals(FollowingType.LEADER)){
+            return followRepository.findByLeader_Nickname(targetNickname)
+                    .stream().map(FollowEntity::getFollower).map(UserEntity::dto).collect(Collectors.toSet());
+        }
+        if (followingType.equals(FollowingType.FOLLOWER)){
+            return followRepository.findByFollower_Nickname(targetNickname)
+                    .stream().map(FollowEntity::getLeader).map(UserEntity::dto).collect(Collectors.toSet());
+        }
+        throw CustomException.of(CustomErrorCode.INTERNAL_SERVER_ERROR);
     }
     /**
      * 언팔로우 기능
-     * @param targetNickname : 팔로우된 사람의 닉네임
-     * @param userFollowing : 팔로워
+     * @param leaderNickname : 팔로우된 사람의 닉네임
+     * @param follower : 팔로워
      */
     @Transactional
-    public void unFollow(String targetNickname, UserEntity userFollowing){
+    public void unFollow(String leaderNickname, UserEntity follower){
+        // 자기 자신을 언팔 하는 경우 에러
+        if (follower.getNickname().equals(leaderNickname)){
+            throw CustomException.of(CustomErrorCode.INTERNAL_SERVER_ERROR, "leader and follower are same...?");
+        }
         FollowEntity follow = followRepository
-                .findByUserFollowedAndUserFollowing(findByNicknameOrElseThrow(targetNickname), userFollowing)
+                .findByLeaderAndFollower(findByNicknameOrElseThrow(leaderNickname), follower)
                 .orElseThrow(()->{throw CustomException.of(CustomErrorCode.FOLLOWING_NOT_FOUND);});
         followRepository.delete(follow);
     }

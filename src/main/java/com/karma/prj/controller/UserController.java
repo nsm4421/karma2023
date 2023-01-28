@@ -4,6 +4,7 @@ import com.karma.prj.controller.request.FollowRequest;
 import com.karma.prj.controller.request.GetFollowerRequest;
 import com.karma.prj.controller.request.LoginRequest;
 import com.karma.prj.controller.request.RegisterRequest;
+import com.karma.prj.controller.response.GetFollowerResponse;
 import com.karma.prj.model.dto.UserDto;
 import com.karma.prj.model.entity.UserEntity;
 import com.karma.prj.model.util.CustomResponse;
@@ -13,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -52,20 +54,24 @@ public class UserController {
     /**
      * 팔로잉하기
      */
-    @PostMapping("/follow")
+    @PutMapping("/follow")
     public CustomResponse<Void> followUser(@RequestBody FollowRequest req, Authentication authentication){
         userService.followUser(req.getNickname(), (UserEntity) authentication.getPrincipal());
         return CustomResponse.success();
     }
     /**
      * 팔로워 리스트 가져오기
-     * FollowingType = FOLLOWED : 특정 유저를 팔로우하는 users
-     * FollowingType = FOLLOWING : 특정 유저를 팔로잉하는 users
+     * FollowingType = LEADER : 특정 유저를 팔로우하는 users
+     * FollowingType = FOLLOWER : 특정 유저를 팔로잉하는 users
      * @return
      */
-    @GetMapping("/follow")
-    public CustomResponse<Set<String>> getFollowers(@RequestBody GetFollowerRequest req){
-        return CustomResponse.success(userService.getUsersFollow(req.getNickname(), req.getFollowingType()));
+    @PostMapping("/follow")
+    public CustomResponse<Set<GetFollowerResponse>> getFollowers(@RequestBody GetFollowerRequest req){
+        return CustomResponse.success(
+                userService.getUsersFollow(req.getNickname(), req.getFollowingType())
+                        .stream()
+                        .map(GetFollowerResponse::from).collect(Collectors.toSet())
+        );
     }
     /**
      * 언팔로우
