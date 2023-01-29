@@ -28,7 +28,6 @@ export default function FollowList(){
     useEffect(()=>{
         const endPoint = '/api/v1/user/follow';
         const data = {nickname:user.nickname, followingType:(selected===0?"FOLLOWER":"LEADER")}
-        console.table(data);
         axios.post(
             endPoint,
             data,
@@ -38,7 +37,6 @@ export default function FollowList(){
                 }
             }
         ).then((res)=>{
-            console.log(res);
             return res.data.result;
         }).then((res)=>{
             setFollower(res);  

@@ -65,7 +65,6 @@ const WritePost = () => {
             return v;
         }).join("#");
         hashtagString = handleHashtag?"#"+hashtagString:""
-        console.log(hashtagString);
         await axios.post(
             endPoint,
             {title, content, hashtags:hashtagString},

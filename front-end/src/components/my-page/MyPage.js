@@ -12,6 +12,7 @@ import DynamicFeedIcon from '@mui/icons-material/DynamicFeed';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import Diversity1Icon from '@mui/icons-material/Diversity1';
+import NotificationList from "./notification/NotificationList";
 
 export default function MyPage(){
 
@@ -95,8 +96,7 @@ function GetContent({type, user}){
             )
         case ("NOTIFICATION"):
             return (
-                // TODO
-                null
+                <NotificationList/>
             );
         default:
             return;
