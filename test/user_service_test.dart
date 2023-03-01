@@ -1,16 +1,9 @@
-import 'package:flutter_prj/model/user.dart';
+import 'package:flutter_prj/model/user_model.dart';
 import 'package:flutter_prj/service/user_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rethinkdb_dart/rethinkdb_dart.dart';
 
-Future<void> createDatabase(Rethinkdb db, Connection connection) async {
-  await db.dbCreate('test').run(connection).catchError((err) => {});
-  await db.tableCreate('users').run(connection).catchError((err) => {});
-}
-
-Future<void> cleanDatabase(Rethinkdb db, Connection connection) async {
-  await db.table('users').delete().run(connection);
-}
+import 'util_for_test.dart';
 
 void main() {
   Rethinkdb _db = Rethinkdb();
