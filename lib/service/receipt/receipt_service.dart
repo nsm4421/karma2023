@@ -49,10 +49,11 @@ class ReceiptService implements IReceiptService {
                 if (feedData['new_val'] == null) return;
 
                 final receipt = _receiptFromFeed(feedData);
-                _removeDeliveredReceipt(receipt);
                 _controller.sink.add(receipt);
+                _removeDeliveredReceipt(receipt);
               })
-              .catchError((err)=>_logger.e(err));
+              .catchError((err) => _logger.e(err))
+              .onError((err, stackTrace) => _logger.e(err));
         });
   }
 

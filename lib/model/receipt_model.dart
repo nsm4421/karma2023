@@ -1,4 +1,19 @@
-import 'package:flutter/cupertino.dart';
+
+
+import 'package:flutter/foundation.dart';
+
+enum ReceiptStatus { delivered, read }
+
+extension EnumParsing on ReceiptStatus {
+  String value() {
+    return toString().split(".").last;
+  }
+
+  static ReceiptStatus fromString(String text) {
+    return ReceiptStatus.values.firstWhere((element) => element.value() == text);
+  }
+}
+
 
 class Receipt {
   String _id;
@@ -7,7 +22,7 @@ class Receipt {
 
   final String recipient;
   final String messageId;
-  final String status;
+  final ReceiptStatus status;
   final DateTime timestamp;
 
   Receipt(
@@ -19,7 +34,7 @@ class Receipt {
   Map<String, dynamic> toJson() => {
         'recipient': recipient,
         'message_id': messageId,
-        'status': status,
+        'status': status.value(),
         'timestamp': timestamp
       };
 
@@ -27,7 +42,7 @@ class Receipt {
     var receipt = Receipt(
         recipient: json['recipient'],
         messageId: json['message_id'],
-        status: json['status'],
+        status: EnumParsing.fromString(json['status']),
         timestamp: json['timestamp']);
     receipt._id = json['id'];
     return receipt;

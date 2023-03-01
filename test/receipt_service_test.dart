@@ -29,7 +29,7 @@ void main() {
     Receipt receipt = Receipt(
         recipient: '444',
         messageId: '12',
-        status: "delivered",
+        status: ReceiptStatus.delivered,
         timestamp: DateTime.now());
     final result = await sut.send(receipt);
     expect(result, true);
@@ -42,12 +42,12 @@ void main() {
     Receipt receipt1 = Receipt(
         recipient: user.id,
         messageId: "1234",
-        status: "delivered",
+        status: ReceiptStatus.delivered,
         timestamp: DateTime.now());
     Receipt receipt2 = Receipt(
         recipient: user.id,
         messageId: "12345",
-        status: "delivered",
+        status: ReceiptStatus.delivered,
         timestamp: DateTime.now());
 
     await sut.send(receipt1);
