@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter_prj/model/message_model.dart';
+import 'package:flutter/foundation.dart';
 
+import '../../model/message_model.dart';
 import '../../model/user_model.dart';
 
 abstract class IMessageService {

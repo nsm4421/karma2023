@@ -1,6 +1,7 @@
-import 'package:flutter_prj/model/user_model.dart';
-import 'package:flutter_prj/service/user/user_service_interface.dart';
 import 'package:rethinkdb_dart/rethinkdb_dart.dart';
+
+import '../../model/user_model.dart';
+import 'user_service_interface.dart';
 
 class UserService implements IUserService {
   final Rethinkdb _db;
@@ -21,14 +22,19 @@ class UserService implements IUserService {
 
   @override
   Future<void> disconnect(User user) async {
-    await _db.table('user').update({'id':user.id, 'active':false, 'last_seen':DateTime.now()}).run(_connection);
+    await _db.table('user').update({
+      'id': user.id,
+      'active': false,
+      'last_seen': DateTime.now()
+    }).run(_connection);
     _connection.close();
   }
 
   @override
   Future<List<User>> online() async {
-    Cursor cursor = await _db.table('users').filter({'active':true}).run(_connection);
+    Cursor cursor =
+        await _db.table('users').filter({'active': true}).run(_connection);
     final users = await cursor.toList();
-    return users.map((u)=>User.fromJson(u)).toList();
+    return users.map((u) => User.fromJson(u)).toList();
   }
 }

@@ -1,10 +1,8 @@
 import 'package:encrypt/encrypt.dart';
-import 'package:flutter_prj/model/message_model.dart';
-import 'package:flutter_prj/model/user_model.dart';
-import 'package:flutter_prj/service/encryption/encryption_service.dart';
-import 'package:flutter_prj/service/message/message_service.dart';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rethinkdb_dart/rethinkdb_dart.dart';
+import 'package:flutter_prj/chat/chat_helper.dart';
 
 import 'util_for_test.dart';
 

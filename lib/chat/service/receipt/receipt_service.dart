@@ -1,10 +1,11 @@
 import 'dart:async';
 
-import 'package:flutter_prj/model/receipt_model.dart';
-import 'package:flutter_prj/model/user_model.dart';
-import 'package:flutter_prj/service/receipt/receipt_service_interface.dart';
 import 'package:logger/logger.dart';
 import 'package:rethinkdb_dart/rethinkdb_dart.dart';
+
+import '../../model/receipt_model.dart';
+import '../../model/user_model.dart';
+import 'receipt_service_interface.dart';
 
 class ReceiptService implements IReceiptService {
   final Rethinkdb _db;

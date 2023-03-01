@@ -1,11 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter_prj/model/typing_event_model.dart';
-import 'package:flutter_prj/model/user_model.dart';
-import 'package:flutter_prj/service/typing/typing_notification_service_interface.dart';
 import 'package:logger/logger.dart';
 import 'package:rethinkdb_dart/rethinkdb_dart.dart';
+
+import '../../model/typing_event_model.dart';
+import '../../model/user_model.dart';
+import 'typing_notification_service_interface.dart';
 
 class TypingNotificationService implements ITypingNotificationService {
   final _logger = Logger();
@@ -17,8 +18,7 @@ class TypingNotificationService implements ITypingNotificationService {
   TypingNotificationService(this._db, this._connection);
 
   @override
-  Future<bool> send(
-      {@required TypingEvent event, @required User to}) async {
+  Future<bool> send({@required TypingEvent event, @required User to}) async {
     if (to.active) return false;
     Map record = await _db
         .table('typing_events')

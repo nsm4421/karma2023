@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_prj/model/typing_event_model.dart';
 
+import '../../model/typing_event_model.dart';
 import '../../model/user_model.dart';
 
 abstract class ITypingNotificationService {

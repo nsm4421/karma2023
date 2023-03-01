@@ -1,11 +1,12 @@
 import 'dart:async';
 
-import 'package:flutter_prj/model/message_model.dart';
-import 'package:flutter_prj/model/user_model.dart';
-import 'package:flutter_prj/service/encryption/encryption_service.dart';
-import 'package:flutter_prj/service/message/message_service_interface.dart';
 import 'package:logger/logger.dart';
 import 'package:rethinkdb_dart/rethinkdb_dart.dart';
+
+import '../../model/message_model.dart';
+import '../../model/user_model.dart';
+import '../encryption/encryption_service.dart';
+import 'message_service_interface.dart';
 
 class MessageService implements IMessageService {
   final Connection _connection;
@@ -51,18 +52,18 @@ class MessageService implements IMessageService {
         .asStream()
         .cast<Feed>()
         .listen((event) {
-      event
-          .forEach((feedData) {
-        if (feedData['new_val'] == null) return;
+          event
+              .forEach((feedData) {
+                if (feedData['new_val'] == null) return;
 
-        final message = _messageFromFeed(feedData);
-        _controller.sink.add(message);
-        _removeDeliveredMessage(message);
-      })
-      // logging error
-          .catchError((err) => _logger.e(err))
-          .onError((err, stackTrace) => _logger.e(err));
-    });
+                final message = _messageFromFeed(feedData);
+                _controller.sink.add(message);
+                _removeDeliveredMessage(message);
+              })
+              // logging error
+              .catchError((err) => _logger.e(err))
+              .onError((err, stackTrace) => _logger.e(err));
+        });
   }
 
   Message _messageFromFeed(feedData) {

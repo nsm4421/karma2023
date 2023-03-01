@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/foundation.dart';
 
 enum ReceiptStatus { delivered, read }
@@ -10,10 +8,10 @@ extension EnumParsing on ReceiptStatus {
   }
 
   static ReceiptStatus fromString(String text) {
-    return ReceiptStatus.values.firstWhere((element) => element.value() == text);
+    return ReceiptStatus.values
+        .firstWhere((element) => element.value() == text);
   }
 }
-
 
 class Receipt {
   String _id;
