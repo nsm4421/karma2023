@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_prj/model/receipt_model.dart';
 import 'package:flutter_prj/model/user_model.dart';
-import 'package:flutter_prj/service/receipt_service_impl.dart';
+import 'package:flutter_prj/service/receipt/receipt_service_interface.dart';
 import 'package:logger/logger.dart';
 import 'package:rethinkdb_dart/rethinkdb_dart.dart';
 

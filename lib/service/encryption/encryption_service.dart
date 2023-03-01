@@ -1,5 +1,5 @@
 import 'package:encrypt/encrypt.dart';
-import 'package:flutter_prj/service/encryption_service_impl.dart';
+import 'package:flutter_prj/service/encryption/encryption_service_interface.dart';
 
 class EncryptionService extends IEncryptionService {
   final Encrypter _encryptor;

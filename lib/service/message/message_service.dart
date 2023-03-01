@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter_prj/model/message_model.dart';
 import 'package:flutter_prj/model/user_model.dart';
-import 'package:flutter_prj/service/encryption_service.dart';
-import 'package:flutter_prj/service/message_service_impl.dart';
+import 'package:flutter_prj/service/encryption/encryption_service.dart';
+import 'package:flutter_prj/service/message/message_service_interface.dart';
 import 'package:logger/logger.dart';
 import 'package:rethinkdb_dart/rethinkdb_dart.dart';
 

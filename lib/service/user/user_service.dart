@@ -1,5 +1,5 @@
 import 'package:flutter_prj/model/user_model.dart';
-import 'package:flutter_prj/service/user_service_impl.dart';
+import 'package:flutter_prj/service/user/user_service_interface.dart';
 import 'package:rethinkdb_dart/rethinkdb_dart.dart';
 
 class UserService implements IUserService {
