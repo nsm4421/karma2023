@@ -51,18 +51,18 @@ class MessageService implements IMessageService {
         .asStream()
         .cast<Feed>()
         .listen((event) {
-          event
-              .forEach((feedData) {
-                if (feedData['new_val'] == null) return;
+      event
+          .forEach((feedData) {
+        if (feedData['new_val'] == null) return;
 
-                final message = _messageFromFeed(feedData);
-                _controller.sink.add(message);
-                _removeDeliveredMessage(message);
-              })
-              // logging error
-              .catchError((err) => _logger.e(err))
-              .onError((err, stackTrace) => _logger.e(err));
-        });
+        final message = _messageFromFeed(feedData);
+        _controller.sink.add(message);
+        _removeDeliveredMessage(message);
+      })
+      // logging error
+          .catchError((err) => _logger.e(err))
+          .onError((err, stackTrace) => _logger.e(err));
+    });
   }
 
   Message _messageFromFeed(feedData) {

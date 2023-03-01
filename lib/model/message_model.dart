@@ -13,9 +13,9 @@ class Message {
 
   Message(
       {@required this.from,
-      @required this.to,
-      @required this.timestamp,
-      @required this.contents});
+        @required this.to,
+        @required this.timestamp,
+        @required this.contents});
 
   toJson() =>
       {'from': from, 'to': to, 'timestamp': timestamp, 'contents': contents};

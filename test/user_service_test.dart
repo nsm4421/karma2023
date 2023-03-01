@@ -6,18 +6,18 @@ import 'package:rethinkdb_dart/rethinkdb_dart.dart';
 import 'util_for_test.dart';
 
 void main() {
-  Rethinkdb _db = Rethinkdb();
-  Connection _connection;
+  Rethinkdb db = Rethinkdb();
+  Connection connection;
   UserService sut;
 
   setUp(() async {
-    _connection = await _db.connect(host: "127.0.0.1", port: 28015);
-    await createDatabase(_db, _connection);
-    sut = UserService(_db, _connection);
+    connection = await db.connect(host: "127.0.0.1", port: 28015);
+    await createDatabase(db, connection);
+    sut = UserService(db, connection);
   });
 
   tearDown(() async {
-    await cleanDatabase(_db, _connection);
+    await cleanDatabase(db, connection);
   });
 
   test('create new user and its id is not empty', () async {

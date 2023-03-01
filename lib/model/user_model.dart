@@ -14,9 +14,9 @@ class User {
   // constructor
   User({
     @required this.username,
-      @required this.photoUrl,
-      @required this.active,
-      @required this.lastSeen,
+    @required this.photoUrl,
+    @required this.active,
+    @required this.lastSeen,
   });
 
   // class → json
@@ -30,10 +30,10 @@ class User {
   // json → class
   factory User.fromJson(Map<String, dynamic> json){
     final user = User(
-      username: json['username'],
-      photoUrl: json['photo_url'],
-      active: json['active'],
-      lastSeen: json['last_seen']
+        username: json['username'],
+        photoUrl: json['photo_url'],
+        active: json['active'],
+        lastSeen: json['last_seen']
     );
     user._id = json['id'];
     return user;

@@ -9,20 +9,20 @@ import 'package:rethinkdb_dart/rethinkdb_dart.dart';
 import 'util_for_test.dart';
 
 void main() {
-  Rethinkdb _db = Rethinkdb();
-  Connection _connection;
+  Rethinkdb db = Rethinkdb();
+  Connection connection;
   MessageService sut;
 
   setUp(() async {
-    _connection = await _db.connect(host: '127.0.0.1', port: 28015);
+    connection = await db.connect(host: '127.0.0.1', port: 28015);
     final encryption = EncryptionService(Encrypter(AES(Key.fromLength(32))));
-    await createDatabase(_db, _connection);
-    sut = MessageService(_db, _connection, encryption);
+    await createDatabase(db, connection);
+    sut = MessageService(db, connection, encryption);
   });
 
   tearDown(() async {
     sut.dispose();
-    await cleanDatabase(_db, _connection);
+    await cleanDatabase(db, connection);
   });
 
   final sender =
