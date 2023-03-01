@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_prj/model/message_model.dart';
 import 'package:flutter_prj/model/user_model.dart';
+import 'package:flutter_prj/service/encryption_service.dart';
 import 'package:flutter_prj/service/message_service_impl.dart';
 import 'package:logger/logger.dart';
 import 'package:rethinkdb_dart/rethinkdb_dart.dart';
@@ -9,17 +10,18 @@ import 'package:rethinkdb_dart/rethinkdb_dart.dart';
 class MessageService implements IMessageService {
   final Connection _connection;
   final Rethinkdb _db;
+  final EncryptionService _encryption;
 
-  var _logger = Logger();
+  final _logger = Logger();
 
   final _controller = StreamController<Message>.broadcast();
-  StreamSubscription _changefeed;
+  StreamSubscription _changeFeed;
 
-  MessageService(this._db, this._connection);
+  MessageService(this._db, this._connection, this._encryption);
 
   @override
   dispose() {
-    _changefeed?.cancel();
+    _changeFeed?.cancel();
     _controller?.close();
   }
 
@@ -31,13 +33,17 @@ class MessageService implements IMessageService {
 
   @override
   Future<bool> send(Message message) async {
-    Map record =
-    await _db.table('messages').insert(message.toJson()).run(_connection);
+    // encrypt content of message
+    var data = message.toJson();
+    data['contents'] = _encryption.encrypt(message.contents);
+    // insert data into database
+    Map record = await _db.table('messages').insert(data).run(_connection);
+    // return whether data inserted successfully or not
     return record['inserted'] == 1;
   }
 
   _startReceivingMessages(User user) {
-    _changefeed = _db
+    _changeFeed = _db
         .table('messages')
         .filter({'to': user.id})
         .changes({'include_initial': true})
@@ -45,21 +51,26 @@ class MessageService implements IMessageService {
         .asStream()
         .cast<Feed>()
         .listen((event) {
-      event
-          .forEach((feedData) {
-        if (feedData['new_val'] == null) return;
+          event
+              .forEach((feedData) {
+                if (feedData['new_val'] == null) return;
 
-        final message = _messageFromFeed(feedData);
-        _controller.sink.add(message);
-        _removeDeliveredMessage(message);
-      })
-          .catchError((err) => _logger.e(err))
-          .onError((err, stackTrace) => _logger.e(err));
-    });
+                final message = _messageFromFeed(feedData);
+                _controller.sink.add(message);
+                _removeDeliveredMessage(message);
+              })
+              // logging error
+              .catchError((err) => _logger.e(err))
+              .onError((err, stackTrace) => _logger.e(err));
+        });
   }
 
   Message _messageFromFeed(feedData) {
-    return Message.fromJson(feedData['new_val']);
+    // decrypt content of message
+    var data = feedData['new_val'];
+    data['contents'] = _encryption.decrypt(data['contents']);
+    // return message as json
+    return Message.fromJson(data);
   }
 
   _removeDeliveredMessage(Message message) {
