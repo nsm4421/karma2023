@@ -30,10 +30,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  cupertino_icons: ^1.0.2
   rethinkdb_dart: ^2.3.2+6
-  logger: ^1.2.2
+  sqflite: ^2.0.0+3
   encrypt: ^4.1.0
-
+  logger: ^1.2.2
 
 dev_dependencies:
   flutter_test:
