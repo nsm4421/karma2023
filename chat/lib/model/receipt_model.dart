@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-enum ReceiptStatus { delivered, read }
+enum ReceiptStatus { sent, delivered, read }
 
 extension EnumParsing on ReceiptStatus {
   String value() {

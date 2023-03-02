@@ -81,13 +81,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.1"
-  chat:
-    dependency: "direct main"
-    description:
-      path: chat
-      relative: true
-    source: path
-    version: "0.0.1"
   clock:
     dependency: transitive
     description:
@@ -128,14 +121,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.2"
-  cupertino_icons:
-    dependency: "direct main"
-    description:
-      name: cupertino_icons
-      sha256: e35129dc44c9118cee2a5603506d823bab99c68393879edb440e0090d07586be
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.5"
   dart_style:
     dependency: transitive
     description:
@@ -145,7 +130,7 @@ packages:
     source: hosted
     version: "2.2.4"
   encrypt:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: encrypt
       sha256: "4fd4e4fdc21b9d7d4141823e1e6515cd94e7b8d84749504c232999fba25d9bbb"
@@ -181,14 +166,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_lints:
-    dependency: "direct dev"
-    description:
-      name: flutter_lints
-      sha256: aeb0b80a8b3709709c9cc496cdc027c5b3216796bc0af0ce1007eaf24464fd4c
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.1"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -210,16 +187,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.5"
-  lints:
-    dependency: transitive
-    description:
-      name: lints
-      sha256: "5e4a9cd06d447758280a8ac2405101e0e2094d2a1dbdd3756aec3fe7775ba593"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.1"
   logger:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: logger
       sha256: c40f9ef51e5bffb4ce69ad2d8c8aad7bd47ec109c090521109b63a4e2bc27191
@@ -315,7 +284,7 @@ packages:
     source: hosted
     version: "2.1.3"
   rethink_db_ns:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: rethink_db_ns
       sha256: dac14016cd8a40dfcaed63ac956b11bc8a7a0328f52e35f8a5f8abc644f0ab87
@@ -343,22 +312,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.9.1"
-  sqflite:
-    dependency: "direct main"
-    description:
-      name: sqflite
-      sha256: "851d5040552cf911f4cabda08d003eca76b27da3ed0002978272e27c8fbf8ecc"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.2.5"
-  sqflite_common:
-    dependency: transitive
-    description:
-      name: sqflite_common
-      sha256: bfd6973aaeeb93475bc0d875ac9aefddf7965ef22ce09790eb963992ffc5183f
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.4.2+2"
   stack_trace:
     dependency: transitive
     description:
@@ -383,14 +336,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
-  synchronized:
-    dependency: transitive
-    description:
-      name: synchronized
-      sha256: "33b31b6beb98100bf9add464a36a8dd03eb10c7a8cf15aeec535e9b054aaf04b"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.1"
   term_glyph:
     dependency: transitive
     description:
@@ -441,4 +386,3 @@ packages:
     version: "3.1.1"
 sdks:
   dart: ">=2.19.0 <3.0.0"
-  flutter: ">=3.3.0"

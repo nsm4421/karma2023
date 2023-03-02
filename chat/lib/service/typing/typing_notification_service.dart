@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
-import 'package:rethinkdb_dart/rethinkdb_dart.dart';
+import 'package:rethink_db_ns/rethink_db_ns.dart';
 
 import '../../model/typing_event_model.dart';
 import '../../model/user_model.dart';
@@ -10,7 +10,7 @@ import 'typing_notification_service_interface.dart';
 
 class TypingNotificationService implements ITypingNotificationService {
   final _logger = Logger();
-  final Rethinkdb _db;
+  final RethinkDb _db;
   final Connection _connection;
   final _controller = StreamController<TypingEvent>.broadcast();
   StreamSubscription _changeFeed;

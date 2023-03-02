@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:logger/logger.dart';
-import 'package:rethinkdb_dart/rethinkdb_dart.dart';
+import 'package:rethink_db_ns/rethink_db_ns.dart';
 
 import '../../model/message_model.dart';
 import '../../model/user_model.dart';
@@ -10,7 +10,7 @@ import 'message_service_interface.dart';
 
 class MessageService implements IMessageService {
   final Connection _connection;
-  final Rethinkdb _db;
+  final RethinkDb _db;
   final EncryptionService _encryption;
 
   final _logger = Logger();
