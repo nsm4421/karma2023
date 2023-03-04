@@ -12,10 +12,10 @@ abstract class IDataSource {
 
   Future<List<Chat>> findAllChat(String chatId);
 
+  Future<List<LocalMessage>> findMessages(String chatId);
+
   /// update
   Future<void> updateMessage(LocalMessage message);
-
-  Future<List<LocalMessage>> findMessages(String chatId);
 
   /// delete
   Future<void> deleteChat(String chatId);

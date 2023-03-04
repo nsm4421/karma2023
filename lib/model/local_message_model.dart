@@ -1,4 +1,4 @@
-import '../chat/chat_helper.dart';
+import 'package:chat/chat.dart';
 
 class LocalMessage {
   String _id;
@@ -6,14 +6,14 @@ class LocalMessage {
   String get id => _id;
   String chatId;
   Message message;
-  ReceiptStatus receiptStatus;
+  ReceiptStatus status;
 
-  LocalMessage(this.chatId, this.message, this.receiptStatus);
+  LocalMessage(this.chatId, this.message, this.status);
 
   Map<String, dynamic> toMap() => {
         'chat_id': chatId,
         'id': message.id,
-        'receipt_status': receiptStatus.value(),
+        'status': status.value(),
         ...message.toJson()
       };
 
@@ -24,7 +24,7 @@ class LocalMessage {
         timestamp: json['timestamp'],
         contents: json['contents']);
     final localMessage =
-        LocalMessage(json['chat_id'], message, json['receipt_status']);
+        LocalMessage(json['chat_id'], message, EnumParsing.fromString(json['status']));
     localMessage._id = json['id'];
     return localMessage;
   }

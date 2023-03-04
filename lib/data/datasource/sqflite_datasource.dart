@@ -13,6 +13,16 @@ class SqfliteDataSource implements IDataSource {
     WHERE RECEIPT_STATUS = ?
     GROUP BY CHAT_ID
      ''';
+  final queryForLatestMessage = '''
+      SELECT MESSAGES.* FROM (
+        SELECT CHAT_ID, MAX(CREATED_AT) AS CREATED_AT 
+        FROM MESSAGES
+        GROUP BY CHAT_ID
+      ) AS LATEST_MESSAGES 
+      INNER JOIN MESSAGES
+      ON MESSAGES.CHAT_ID = LATEST_MESSAGES.CHAT_ID
+      AND MESSAGE.CREATED_AT = LATEST_MESSAGES.CREATED_AT
+      ''';
 
   @override
   Future<void> addChat(Chat chat) async {
@@ -28,18 +38,9 @@ class SqfliteDataSource implements IDataSource {
 
   @override
   Future<List<Chat>> findAllChat(String chatId) {
-    String queryForLatestMessage = '''
-      SELECT MESSAGES.* FROM (
-        SELECT CHAT_ID, MAX(CREATED_AT) AS CREATED_AT 
-        FROM MESSAGES
-        GROUP BY CHAT_ID
-      ) AS LATEST_MESSAGES 
-      INNER JOIN MESSAGES
-      ON MESSAGES.CHAT_ID = LATEST_MESSAGES.CHAT_ID
-      AND MESSAGE.CREATED_AT = LATEST_MESSAGES.CREATED_AT
-      ''';
     return _db.transaction((txn) async {
       final chatsWithLatestMessage = await txn.rawQuery(queryForLatestMessage);
+      if (chatsWithLatestMessage.isEmpty) return [];
       final chatWithUnreadMessages =
           await txn.rawQuery(queryForUnread, ['delivered']);
       return chatsWithLatestMessage.map<Chat>((row) {
@@ -59,6 +60,7 @@ class SqfliteDataSource implements IDataSource {
     return await _db.transaction((txn) async {
       final listOfChatMaps =
           await txn.query('chat', where: 'CHAT_ID = ?', whereArgs: [chatId]);
+      if (listOfChatMaps.isNotEmpty) return null;
       final unread = Sqflite.firstIntValue(
           await txn.rawQuery(queryForUnread, [chatId, 'delivered']));
       final mostRecentMessage = await txn.query('messages',
