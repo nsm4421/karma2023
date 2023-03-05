@@ -35,6 +35,8 @@ dependencies:
     path: ./chat
   cupertino_icons: ^1.0.5
   sqflite: ^2.2.5
+  bloc: ^7.0.0
+  equatable: ^2.0.2
 
 dev_dependencies:
   flutter_test:
