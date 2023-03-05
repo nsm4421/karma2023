@@ -10,7 +10,7 @@ abstract class IDataSource {
   /// read
   Future<Chat> findChat(String chatId);
 
-  Future<List<Chat>> findAllChat(String chatId);
+  Future<List<Chat>> findAllChat();
 
   Future<List<LocalMessage>> findMessages(String chatId);
 

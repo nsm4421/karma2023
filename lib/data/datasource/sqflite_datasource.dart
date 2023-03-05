@@ -37,7 +37,7 @@ class SqfliteDataSource implements IDataSource {
   }
 
   @override
-  Future<List<Chat>> findAllChat(String chatId) {
+  Future<List<Chat>> findAllChat() {
     return _db.transaction((txn) async {
       final chatsWithLatestMessage = await txn.rawQuery(queryForLatestMessage);
       if (chatsWithLatestMessage.isEmpty) return [];

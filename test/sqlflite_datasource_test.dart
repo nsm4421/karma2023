@@ -85,6 +85,4 @@ void main() {
       whereArgs: anyNamed('whereArgs'),
     )).called(1);
   });
-
-
 }
