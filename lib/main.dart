@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_prj/screen/custom_desgin/theme.dart';
+import 'package:flutter_prj/screen/pages/on_board/on_board_page.dart';
 void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
-  const MyApp({key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
         title: "Chat App",
-        theme: ThemeData(
-            brightness: Brightness.dark,
-            primaryColor: Colors.black,
-            accentColor: Colors.white,
-            visualDensity: VisualDensity.adaptivePlatformDensity),
-        home: Container());
+        theme: lightTheme(context),
+        darkTheme: darkTheme(context),
+        home: OnBoarding());
   }
+
+  const MyApp({key}) : super(key: key);
 }
