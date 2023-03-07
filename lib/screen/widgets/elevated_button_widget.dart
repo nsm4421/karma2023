@@ -7,7 +7,8 @@ class ElevatedBtn extends StatelessWidget {
   final String btnText;
   final double height;
 
-  const ElevatedBtn({Key key, this.onPressed, this.btnText, this.height = 45}) : super(key: key);
+  const ElevatedBtn({Key key, this.onPressed, this.btnText, this.height = 45})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

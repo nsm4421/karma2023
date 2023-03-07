@@ -11,7 +11,12 @@ class CustomTextField extends StatelessWidget {
   final TextInputAction textInputAction;
 
   const CustomTextField(
-      {this.hint, this.onChanged, this.height = 54.0, this.textInputAction});
+      {Key key,
+      this.hint,
+      this.onChanged,
+      this.height = 54.0,
+      this.textInputAction})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

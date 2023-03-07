@@ -1,5 +1,3 @@
-
-
 import 'package:rethink_db_ns/rethink_db_ns.dart';
 
 String databaseName = 'test';
