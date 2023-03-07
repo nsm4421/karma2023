@@ -12,3 +12,4 @@ export './service/receipt/receipt_service.dart';
 export './service/typing/typing_notification_service_interface.dart';
 export './service/typing/typing_notification_service.dart';
 export './service/user/user_service.dart';
+export './service/user/user_service_interface.dart';
