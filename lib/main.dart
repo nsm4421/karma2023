@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_prj/screen/custom_desgin/theme.dart';
-import 'package:flutter_prj/screen/pages/on_board/on_board_page.dart';
-void main() => runApp(const MyApp());
+import 'package:flutter_prj/view_model/composition_root.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await CompositionRoot.configure();
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -10,7 +15,7 @@ class MyApp extends StatelessWidget {
         title: "Chat App",
         theme: lightTheme(context),
         darkTheme: darkTheme(context),
-        home: OnBoarding());
+        home: CompositionRoot.composeOnBoardingUi());
   }
 
   const MyApp({key}) : super(key: key);
