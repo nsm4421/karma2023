@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../custom_desgin/colors.dart';
+import '../custom_design/colors.dart';
 
 class ElevatedBtn extends StatelessWidget {
   final Function onPressed;

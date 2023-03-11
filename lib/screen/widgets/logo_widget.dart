@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../custom_desgin/theme.dart';
+import '../custom_design/theme.dart';
 
 Widget _logoImage(BuildContext context) {
   // TODO : 로고 이미지 수정

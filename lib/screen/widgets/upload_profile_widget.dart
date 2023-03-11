@@ -2,10 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_prj/screen/custom_desgin/colors.dart';
+import 'package:flutter_prj/screen/custom_design/colors.dart';
 
 import '../../states_management/on_board/profile_image_cubit.dart';
-import '../custom_desgin/theme.dart';
+import '../custom_design/theme.dart';
 
 class ProfileUploadWidget extends StatelessWidget {
   final double _size = 100.0;

@@ -1,16 +1,14 @@
-# flutter_prj
+# 채팅 어플 만들기
 
-A new Flutter project.
+## Description
 
-## Getting Started
+    Flutter를 사용해 채팅 어플 만들기
 
-This project is a starting point for a Flutter application.
+## My Blog
 
-A few resources to get you started if this is your first Flutter project:
+    https://sddkarma.tistory.com/
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Reference
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+    https://github.com/vykes-mac/labalaba
+

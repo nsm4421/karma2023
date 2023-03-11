@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_prj/screen/custom_desgin/theme.dart';
+import 'package:flutter_prj/screen/custom_design/theme.dart';
 
-import '../custom_desgin/colors.dart';
+import '../custom_design/colors.dart';
 
 class CustomTextField extends StatelessWidget {
   final String hint;
