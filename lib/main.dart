@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_prj/screen/custom_design/theme.dart';
+import 'package:flutter_prj/screen/pages/home/home_page.dart';
 import 'package:flutter_prj/view_model/composition_root.dart';
 
 void main() async {
@@ -16,7 +17,8 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: lightTheme(context),
         darkTheme: darkTheme(context),
-        home: CompositionRoot.composeOnBoardingUi());
+        // home: CompositionRoot.composeOnBoardingUi());
+        home: CompositionRoot.composeHomeUi());
   }
 
   const MyApp({key}) : super(key: key);
