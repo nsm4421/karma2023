@@ -1,6 +1,8 @@
 package com.karma.community.model.dto;
 
 import com.karma.community.model.entity.UserAccount;
+import com.karma.community.model.util.RoleType;
+import com.karma.community.model.util.UserStatus;
 
 import java.time.LocalDateTime;
 
@@ -9,6 +11,8 @@ public record UserAccountDto(
         String password,
         String email,
         String nickname,
+        RoleType roleType,
+        UserStatus userStatus,
         LocalDateTime createdAt,
         LocalDateTime modifiedAt
 ) {
@@ -19,6 +23,8 @@ public record UserAccountDto(
                 entity.getPassword(),
                 entity.getEmail(),
                 entity.getNickname(),
+                entity.getRoleType(),
+                entity.getUserStatus(),
                 entity.getCreatedAt(),
                 entity.getModifiedAt()
         );
