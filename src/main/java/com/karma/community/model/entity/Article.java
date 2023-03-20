@@ -1,12 +1,13 @@
 package com.karma.community.model.entity;
 
-import com.karma.community.model.AuditingFields;
+import com.karma.community.model.util.AuditingFields;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -31,10 +32,10 @@ public class Article extends AuditingFields {
     private String content;
 
     /** 댓글
-     * 부모 댓글 아이디 순으로 정렬
+     * 부모 댓글 아이디, 생성일자 순으로 정렬
      */
     @ToString.Exclude
-    @OrderBy("parentCommentId DESC")
+    @OrderBy("parentCommentId DESC, createdAt DESC")
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
     private final Set<ArticleComment> articleComments = new LinkedHashSet<>();
 
@@ -59,5 +60,16 @@ public class Article extends AuditingFields {
 
     public static Article of(UserAccount author, String title, String content, Set<String> images, Set<String> hashtags) {
         return new Article(author, title, content, images, hashtags);
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Article that)) return false;
+        return this.getId() != null && this.getId().equals(that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.getId());
     }
 }

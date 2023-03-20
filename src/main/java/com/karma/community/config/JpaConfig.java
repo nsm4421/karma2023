@@ -1,9 +1,13 @@
 package com.karma.community.config;
 
+import com.karma.community.model.util.CustomPrincipal;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Optional;
 
@@ -12,7 +16,11 @@ import java.util.Optional;
 public class JpaConfig {
     @Bean
     public AuditorAware<String> auditorAware() {
-        // TODO : 인증기능 구현 후 createdby, modifiedby 컬럼에 들어갈 정보 수정
-        return () -> Optional.of("TODO");
+        return () -> Optional.ofNullable(SecurityContextHolder.getContext())
+                .map(SecurityContext::getAuthentication)
+                .filter(Authentication::isAuthenticated)
+                .map(Authentication::getPrincipal)
+                .map(CustomPrincipal.class::cast)
+                .map(CustomPrincipal::getUsername);
     }
 }

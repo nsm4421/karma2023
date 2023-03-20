@@ -1,4 +1,4 @@
-package com.karma.community.model;
+package com.karma.community.model.util;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
