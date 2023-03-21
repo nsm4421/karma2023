@@ -1,7 +1,10 @@
 import axios from "axios";
 import { useState } from "react";
+import { useNavigate } from "react-router";
 
 export default function Register(){
+
+    const navigator = useNavigate();
    
     /** States */
     const [username, setUsername] = useState("");
@@ -24,7 +27,7 @@ export default function Register(){
             .then(res=>res.data.data)
             .then((data)=>{
                 alert(`${data.nickname}님 회원가입에 성공하였습니다.`)
-                // TODO : 회원가입 성공시 처리
+                navigator("/login");
             })
             .catch((err)=>{
                 alert(err.response.data.message);
@@ -38,22 +41,22 @@ export default function Register(){
 
             <div>
                 <label>유저명</label>
-                <input placeholder="로그인 시에 사용할 유저명" onChange={handleUsername}/>
+                <input value={username} placeholder="로그인 시에 사용할 유저명" onChange={handleUsername}/>
             </div>
 
             <div>
                 <label>닉네임</label>
-                <input placeholder="닉네임" onChange={handleNickname}/>
+                <input value={nickname} placeholder="닉네임" onChange={handleNickname}/>
             </div>
 
             <div>
                 <label>이메일</label>
-                <input placeholder="이메일" type="email" onChange={handleEmail}/>
+                <input value={email} placeholder="이메일" type="email" onChange={handleEmail}/>
             </div>
 
             <div>
                 <label>비밀번호</label>
-                <input placeholder="패스워드" type="password" onChange={handlePassword}/>
+                <input value={password} placeholder="패스워드" type="password" onChange={handlePassword}/>
             </div>
 
             <button onClick={handleSubmit} disabled={isLoading}>회원가입하기</button>

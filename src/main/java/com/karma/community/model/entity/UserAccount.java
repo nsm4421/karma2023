@@ -47,13 +47,11 @@ public class UserAccount {
     private UserStatus userStatus = UserStatus.ACTIVE;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    @CreatedDate
-    @Column(updatable = false, name = "created_at")
+    @Column(name = "created_at") @Setter
     private LocalDateTime createdAt;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    @LastModifiedDate
-    @Column(name = "modified_at")
+    @Column(name = "modified_at") @Setter
     private LocalDateTime modifiedAt;
 
     private UserAccount(

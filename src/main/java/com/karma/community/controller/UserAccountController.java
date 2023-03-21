@@ -9,10 +9,7 @@ import com.karma.community.service.UserAccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/user")
@@ -22,7 +19,7 @@ public class UserAccountController {
 
     @PostMapping("/register")
     private ResponseEntity<Object> signUp(
-            RegisterRequest req
+            @RequestBody RegisterRequest req
     ){
         UserAccountDto dto = userAccountService.register(req.dto());
         return CustomResponse.success(dto);
@@ -30,7 +27,7 @@ public class UserAccountController {
 
     @PostMapping("/modify")
     private ResponseEntity<Object> modifyUserInfo(
-            ModifyUserInfoRequest req,
+            @RequestBody ModifyUserInfoRequest req,
             @AuthenticationPrincipal CustomPrincipal principal
     ){
         String usernameOfLoginUser = principal.getUsername();
