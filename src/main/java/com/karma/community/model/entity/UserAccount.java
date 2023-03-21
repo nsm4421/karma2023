@@ -11,13 +11,22 @@ import java.util.Objects;
 
 @Getter
 @ToString(callSuper = true)
-@Table(indexes = {
+@Table(
+        name = "user_account",
+        indexes = {
         @Index(columnList = "email", unique = true),
         @Index(columnList = "createdAt"),
         @Index(columnList = "createdBy")
 })
 @Entity
 public class UserAccount extends AuditingFields {
+    /** Fields
+     * username : primary key
+     * password : encoded password
+     * nickname
+     * content
+     * articleComments
+     */
     @Id
     @Column(length = 50, unique = true)
     private String username;
@@ -25,10 +34,10 @@ public class UserAccount extends AuditingFields {
     @Column(nullable = false)
     private String password;
     @Setter
-    @Column(length = 100)
+    @Column(length = 100, unique = true)
     private String email;
     @Setter
-    @Column(length = 100)
+    @Column(length = 100, unique = true)
     private String nickname;
     @Setter
     private String description;

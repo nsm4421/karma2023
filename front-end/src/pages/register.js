@@ -11,12 +11,14 @@ export default function Register(){
     const [nickname, setNickname] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [description, setDisciption] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
     const handleUsername = (e) => {setUsername(e.target.value)};
     const handleNickname = (e) => {setNickname(e.target.value)};
     const handleEmail = (e) => {setEmail(e.target.value)};
     const handlePassword = (e) => {setPassword(e.target.value)};
+    const handleDescription = (e) => {setDisciption(e.target.value)};
 
     const handleSubmit = async () => {
         const endPoint = '/api/user/register';
@@ -26,13 +28,14 @@ export default function Register(){
         await axios.post(endPoint, data, config)
             .then(res=>res.data.data)
             .then((data)=>{
-                alert(`${data.nickname}님 회원가입에 성공하였습니다.`)
+                alert(data.message);
                 navigator("/login");
             })
             .catch((err)=>{
-                alert(err.response.data.message);
+                alert("회원가입에 실패하였습니다.")
+                console.log(err.response.data.message);
+                setIsLoading(false);
             })
-            .finally(()=>{setIsLoading(false);});
     }
 
     return(
@@ -57,6 +60,11 @@ export default function Register(){
             <div>
                 <label>비밀번호</label>
                 <input value={password} placeholder="패스워드" type="password" onChange={handlePassword}/>
+            </div>
+
+            <div>
+                <label>자기소개</label>
+                <textarea value={description} placeholder="자기소개를 간단히 적어주세요" onChange={handleDescription}/>
             </div>
 
             <button onClick={handleSubmit} disabled={isLoading}>회원가입하기</button>
