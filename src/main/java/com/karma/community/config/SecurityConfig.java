@@ -1,5 +1,8 @@
 package com.karma.community.config;
 
+import com.karma.community.exception.CustomError;
+import com.karma.community.exception.CustomErrorCode;
+import com.karma.community.model.util.CustomPrincipal;
 import com.karma.community.service.UserAccountService;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -49,7 +52,12 @@ public class SecurityConfig {
         return username -> userAccountService
                 .findByUsername(username)
                 .map(CustomPrincipal::from)
-                .orElseThrow(() -> new UsernameNotFoundException(String.format("유저명 [%s]를 찾을 수 없습니다",username)));
+                .orElseThrow(() -> {
+                    throw CustomError.of(
+                            CustomErrorCode.USER_NOT_FOUND,
+                            String.format("유저명[ %s]는 존재하지 않는 유저명입니다...", username)
+                    );
+                });
     }
 
     @Bean
