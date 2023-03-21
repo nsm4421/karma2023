@@ -1,6 +1,5 @@
 package com.karma.community.config;
 
-import com.karma.community.model.util.CustomPrincipal;
 import com.karma.community.service.UserAccountService;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;

@@ -1,0 +1,2 @@
+insert into user_account(id,username,password,nickname,email,user_status,role_type)
+values(1, 'test', '{bcrypt}$2a$10$22h7Wuj.P2uslk5vs6jvU.a/GMZ13kE6M6a9cyX0v1OFqHHcUmDeC','test','test','ACTIVE','USER');
