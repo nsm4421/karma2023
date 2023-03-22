@@ -1,2 +1,4 @@
-insert into user_account(id,username,password,nickname,email,user_status,role_type)
-values(1, 'test', '{bcrypt}$2a$10$22h7Wuj.P2uslk5vs6jvU.a/GMZ13kE6M6a9cyX0v1OFqHHcUmDeC','test','test','ACTIVE','USER');
+insert into user_account(user_id, description, username, email, nickname, password)
+values(
+1, 'test','test','test', 'test', '{bcrypt}$2a$10$9oMDz25QVDRM7t9leAtsKexvt.sCyUXplA7hGjOxr2ipWppss.iUW'
+);
