@@ -1,7 +1,7 @@
-import axios from "axios"
 import { useNavigate } from "react-router-dom";
+import { deleteArticleApi } from "../api/articleApi";
 
-export default function Article({article, getArticle}){
+export default function Article({article}){
 
     const navigator = useNavigate();
 
@@ -9,18 +9,15 @@ export default function Article({article, getArticle}){
         navigator(`/article/modify/${article.articleId}`);
     }
 
-    /**
-     * 게시글 삭제 성공 시, Article List 다시 불러오기
-     * TODO : 다시 불러오는 페이지는 현재 보고 있는 페이지를 불러오도록 수정하기
-     */
-    const deleteArticle = () => {
-        const endPoint = `/api/article/${article.articleId}`;
-        axios.delete(endPoint).then((res)=>{
-            console.log(res);
-            getArticle();
-        }).catch((err)=>{
-            console.log(err);
-        });
+    // 새로고침하기
+    const successCallback = () => {
+        window.location.href = '/article';
+    };
+
+    const failureCallback = console.log;
+
+    const handleDeleteArticle = () => {
+        deleteArticleApi(article.articleId, successCallback, failureCallback);
     }
 
     return (
@@ -36,7 +33,7 @@ export default function Article({article, getArticle}){
             {/* TODO : 내가 쓴 게시물만 아래 버튼들이 보이게 하기 */}
             <div>
                 <button onClick={moveToModifyPage}>수정하기</button>
-                <button onClick={deleteArticle}>삭제하기</button>
+                <button onClick={handleDeleteArticle}>삭제하기</button>
             </div>
             <div>
                 <label>본문</label>

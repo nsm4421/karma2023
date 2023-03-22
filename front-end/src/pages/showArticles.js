@@ -1,5 +1,6 @@
 import axios from "axios"
 import { useEffect, useState } from "react";
+import { getArticlesApi } from "../api/articleApi";
 import Article from "../components/article";
 
 export default function ShowArticle(){
@@ -10,29 +11,22 @@ export default function ShowArticle(){
     const [totalPages, setTotalPages] = useState(1);
     const [totalElements, setTotalElements] = useState(1);
 
-    const getArticle = () => {
-        setIsLoading(true);
-        const endPoint = "/api/article";
-        axios.get(endPoint)
-        .then((res)=>{
-            return res.data.data;
-        })
-        .then((data)=>{
-            console.log(data);
-            setArticles([...data.content]);
-            setPageable(data.pagebale);
-            setTotalPages(data.totalPages);
-            setTotalElements(data.totalElements);
-        })
-        .catch((err)=>{
-            console.log(err);
-        })
-        .finally(()=>{
-            setIsLoading(false);
-        });
+    const successCallbackForGetArticlesApi = (res) => {
+        const data = res.data.data;
+        setArticles([...data.content]);
+        setPageable(data.pagebale);
+        setTotalPages(data.totalPages);
+        setTotalElements(data.totalElements);
     }
 
+    const failureCallback = console.log;
+
     useEffect(()=>{
+        const getArticle = async ()=> {
+            setIsLoading(true);
+            await getArticlesApi(successCallbackForGetArticlesApi, failureCallback);
+            setIsLoading(false);
+        }
         getArticle();
     }, [])
 
@@ -50,7 +44,7 @@ export default function ShowArticle(){
             {
                 articles.map((a, i)=>{
                     return (
-                        <Article key={i} article={a} getArticle={getArticle}/>
+                        <Article key={i} article={a}/>
                     )
                 })
             }

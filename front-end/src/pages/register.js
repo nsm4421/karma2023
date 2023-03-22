@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { regsterApi } from "../api/authApi";
 
 export default function Register(){
 
@@ -20,23 +21,20 @@ export default function Register(){
     const handlePassword = (e) => {setPassword(e.target.value)};
     const handleDescription = (e) => {setDescription(e.target.value)};
 
+    const successCallbackForRegister = (res) => {
+        alert(res.data.message);
+        navigator("/login");
+    }
+
+    const failureCallbackForRegister = (err) => {
+        alert("회원가입에 실패하였습니다.")
+        console.log(err);
+    }
+
     const handleSubmit = async () => {
-        const endPoint = '/api/user/register';
         setIsLoading(true);
         const data = {username, nickname, email, password, description};
-        const config = {};
-        await axios.post(endPoint, data, config)
-            .then(res=>{
-                return res.data;
-            })
-            .then((data)=>{
-                alert(data.message);
-                navigator("/login");
-            })
-            .catch((err)=>{
-                alert("회원가입에 실패하였습니다.")
-                console.log(err);
-            })
+        await regsterApi(data, successCallbackForRegister, failureCallbackForRegister)
         setIsLoading(false);
     }
 
