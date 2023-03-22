@@ -22,12 +22,12 @@ import java.util.Objects;
 @Entity
 public class UserAccount {
     /** Fields
-     * userId
-     * username
+     * username : primary key
      * password : encoded password
      * nickname
-     * content
-     * articleComments
+     * description
+     * roleType - 권한 설정을 위해 만듬
+     * createdAt, modifiedAt - JPA Auditing 사용하지 않고, Service 코드에서 직접 박도록 설계
      */
 
     @Id @Column(length = 50)

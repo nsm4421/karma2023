@@ -21,7 +21,7 @@ import java.util.Set;
 public class Article extends AuditingFields {
     /** Fields
      * articleId : primary key
-     * userAccount : author
+     * userAccount : 글쓴이
      * title
      * content
      * articleComments
