@@ -33,7 +33,7 @@ public class Article extends AuditingFields {
     private Long articleId;
 
     @Setter
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "username")
     @ManyToOne(optional = false)
     private UserAccount userAccount;
 
@@ -49,7 +49,7 @@ public class Article extends AuditingFields {
 
     @ToString.Exclude
     @OrderBy("createdAt DESC")
-    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private final Set<ArticleComment> articleComments = new LinkedHashSet<>();
 
     private Article(UserAccount userAccount, String title, String content, Set<String> hashtags) {

@@ -1,14 +1,10 @@
 package com.karma.community.model.entity;
 
-import com.karma.community.model.util.AuditingFields;
 import com.karma.community.model.util.RoleType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
@@ -19,22 +15,22 @@ import java.util.Objects;
 @Table(
         name = "user_account",
         indexes = {
-        @Index(columnList = "email", unique = true),
-        @Index(columnList = "createdAt")
+                @Index(columnList = "nickname", unique = true),
+                @Index(columnList = "email", unique = true),
+                @Index(columnList = "createdAt")
 })
 @Entity
 public class UserAccount {
     /** Fields
-     * username : primary key
+     * userId
+     * username
      * password : encoded password
      * nickname
      * content
      * articleComments
      */
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
 
-    @Column(length = 50, unique = true)
+    @Id @Column(length = 50)
     private String username;
     @Setter
     @Column(nullable = false)
@@ -124,11 +120,11 @@ public class UserAccount {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof UserAccount that)) return false;
-        return this.getUserId() != null && this.getUserId().equals(that.getUserId());
+        return this.getUsername() != null && this.getUsername().equals(that.getUsername());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.getUserId());
+        return Objects.hash(this.getUsername());
     }
 }
