@@ -6,7 +6,12 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Getter
@@ -15,11 +20,10 @@ import java.util.Objects;
         name = "user_account",
         indexes = {
         @Index(columnList = "email", unique = true),
-        @Index(columnList = "createdAt"),
-        @Index(columnList = "createdBy")
+        @Index(columnList = "createdAt")
 })
 @Entity
-public class UserAccount extends AuditingFields {
+public class UserAccount {
     /** Fields
      * username : primary key
      * password : encoded password
@@ -27,7 +31,9 @@ public class UserAccount extends AuditingFields {
      * content
      * articleComments
      */
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long userId;
+
     @Column(length = 50, unique = true)
     private String username;
     @Setter
@@ -45,6 +51,12 @@ public class UserAccount extends AuditingFields {
     @Enumerated(EnumType.STRING)
     private RoleType roleType = RoleType.USER;
 
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private LocalDateTime createdAt;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private LocalDateTime modifiedAt;
+
     protected UserAccount() {
     }
 
@@ -55,7 +67,8 @@ public class UserAccount extends AuditingFields {
             String nickname,
             String description,
             RoleType roleType,
-            String createdBy
+            LocalDateTime createdAt,
+            LocalDateTime modifiedAt
     ) {
         this.username = username;
         this.password = password;
@@ -63,36 +76,47 @@ public class UserAccount extends AuditingFields {
         this.nickname = nickname;
         this.description = description;
         this.roleType = roleType;
-        this.createdBy = createdBy;
-        this.modifiedBy = createdBy;
+        this.createdAt = createdAt;
+        this.modifiedAt = modifiedAt;
     }
 
     public static UserAccount of(
             String username,
-            String userPassword,
+            String password,
             String email,
             String nickname,
             String description
     ) {
-        return UserAccount.of(username, userPassword, email, nickname, description, null);
+        return new UserAccount(
+                username,
+                password,
+                email,
+                nickname,
+                description,
+                RoleType.USER,
+                null,
+                null
+        );
     }
 
     public static UserAccount of(
             String username,
-            String userPassword,
+            String password,
             String email,
             String nickname,
             String description,
-            String createdBy
+            LocalDateTime createdAt,
+            LocalDateTime modifiedAt
     ) {
         return new UserAccount(
                 username,
-                userPassword,
+                password,
                 email,
                 nickname,
                 description,
-                RoleType.USER,                  // role type 필드는 고정
-                createdBy
+                RoleType.USER,
+                createdAt,
+                modifiedAt
         );
     }
 
@@ -100,11 +124,11 @@ public class UserAccount extends AuditingFields {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof UserAccount that)) return false;
-        return this.getUsername() != null && this.getUsername().equals(that.getUsername());
+        return this.getUserId() != null && this.getUserId().equals(that.getUserId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.getUsername());
+        return Objects.hash(this.getUserId());
     }
 }

@@ -11,31 +11,33 @@ export default function Register(){
     const [nickname, setNickname] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [description, setDisciption] = useState("");
+    const [description, setDescription] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
     const handleUsername = (e) => {setUsername(e.target.value)};
     const handleNickname = (e) => {setNickname(e.target.value)};
     const handleEmail = (e) => {setEmail(e.target.value)};
     const handlePassword = (e) => {setPassword(e.target.value)};
-    const handleDescription = (e) => {setDisciption(e.target.value)};
+    const handleDescription = (e) => {setDescription(e.target.value)};
 
     const handleSubmit = async () => {
         const endPoint = '/api/user/register';
         setIsLoading(true);
-        const data = {username, nickname, email, password};
+        const data = {username, nickname, email, password, description};
         const config = {};
         await axios.post(endPoint, data, config)
-            .then(res=>res.data.data)
+            .then(res=>{
+                return res.data;
+            })
             .then((data)=>{
                 alert(data.message);
                 navigator("/login");
             })
             .catch((err)=>{
                 alert("회원가입에 실패하였습니다.")
-                console.log(err.response.data.message);
-                setIsLoading(false);
+                console.log(err);
             })
+        setIsLoading(false);
     }
 
     return(

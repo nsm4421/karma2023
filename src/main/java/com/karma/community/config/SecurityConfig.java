@@ -2,7 +2,7 @@ package com.karma.community.config;
 
 import com.karma.community.exception.CustomError;
 import com.karma.community.exception.CustomErrorCode;
-import com.karma.community.model.util.CustomPrincipal;
+import com.karma.community.model.dto.CustomPrincipal;
 import com.karma.community.service.UserAccountService;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -29,14 +28,14 @@ public class SecurityConfig {
                         // static(html,css,js,favicon...) → permit all
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations())
                         .permitAll()
-                        // api → permit all
-                        .requestMatchers("/api/**")
+                        // 회원가입 → permit all
+                        .requestMatchers("/api/user/register")
                         .permitAll()
-                        // Get 요청 허용하는 url
+                        // index 페이지, 게시글 조회 →  Get 요청 허용하는 url
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/",
-                                "/articles"
+                                "/api/article"
                         ).permitAll()
                         // else → 인증기능 활성화
                         .anyRequest().authenticated()

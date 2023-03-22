@@ -1,39 +1,57 @@
 package com.karma.community.model.util;
 
 import com.karma.community.exception.CustomErrorCode;
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
-import java.util.HashMap;
-import java.util.Map;
+@Getter
+public class CustomResponse <T>{
 
-public class CustomResponse {
+    private HttpStatus status;
+    private String message;
+    private T data;
 
-    private static ResponseEntity<Object> of(HttpStatus status, String message, Object data) {
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("status", status.value());
-        map.put("message", message);
-        map.put("data", data);
-        return new ResponseEntity<Object>(map, status);
+    private CustomResponse(HttpStatus status, String message, T data) {
+        this.status = status;
+        this.message = message;
+        this.data = data;
     }
 
-    public static ResponseEntity<Object> success() {
-        return CustomResponse.of(HttpStatus.OK, null, null);
+    protected CustomResponse(){}
+
+    public static <T> CustomResponse<T> of(HttpStatus status, String message, T data){
+        return new CustomResponse<T>(status, message, data);
     }
 
-    public static ResponseEntity<Object> success(Object data) {
-        return CustomResponse.of(HttpStatus.OK, null, data);
+    public static <T> CustomResponse<T> success(HttpStatus status, String message, T data){
+        return CustomResponse.of(status, message, data);
     }
 
-    public static ResponseEntity<Object> success(String message, Object data) {
+    public static <T> CustomResponse<T> success(String message, T data){
         return CustomResponse.of(HttpStatus.OK, message, data);
     }
 
-    public static ResponseEntity<Object> error(CustomErrorCode errorCode) {
+    public static <T> CustomResponse<T> success(T data){
+        return CustomResponse.of(HttpStatus.OK, null, data);
+    }
+
+    public static <T> CustomResponse<T> success(String message){
+        return CustomResponse.of(HttpStatus.OK, message, null);
+    }
+
+    public static <T> CustomResponse<T> error(HttpStatus status, String message, T data){
+        return CustomResponse.of(status, message, data);
+    }
+
+    public static <T> CustomResponse<T> error(CustomErrorCode errorCode, T data){
+        return CustomResponse.of(errorCode.getHttpStatus(), errorCode.getMessage(), data);
+    }
+
+    public static <T> CustomResponse<T> error(CustomErrorCode errorCode){
         return CustomResponse.of(errorCode.getHttpStatus(), errorCode.getMessage(), null);
     }
 
-    public static ResponseEntity<Object> error(CustomErrorCode errorCode, String message) {
+    public static <T> CustomResponse<T> error(CustomErrorCode errorCode, String message){
         return CustomResponse.of(errorCode.getHttpStatus(), message, null);
     }
 }

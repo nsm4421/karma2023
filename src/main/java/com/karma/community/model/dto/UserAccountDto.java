@@ -11,9 +11,7 @@ public record UserAccountDto(
         String nickname,
         String description,
         LocalDateTime createdAt,
-        String createdBy,
-        LocalDateTime modifiedAt,
-        String modifiedBy
+        LocalDateTime modifiedAt
 ) {
 
     public static UserAccountDto of(
@@ -30,8 +28,6 @@ public record UserAccountDto(
                 nickname,
                 description,
                 null,
-                null,
-                null,
                 null
         );
     }
@@ -43,11 +39,9 @@ public record UserAccountDto(
             String nickname,
             String description,
             LocalDateTime createdAt,
-            String createdBy,
-            LocalDateTime modifiedAt,
-            String modifiedBy
+            LocalDateTime modifiedAt
     ) {
-        return new UserAccountDto(username, password, email, nickname, description, createdAt, createdBy, modifiedAt, modifiedBy);
+        return new UserAccountDto(username, password, email, nickname, description, createdAt, modifiedAt);
     }
 
     public static UserAccountDto from(UserAccount entity) {
@@ -58,9 +52,7 @@ public record UserAccountDto(
                 entity.getNickname(),
                 entity.getDescription(),
                 entity.getCreatedAt(),
-                entity.getCreatedBy(),
-                entity.getModifiedAt(),
-                entity.getModifiedBy()
+                entity.getModifiedAt()
         );
     }
 

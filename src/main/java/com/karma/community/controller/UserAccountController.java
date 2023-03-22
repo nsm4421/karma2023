@@ -18,7 +18,7 @@ public class UserAccountController {
     private final UserAccountService userAccountService;
 
     @PostMapping("/register")
-    public ResponseEntity<Object> register(@RequestBody RegisterRequest req){
+    public CustomResponse<String> register(@RequestBody RegisterRequest req){
         UserAccountDto dto = userAccountService.register(
                 req.getUsername(),
                 req.getPassword(),
@@ -26,6 +26,6 @@ public class UserAccountController {
                 req.getNickname(),
                 req.getDescription()
         );
-        return CustomResponse.success(String.format("%s님 가입을 환영합니다.", dto.nickname()), null);
+        return CustomResponse.success(String.format("%s님 가입을 환영합니다.", dto.nickname()));
     }
 }

@@ -8,19 +8,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class UserAccountService {
 
     private final UserAccountRepository userAccountRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Transactional(readOnly = true)
     public Optional<UserAccountDto> findByUsername(String username) {
-        return userAccountRepository.findById(username)
+        return userAccountRepository.findByUsername(username)
                 .map(UserAccountDto::from);
     }
 
@@ -32,16 +31,15 @@ public class UserAccountService {
             String description
     ) {
         return UserAccountDto.from(
-                userAccountRepository.save(
-                        UserAccount.of(
-                                username,
-                                passwordEncoder.encode(password),    // save encrypted password
-                                email,
-                                nickname,
-                                description,
-                                username
-                        )
-                )
+                userAccountRepository.save(UserAccount.of(
+                        username,
+                        passwordEncoder.encode(password),    // save encrypted password
+                        email,
+                        nickname,
+                        description,
+                        LocalDateTime.now(),
+                        LocalDateTime.now()
+                ))
         );
     }
 
