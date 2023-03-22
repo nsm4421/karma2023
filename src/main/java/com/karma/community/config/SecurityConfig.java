@@ -41,7 +41,8 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .formLogin(withDefaults())
-                .logout(logout -> logout.logoutSuccessUrl("/"))
+                // 로그아웃 시 쿠키 제거
+                .logout(logout -> logout.logoutSuccessUrl("/").deleteCookies("JSESSIONID"))
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
                 .build();
     }

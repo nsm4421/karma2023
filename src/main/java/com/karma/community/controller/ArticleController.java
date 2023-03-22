@@ -23,6 +23,16 @@ public class ArticleController {
     private final ArticleService articleService;
 
     /**
+     * 게시글 단건 검색
+     * @param articleId 조회할 게시글 id
+     * @return Article Dto
+     */
+    @GetMapping("/search/{articleId}")
+    public CustomResponse<ArticleDto> findByArticleId(@PathVariable Long articleId){
+        return CustomResponse.success(articleService.findByArticleId(articleId));
+    }
+
+    /**
      * 게시글 전체조회
      * @param pageable
      * @return Page of article dto
@@ -38,7 +48,7 @@ public class ArticleController {
      * @param pageable
      * @return  Page of article dto
      */
-    @GetMapping("/search")
+    @PostMapping("/search")
     public CustomResponse<Page<ArticleDto>> searchArticle(
             @RequestBody SearchArticleRequest req,
             @PageableDefault Pageable pageable
@@ -77,16 +87,16 @@ public class ArticleController {
 
     /**
      * 게시글 삭제
-     * @param req 게시글 삭제 요청 (article id)
+     * @param articleId 삭제할 게시글 id
      * @param principal 인증 context
-     * @return nothing
+     * @return void
      */
-    @DeleteMapping
+    @DeleteMapping("/{articleId}")
     public CustomResponse<Void> deleteArticle(
-            @RequestBody ModifyArticleRequest req,
+            @PathVariable Long articleId,
             @AuthenticationPrincipal CustomPrincipal principal
     ){
-        articleService.deleteArticle(req.getArticleId(), principal.toDto().toEntity());
+        articleService.deleteArticle(articleId, principal.toDto().toEntity());
         return CustomResponse.success();
     }
 }

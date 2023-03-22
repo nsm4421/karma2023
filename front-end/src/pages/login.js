@@ -6,15 +6,13 @@ export default function Login(){
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleUsername = (e) => {setUsername(e.tareget.value);};
-    const handlePassword = (e) => {setPassword(e.tareget.value);};
+    const handleUsername = (e) => {setUsername(e.target.value);};
+    const handlePassword = (e) => {setPassword(e.target.value);};
     const handleSubmit = async (e) => {
         setIsLoading(true);
         const endPoint = "/api/user/login";
-        const data = {username, password};
-        const config = {};
         await axios
-            .post(endPoint, data, config)
+            .post(endPoint, {username, password})
             .then((res)=>{
                 console.log(res);
             })
@@ -25,7 +23,7 @@ export default function Login(){
             .finally(()=>{
                 setIsLoading(false);
             });
-    }
+    }   
 
     return (
         <div>

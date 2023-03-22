@@ -22,7 +22,14 @@ public class ArticleService {
     private final ArticleRepository articleRepository;
 
     @Transactional(readOnly = true)
-    public Page<ArticleDto> findAll(Pageable pageable){
+    public ArticleDto findByArticleId(Long articleId) {
+        return ArticleDto.from(articleRepository.findById(articleId).orElseThrow(() -> {
+            throw CustomError.of(CustomErrorCode.ARTICLE_NOT_FOUND);
+        }));
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ArticleDto> findAll(Pageable pageable) {
         return articleRepository.findAll(pageable).map(ArticleDto::from);
     }
 
@@ -33,7 +40,7 @@ public class ArticleService {
             throw CustomError.of(CustomErrorCode.INVALID_INPUT, "검색어가 없거나 빈칸입니다");
         }
         // 검색 유형에 따라 처리
-        Page<Article> articles =  switch (searchType) {
+        Page<Article> articles = switch (searchType) {
             case TITLE -> articleRepository.findByTitleContaining(searchWord, pageable);
             case CONTENT -> articleRepository.findByContentContaining(searchWord, pageable);
             case NICKNAME -> articleRepository.findByUserAccount_NicknameContaining(searchWord, pageable);
@@ -56,11 +63,11 @@ public class ArticleService {
 
     public ArticleDto modifyArticle(ArticleDto modifyRequest, UserAccount loginUser) {
         // 존재하는 게시물인지 확인
-        Article article = articleRepository.findById(modifyRequest.articleId()).orElseThrow(()->{
-           throw CustomError.of(CustomErrorCode.ARTICLE_NOT_FOUND);
+        Article article = articleRepository.findById(modifyRequest.articleId()).orElseThrow(() -> {
+            throw CustomError.of(CustomErrorCode.ARTICLE_NOT_FOUND);
         });
         // 게시글 작성자와 수정요청한 유저가 동일한지 확인
-        if (!article.getUserAccount().getUsername().equals(loginUser.getUsername())){
+        if (!article.getUserAccount().getUsername().equals(loginUser.getUsername())) {
             throw CustomError.of(CustomErrorCode.UNAUTHORIZED_ACCESS);
         }
         // 게시글 수정
@@ -74,11 +81,11 @@ public class ArticleService {
 
     public void deleteArticle(Long articleId, UserAccount loginUser) {
         // 존재하는 게시물인지 확인
-        Article article = articleRepository.findById(articleId).orElseThrow(()->{
+        Article article = articleRepository.findById(articleId).orElseThrow(() -> {
             throw CustomError.of(CustomErrorCode.ARTICLE_NOT_FOUND);
         });
         // 작성자와 삭제 요청한 유저가 동일한지 확인
-        if (!article.getUserAccount().getUsername().equals(loginUser.getUsername())){
+        if (!article.getUserAccount().getUsername().equals(loginUser.getUsername())) {
             throw CustomError.of(CustomErrorCode.UNAUTHORIZED_ACCESS);
         }
         // 삭제

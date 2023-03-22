@@ -1,19 +1,32 @@
 import axios from "axios";
-import { useState } from "react"
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react"
+import { useNavigate, useParams } from "react-router-dom";
 import WriteArticleForm from "../components/writeArticleForm";
 
-export default function WriteArticle(){   
-
-    // TODO : 이미지 업로드 
-
+export default function ModifyArticle(){   
+    
+    const params = useParams();
     const navigator = useNavigate();
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [hashtags, setHashtags] = useState([""]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false); 
 
-    
+    useEffect(()=>{        
+        setIsLoading(true);
+        const endPoint = `/api/article/search/${params.id}`;
+        axios.get(endPoint).then((res)=>{
+            return res.data.data;
+        }).then((data)=>{
+            setTitle(data.title);
+            setContent(data.content);    
+            setHashtags(data.hashtags);
+        }).catch((err)=>{
+            console.log(err);
+        })
+        setIsLoading(false);
+    }, []);
+
     const handleSubmit = async () => {
         // 유저 input 체크
         if (!title){
@@ -26,14 +39,16 @@ export default function WriteArticle(){
         }
         // 서버 요청
         const endPoint = '/api/article';
-        const data = {title, content, hashtags:[...new Set(hashtags)]};     // 해시태그는 중복 제거해서 보냄
-        console.table(data);
+        const data = {articleId:params.id, title, content, hashtags:[...new Set(hashtags)]};     // 해시태그는 중복 제거해서 보냄
         setIsLoading(true);
         await axios
-            .post(endPoint, data)
+            .put(endPoint, data)
             .then((res)=>{
+                return res.data;
+            })
+            .then((data)=>{
                 navigator("/article");
-            })      
+            })        
             .catch((err)=>{
                 alert("에러발생");
                 console.log(err);
@@ -45,7 +60,7 @@ export default function WriteArticle(){
 
     return(
         <div>
-            <h1>작성</h1>
+            <h1>수정</h1>
             <WriteArticleForm title={title} setTitle={setTitle} content={content} setContent={setContent} hashtags={hashtags} setHashtags={setHashtags}/>
             <button disabled={isLoading} onClick={handleSubmit}>제출</button>
         </div>

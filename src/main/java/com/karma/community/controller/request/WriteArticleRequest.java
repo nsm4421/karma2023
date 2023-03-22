@@ -1,7 +1,6 @@
 package com.karma.community.controller.request;
 
 import com.karma.community.model.dto.ArticleDto;
-import com.karma.community.model.dto.UserAccountDto;
 import lombok.Data;
 
 import java.util.Set;
