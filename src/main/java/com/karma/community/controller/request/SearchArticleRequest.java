@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 public class SearchArticleRequest {
     private SearchType searchType;
-    private String searchValue;
+    private String searchWord;
 }

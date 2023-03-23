@@ -53,7 +53,7 @@ public class ArticleController {
             @RequestBody SearchArticleRequest req,
             @PageableDefault Pageable pageable
     ){
-        return CustomResponse.success(articleService.searchArticle(req.getSearchType(), req.getSearchValue(), pageable));
+        return CustomResponse.success(articleService.searchArticle(req.getSearchType(), req.getSearchWord(), pageable));
     }
 
 

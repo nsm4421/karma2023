@@ -32,6 +32,14 @@ export function getArticlesApi(successCallback, failureCallback){
         .catch(failureCallback);
 }
 
+export function searchArticleApi(searchType, searchWord, successCallback, failureCallback){
+    const endPoint = "/api/article/search";
+    const data = {searchType, searchWord};
+    axios.post(endPoint, data)
+        .then(successCallback)
+        .catch(failureCallback);
+};
+
 export async function deleteArticleApi(articleId, successCallback, failureCallback) {
     const endPoint = `/api/article/${articleId}`;
     await axios
