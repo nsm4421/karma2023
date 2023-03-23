@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom";
 import { getArticleApi, modifyArticleApi } from "../api/articleApi";
@@ -24,34 +23,35 @@ export default function ModifyArticle(){
         }
     }
 
-    const successCallbackForGetArticleApi = (res) => {
-        const data = res.data.data;
-        setTitle(data.title);
-        setContent(data.content);
-        setHashtags(data.hashtags);
-    }
-    const failureCallback = (err)=>{
-        console.log(err);
-    }
-
-    const successCallbackForModifyArticleApi = () => {
-        navigator("/article");
+    const getArticle = async () => {
+        const successCallback = (res) => {
+            const data = res.data.data;
+            setTitle(data.title);
+            setContent(data.content);
+            setHashtags(data.hashtags);
+        }
+        const failureCallback = console.log;
+        await getArticleApi(params.id, successCallback, failureCallback);
     }
 
     const handleSubmit = async () => {
+        const successCallback = () => {
+            navigator("/article");
+        }
+        const failureCallback = console.log;
         await checkInput();
         setIsLoading(true);
-        const data = {articleId:params.id, title, content, hashtags:[...new Set(hashtags)]};
-        await modifyArticleApi(data, successCallbackForModifyArticleApi, failureCallback);
+        await modifyArticleApi(params.id, title, content, hashtags, successCallback, failureCallback);
+        setIsLoading(false);
     }
 
     useEffect(()=>{       
-        const getArticle = async () => {
+        const _getArticle = async () => {
             setIsLoading(true);
-            await getArticleApi(params.id,successCallbackForGetArticleApi, failureCallback);
+            await getArticle();
             setIsLoading(false);
         }
-        getArticle();
+        _getArticle();
     }, []);
 
     return(

@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { regsterApi } from "../api/authApi";
@@ -21,20 +20,17 @@ export default function Register(){
     const handlePassword = (e) => {setPassword(e.target.value)};
     const handleDescription = (e) => {setDescription(e.target.value)};
 
-    const successCallbackForRegister = (res) => {
-        alert(res.data.message);
-        navigator("/login");
-    }
-
-    const failureCallbackForRegister = (err) => {
-        alert("회원가입에 실패하였습니다.")
-        console.log(err);
-    }
-
     const handleSubmit = async () => {
+        const successCallback = (res) => {
+            alert(res.data.message);
+            navigator("/login");
+        };
+        const failureCallback = (err) => {
+            alert("회원가입에 실패하였습니다.")
+            console.log(err);
+        };
         setIsLoading(true);
-        const data = {username, nickname, email, password, description};
-        await regsterApi(data, successCallbackForRegister, failureCallbackForRegister)
+        await regsterApi(username, nickname, email, password, description, successCallback, failureCallback)
         setIsLoading(false);
     }
 

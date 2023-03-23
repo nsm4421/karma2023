@@ -1,15 +1,17 @@
 import axios from "axios";
 
-export async function writeArticleApi(data, successCallback, failureCallback){
+export async function writeArticleApi(title, content, hashtags, successCallback, failureCallback){
     const endPoint = '/api/article';
+    const data =  {title, content, hashtags:[...new Set(hashtags)]};
     await axios
         .post(endPoint, data)
         .then(successCallback)      
         .catch(failureCallback);
 }
 
-export async function modifyArticleApi(data, successCallback, failureCallback){
+export async function modifyArticleApi(articleId, title, content, hashtags, successCallback, failureCallback){
     const endPoint = '/api/article';
+    const data =  {articleId, title, content, hashtags:[...new Set(hashtags)]};
     await axios
         .put(endPoint, data)
         .then(successCallback)      

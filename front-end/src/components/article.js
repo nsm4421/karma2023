@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { deleteArticleApi } from "../api/articleApi";
+import Comment from "./comment";
 
-export default function Article({article}){
+export default function Article({article, isLoading, setIsLoading}){
 
     const navigator = useNavigate();
 
@@ -16,8 +17,10 @@ export default function Article({article}){
 
     const failureCallback = console.log;
 
-    const handleDeleteArticle = () => {
-        deleteArticleApi(article.articleId, successCallback, failureCallback);
+    const handleDeleteArticle = async () => {
+        setIsLoading(true);
+        await deleteArticleApi(article.articleId, successCallback, failureCallback);
+        setIsLoading(false);
     }
 
     return (
@@ -32,8 +35,8 @@ export default function Article({article}){
             </div>
             {/* TODO : 내가 쓴 게시물만 아래 버튼들이 보이게 하기 */}
             <div>
-                <button onClick={moveToModifyPage}>수정하기</button>
-                <button onClick={handleDeleteArticle}>삭제하기</button>
+                <button disabled={isLoading} onClick={moveToModifyPage}>수정하기</button>
+                <button disabled={isLoading} onClick={handleDeleteArticle}>삭제하기</button>
             </div>
             <div>
                 <label>본문</label>
@@ -58,6 +61,7 @@ export default function Article({article}){
                 <label>수정시간</label>
                 <span>{article.modifiedAt}</span>
             </div>
+            <Comment articleId={article.articleId}/>
         </div>
     )
 }

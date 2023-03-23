@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
 import { writeArticleApi } from "../api/articleApi";
@@ -23,18 +22,15 @@ export default function WriteArticle(){
             return;
         }
     }
-
-    const successCallbackForWriteArticleApi = () => {
-        navigator("/article");
-    }
-
-    const failureCallback = console.log;
     
     const handleSubmit = async () => {
+        const successCallback = () => {
+            navigator("/article");
+        };    
+        const failureCallback = console.log;
         await checkInput();
-        const data = {title, content, hashtags:[...new Set(hashtags)]};     // 해시태그는 중복 제거해서 보냄
         setIsLoading(true);
-        await writeArticleApi(data, successCallbackForWriteArticleApi, failureCallback)
+        await writeArticleApi(title, content, hashtags, successCallback, failureCallback)
         setIsLoading(false);
     }
 
