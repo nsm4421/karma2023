@@ -11,6 +11,7 @@ public enum CustomErrorCode {
     DUPLICATED_USERNAME(HttpStatus.CONFLICT, "중복된 유저명입니다"),
     DUPLICATED_NICKNAME(HttpStatus.CONFLICT, "중복된 닉네임입니다"),
     DUPLICATED_EMAIL(HttpStatus.CONFLICT, "중복된 이메일입니다"),
+    DUPLICATED_EMOTION(HttpStatus.CONFLICT, "중복된 감정표현입니다"),
     INVALID_INPUT(HttpStatus.BAD_REQUEST, "유효하지 않은 요청입니다"),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 유저입니다"),
     ARTICLE_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 게시물입니다"),
