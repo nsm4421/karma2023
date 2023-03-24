@@ -25,8 +25,8 @@ export function getArticleApi(articleId, successCallback, failureCallback){
         .catch(failureCallback)
 }
 
-export function getArticlesApi(successCallback, failureCallback){
-    const endPoint = "/api/article";
+export async function getArticlesApi(currentPage, successCallback, failureCallback){
+    const endPoint = `/api/article?page=${currentPage}&size=20`;
     axios.get(endPoint)
         .then(successCallback)
         .catch(failureCallback);

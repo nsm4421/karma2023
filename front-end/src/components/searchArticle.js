@@ -1,48 +1,76 @@
-import { useState } from "react"
 import { searchArticleApi } from '../api/articleApi';
+import { useState } from 'react';
+import { Chip, IconButton, InputAdornment, TextField, Typography } from '@mui/material';
+import { Search } from '@mui/icons-material';
 
-export default function SearchArticle({successCallback, setArticles, setPageable, setTotalPages, setTotalElements, isLoading}){
+const InputAdornmentForSearchType = ({searchType, setSearchType}) => {
 
-    const [searchType, setSearchType] = useState("TITLE");
-    const [searchWord, setSearchWord] = useState("");
+    const searchTypeList = [
+        {label:"제목", value:"TITLE"},
+        {label:"본문", value:"CONTENT"},
+        {label:"닉네임", value:"NICKNAME"},
+    ]
 
-    const handleSearchType = (e) => {
-        setSearchType(e.target.value);
+    const handleSearchType = (i) => () => {
+        setSearchType(searchTypeList[i].value);
     }
 
+    return (
+        <InputAdornment position="start">
+            {
+                searchTypeList.map((v, i) => {
+                    return (
+                        <Chip
+                            key = {i}
+                            label={v.label}
+                            color='primary'
+                            variant={searchType === v.value ? 'filled' : 'outlined'}
+                            onClick={handleSearchType(i)}
+                        />
+                    )
+                })
+            }
+        </InputAdornment>
+    )
+}
+
+const InputAdornmentForSearchIcon = ({isLoading, handleSubmit}) => {
+    return (
+        <InputAdornment  position="start">
+            <IconButton
+                color='primary'
+                sx={{ marginLeft: '10px'}}
+                disabled={isLoading}
+                onClick={handleSubmit}>
+                <Search />
+                <Typography>검색</Typography>
+            </IconButton>
+        </InputAdornment>
+    )
+}
+
+export default function SearchArticle(props) {
+
     const handleSearchWord = (e) => {
-        setSearchWord(e.target.value);
-    }    
-        
+        props.setSearchWord(e.target.value);
+    }
+
     const handleSubmit = async () => {
-        const successCallback = (res) => {
-            const data = res.data.data; 
-            console.log(res);
-            setArticles([...data.content]);
-            setPageable(data.pagebale);
-            setTotalPages(data.totalPages);
-            setTotalElements(data.totalElements);
-        }
-        const failureCallback = console.log;
-        await searchArticleApi(searchType, searchWord, successCallback, failureCallback)
+        await props.handleSearchArticle();
+        props.setSearchWord("");
     };
 
     return (
-        <div>
-            <h3>검색바</h3>
-
-            <label>검색유형</label>
-            <select onChange={handleSearchType}>
-                <option value="TITLE">제목</option>
-                <option value="CONTENT">본문</option>
-                <option value="NICKNAME">닉네임</option>
-            </select>
-            <br/>
-
-            <input value={searchWord} onChange={handleSearchWord} placeholder="검색할 단어를 입력하세요"/>
-            <br/>
-
-            <button disabled={isLoading} onClick={handleSubmit}>검색하기</button>
-        </div>
+        <TextField
+            placeholder='검색유형과 검색어를 입력해주세요'
+            fullWidth
+            variant="standard"
+            onChange={handleSearchWord}
+            sx={{ minWidth: '500px' }}
+            InputProps={{
+                startAdornment: <InputAdornmentForSearchType searchType={props.searchType} setSearchType={props.setSearchType} />,
+                endAdornment: <InputAdornmentForSearchIcon isLoading={props.isLoading} handleSubmit={handleSubmit} />
+            }}
+        />
     )
 }
