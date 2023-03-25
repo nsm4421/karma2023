@@ -13,16 +13,11 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRecoilState } from 'recoil';
+import { userState } from '..';
 
-// TODO : 로그인 상태에 따라 보이는 메뉴를 다르게 하기
-const navItems = [
-    { label: '홈', href: '/' },
-    { label: '회원가입', href: '/register' },
-    { label: '로그인', href: '/login' },
-    { label: '로그아웃', href: '/logout' },
-    { label: '게시글', href: '/article' },
-]
+
 
 const StyledNavBox = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -38,10 +33,27 @@ const StyledNavBox = styled('div')(({ theme }) => ({
 
 export default function Nav() {
 
-
+    const [user, setUser] = useRecoilState(userState);
+    const [isLogin, setIsLogin] = useState(false);
     const navigator = useNavigate();
     const [anchorEl, setAnchorEl] = useState(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
+    const mobileMenuId = 'primary-search-account-menu-mobile';
+
+    // 네비게이션 아이템
+    const navItems = [
+        { label: '홈', href: '/', showOnLogin: true, showOnNotLogin: true },
+        { label: '회원가입', href: '/register', showOnLogin: false, showOnNotLogin: true },
+        { label: '로그인', href: '/login', showOnLogin: false, showOnNotLogin: true },
+        // TODO : 로그아웃시 로그아웃 처리 및 쿠키 clear
+        { label: '로그아웃', href: '/logout', showOnLogin: true, showOnNotLogin: true},
+        { label: '게시글', href: '/article', showOnLogin: true, showOnNotLogin: true },
+    ]
+
+    // user(전역변수) 변경 시 로그인 여부 갱신하기
+    useEffect(() => {
+        user.nickname ? setIsLogin(true) : setIsLogin(false);
+    }, [user])
 
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -72,9 +84,8 @@ export default function Nav() {
             <StyledNavBox>
                 {
                     navItems.map((n, i) => {
-                        return (
-                            <Button sx={{ color: 'white' }} key={i} onClick={handleNav(n.href)}>{n.label}</Button>
-                        )
+                        const show = (isLogin && n.showOnLogin) || (!isLogin && n.showOnNotLogin)
+                        return show ? <Button sx={{ color: 'white' }} key={i} onClick={handleNav(n.href)}>{n.label}</Button> : null
                     })
                 }
             </StyledNavBox>
@@ -82,80 +93,119 @@ export default function Nav() {
     }
 
     const menuId = 'primary-search-account-menu';
-    const renderMenu = (
-        <Menu
-            anchorEl={anchorEl}
-            anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-            }}
-            id={menuId}
-            keepMounted
-            transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-            }}
-            open={isMenuOpen}
-            onClose={handleMenuClose}
-        >
-            <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-            <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-        </Menu>
-    );
 
-    const mobileMenuId = 'primary-search-account-menu-mobile';
-    const renderMobileMenu = (
-        <Menu
-            anchorEl={mobileMoreAnchorEl}
-            anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-            }}
-            id={mobileMenuId}
-            keepMounted
-            transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-            }}
-            open={isMobileMenuOpen}
-            onClose={handleMobileMenuClose}
-        >
-            <MenuItem>
+    const MenuOnClickProfile = () => {
+        return isLogin ?
+            <Menu
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                id={menuId}
+                keepMounted
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                open={isMenuOpen}
+                onClose={handleMenuClose}
+            >
+                <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+                <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+            </Menu>
+            : null
+    }
+
+    const RightSideIconsOnWideView = () => {
+        return isLogin ?
+            <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                 <IconButton size="large" aria-label="show 4 new mails" color="inherit">
                     <Badge badgeContent={4} color="error">
                         <MailIcon />
                     </Badge>
                 </IconButton>
-                <p>Messages</p>
-            </MenuItem>
-            <MenuItem>
                 <IconButton
                     size="large"
+                    aria-label="show 17 new notifications"
                     color="inherit"
                 >
                     <Badge badgeContent={17} color="error">
                         <NotificationsIcon />
                     </Badge>
                 </IconButton>
-                <p>Notifications</p>
-            </MenuItem>
-            <MenuItem onClick={handleProfileMenuOpen}>
                 <IconButton
                     size="large"
+                    edge="end"
+                    aria-label="account of current user"
+                    aria-controls={menuId}
+                    aria-haspopup="true"
+                    onClick={handleProfileMenuOpen}
                     color="inherit"
                 >
                     <AccountCircle />
+                    <Typography sx={{ ml: 1 }}>{user.nickname}</Typography>
                 </IconButton>
-                <p>Profile</p>
-            </MenuItem>
-        </Menu>
-    );
+            </Box>
+            : null
+
+    }
+
+    const RightSideIconsOnNarrowView = () => {
+        return isLogin ?
+            <Menu
+                anchorEl={mobileMoreAnchorEl}
+                anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                id={mobileMenuId}
+                keepMounted
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                open={isMobileMenuOpen}
+                onClose={handleMobileMenuClose}
+            >
+                <MenuItem>
+                    <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+                        <Badge badgeContent={4} color="error">
+                            <MailIcon />
+                        </Badge>
+                    </IconButton>
+                    <p>Messages</p>
+                </MenuItem>
+                <MenuItem>
+                    <IconButton
+                        size="large"
+                        color="inherit"
+                    >
+                        <Badge badgeContent={17} color="error">
+                            <NotificationsIcon />
+                        </Badge>
+                    </IconButton>
+                    <p>Notifications</p>
+                </MenuItem>
+                <MenuItem onClick={handleProfileMenuOpen}>
+                    <IconButton
+                        size="large"
+                        color="inherit"
+                    >
+                        <AccountCircle />
+                    </IconButton>
+                    <p>{user.nickname}</p>
+                </MenuItem>
+            </Menu>
+            : null
+    };
 
     return (
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static">
                 <Toolbar>
 
+                    {/* 앱 로고 */}
                     <Typography
                         variant="h6"
                         noWrap
@@ -166,36 +216,14 @@ export default function Nav() {
                         Karma
                     </Typography>
 
+                    {/* 네비게이션 아이템 */}
                     <NavItems />
 
+
+                    {/* 오른쪽 아이콘 메뉴 */}
                     <Box sx={{ flexGrow: 1 }} />
-                    <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-                            <Badge badgeContent={4} color="error">
-                                <MailIcon />
-                            </Badge>
-                        </IconButton>
-                        <IconButton
-                            size="large"
-                            aria-label="show 17 new notifications"
-                            color="inherit"
-                        >
-                            <Badge badgeContent={17} color="error">
-                                <NotificationsIcon />
-                            </Badge>
-                        </IconButton>
-                        <IconButton
-                            size="large"
-                            edge="end"
-                            aria-label="account of current user"
-                            aria-controls={menuId}
-                            aria-haspopup="true"
-                            onClick={handleProfileMenuOpen}
-                            color="inherit"
-                        >
-                            <AccountCircle />
-                        </IconButton>
-                    </Box>
+                    <RightSideIconsOnWideView />
+
                     <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
                         <IconButton
                             size="large"
@@ -210,8 +238,10 @@ export default function Nav() {
                     </Box>
                 </Toolbar>
             </AppBar>
-            {renderMobileMenu}
-            {renderMenu}
+
+            {/* 화면이 줄어들었을 때 오른쪽 아이콘 메뉴 대신 보여줄 메뉴 */}
+            <RightSideIconsOnNarrowView />
+            <MenuOnClickProfile />
         </Box>
     );
 }

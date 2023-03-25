@@ -56,7 +56,6 @@ public class ArticleController {
         return CustomResponse.success(articleService.searchArticle(req.getSearchType(), req.getSearchWord(), pageable));
     }
 
-
     /**
      * 게시글 쓰기
      * @param req 게시글 쓰기 요청 (title, content, hashtags)

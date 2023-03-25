@@ -1,21 +1,27 @@
 package com.karma.community.controller;
 
 import com.karma.community.controller.request.RegisterRequest;
+import com.karma.community.model.dto.CustomPrincipal;
 import com.karma.community.model.dto.UserAccountDto;
 import com.karma.community.model.util.CustomResponse;
 import com.karma.community.service.UserAccountService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.RequiredArgsConstructor;;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
 public class UserAccountController {
     private final UserAccountService userAccountService;
+
+    // 현재 로그인한 유저명
+    @GetMapping
+    public String nickname(
+            @AuthenticationPrincipal CustomPrincipal principal
+    ){
+        return principal.nickname();
+    }
 
     @PostMapping("/register")
     public CustomResponse<String> register(@RequestBody RegisterRequest req){

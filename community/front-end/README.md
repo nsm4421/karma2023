@@ -8,6 +8,6 @@
 
 `npm install axios`
 
-`npm install @reduxjs/toolkit`
+`npm install recoil`
 
 `npm install @mui/material @emotion/react @emotion/styled`

@@ -14,8 +14,6 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
 @Configuration
 public class SecurityConfig {
 
@@ -40,7 +38,12 @@ public class SecurityConfig {
                         // else → 인증기능 활성화
                         .anyRequest().authenticated()
                 )
-                .formLogin(withDefaults())
+                // 로그인
+                .formLogin()
+                .usernameParameter("username")
+                .passwordParameter("password")
+                .loginProcessingUrl("/api/login")
+                .and()
                 // 로그아웃 시 쿠키 제거
                 .logout(logout -> logout.logoutSuccessUrl("/").deleteCookies("JSESSIONID"))
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
