@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -30,7 +29,7 @@ public class UserAccount {
      * createdAt, modifiedAt - JPA Auditing 사용하지 않고, Service 코드에서 직접 박도록 설계
      */
 
-    @Id @Column(length = 50)
+    @Id @Column(length = 50, nullable = false)
     private String username;
     @Setter
     @Column(nullable = false)
@@ -39,7 +38,7 @@ public class UserAccount {
     @Column(length = 100, unique = true)
     private String email;
     @Setter
-    @Column(length = 100, unique = true)
+    @Column(length = 100, unique = true,nullable = false)
     private String nickname;
     @Setter
     private String description;
@@ -47,11 +46,14 @@ public class UserAccount {
     @Enumerated(EnumType.STRING)
     private RoleType roleType = RoleType.USER;
 
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @Setter
     private LocalDateTime createdAt;
-
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @Setter
     private LocalDateTime modifiedAt;
+    @Setter
+    private String createdBy;
+    @Setter
+    private String modifiedBy;
 
     protected UserAccount() {
     }
@@ -64,7 +66,9 @@ public class UserAccount {
             String description,
             RoleType roleType,
             LocalDateTime createdAt,
-            LocalDateTime modifiedAt
+            String createdBy,
+            LocalDateTime modifiedAt,
+            String modifiedBy
     ) {
         this.username = username;
         this.password = password;
@@ -73,47 +77,21 @@ public class UserAccount {
         this.description = description;
         this.roleType = roleType;
         this.createdAt = createdAt;
+        this.createdBy = createdBy;
         this.modifiedAt = modifiedAt;
+        this.modifiedBy = modifiedBy;
     }
 
-    public static UserAccount of(
-            String username,
-            String password,
-            String email,
-            String nickname,
-            String description
-    ) {
-        return new UserAccount(
-                username,
-                password,
-                email,
-                nickname,
-                description,
-                RoleType.USER,
-                null,
-                null
-        );
+    public static UserAccount of(String username, String password, String email, String nickname, String description, LocalDateTime createdAt, String createdBy, LocalDateTime modifiedAt, String modifiedBy) {
+        return new UserAccount(username, password, email, nickname, description, RoleType.USER, createdAt, createdBy, modifiedAt, modifiedBy);
     }
 
-    public static UserAccount of(
-            String username,
-            String password,
-            String email,
-            String nickname,
-            String description,
-            LocalDateTime createdAt,
-            LocalDateTime modifiedAt
-    ) {
-        return new UserAccount(
-                username,
-                password,
-                email,
-                nickname,
-                description,
-                RoleType.USER,
-                createdAt,
-                modifiedAt
-        );
+    public static UserAccount of(String username, String password, String email, String nickname, String description) {
+        return new UserAccount(username, password, email, nickname, description, RoleType.USER, null, null, null, null);
+    }
+
+    public static UserAccount of(String username, String password, String email, String nickname, String description, LocalDateTime createdAt, String createdBy) {
+        return new UserAccount(username, password, email, nickname, description, RoleType.USER, createdAt, createdBy, createdAt, createdBy);
     }
 
     @Override

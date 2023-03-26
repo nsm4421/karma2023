@@ -6,6 +6,7 @@ import Nav from './components/nav';
 import Register from './pages/register';
 import { Container } from '@mui/system';
 import Login from './pages/login';
+import KakaoLogin from './pages/kakaoLogin';
 
 export default function App() {
 
@@ -15,6 +16,7 @@ export default function App() {
         <Routes>
             <Route path='/register' element={<Register/>}/>
             <Route path='/login' element={<Login/>}/>
+            <Route path='/oauth2/kakao' element={<KakaoLogin/>}/>
             <Route exact path='/article/write' element={<WriteArticle/>}/>
             <Route exact path='/article/modify/:id' element={<ModifyArticle/>}/>
             <Route exact path='/article' element={<ShowArticle/>}/>

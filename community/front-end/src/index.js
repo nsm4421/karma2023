@@ -9,12 +9,23 @@ import {
     atom,
 } from 'recoil';
 
-export const userState = atom({
+export const initUserState = {
     key: 'user',
     default: {
-        nickname:null
+        nickname:null,
+        kakao:{
+            id:null,
+            connected_at:null,
+            email:null,
+            nickname:null,
+            profile_image_url:null,
+            thumbnail_image_url:null,
+            token:null
+        }
     },
-});
+}
+
+export const userState = atom(initUserState);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

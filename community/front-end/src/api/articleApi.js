@@ -1,10 +1,10 @@
 import axios from "axios";
 
-export async function writeArticleApi(title, content, hashtags, successCallback, failureCallback){
+export async function writeArticleApi(title, content, hashtags, successCallback, failureCallback, config){
     const endPoint = '/api/article';
     const data =  {title, content, hashtags:[...new Set(hashtags)]};
     await axios
-        .post(endPoint, data)
+        .post(endPoint, data, config)
         .then(successCallback)      
         .catch(failureCallback);
 }

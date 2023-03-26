@@ -1,7 +1,7 @@
 package com.karma.community.controller;
 
 import com.karma.community.controller.request.RegisterRequest;
-import com.karma.community.model.dto.CustomPrincipal;
+import com.karma.community.model.security.CustomPrincipal;
 import com.karma.community.model.dto.UserAccountDto;
 import com.karma.community.model.util.CustomResponse;
 import com.karma.community.service.UserAccountService;
@@ -21,6 +21,13 @@ public class UserAccountController {
             @AuthenticationPrincipal CustomPrincipal principal
     ){
         return principal.nickname();
+    }
+
+    @GetMapping("/kakao/me")
+    public String getUserInfo(@RequestParam("code") String code){
+        return userAccountService.getUserInfoByAccessToken(
+                userAccountService.getAccessTokenByAuthToken(code).access_token()
+        );
     }
 
     @PostMapping("/register")

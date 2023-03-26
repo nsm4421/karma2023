@@ -2,8 +2,6 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
@@ -43,11 +41,18 @@ export default function Register() {
         setIsLoading(true);
         await regsterApi(
             {username, nickname, email, password, description}, 
-            ()=>{
-                navigator("/login");
+            (res)=>{
+                if (res.data.status === 'OK'){
+                    console.log(res);
+                    navigator("/login");
+                    return;
+                }
+                alert("회원가입에 실패하였습니다");
+                console.log(res);
             }, 
-            ()=>{
-                alert("회원가입에 실패하였습니다.")
+            (err)=>{
+                alert("회원가입에 실패하였습니다");
+                console.log(err);
             })
         setIsLoading(false);
     }

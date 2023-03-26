@@ -5,7 +5,7 @@ import com.karma.community.controller.request.ModifyArticleRequest;
 import com.karma.community.controller.request.SearchArticleRequest;
 import com.karma.community.controller.request.WriteArticleRequest;
 import com.karma.community.model.dto.ArticleDto;
-import com.karma.community.model.dto.CustomPrincipal;
+import com.karma.community.model.security.CustomPrincipal;
 import com.karma.community.model.util.CustomResponse;
 import com.karma.community.service.ArticleService;
 import lombok.RequiredArgsConstructor;

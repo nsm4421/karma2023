@@ -22,3 +22,20 @@ spring:
   data.rest:
     base-path: /api
     detection-strategy: annotated
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: b6023639a0983010fa1b4636be190b80
+            client-secret: 16adERPc20d7Jzm185trWbn4RroYZ5dw
+            authorization-grant-type: authorization_code
+#            redirect-uri: "{baseUrl}/login/oauth2/code/kakao"
+            redirect-uri: http://localhost:3000/oauth2/kakao
+            client-authentication-method: POST
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id

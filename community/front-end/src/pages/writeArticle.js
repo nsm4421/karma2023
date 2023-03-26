@@ -6,10 +6,13 @@ import { useNavigate } from "react-router-dom";
 import { writeArticleApi } from "../api/articleApi";
 import CreateIcon from '@mui/icons-material/Create';
 import WriteArticleForm from "../components/writeArticleForm";
+import { useRecoilState } from "recoil";
+import { userState } from "..";
 
 export default function WriteArticle() {
 
     // TODO : 이미지 업로드 
+    const [user,setUser] = useRecoilState(userState);
     const navigator = useNavigate();
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
@@ -43,6 +46,11 @@ export default function WriteArticle() {
             (err) => {
                 alert("게시글 업로드 실패");
                 console.log(err);
+            },
+            {
+                Headers:{
+                    Authorization:`Bearer ${user.kakao.token}`
+                }
             })
         setIsLoading(false);
     }

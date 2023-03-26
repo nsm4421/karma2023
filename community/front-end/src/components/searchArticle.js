@@ -1,6 +1,5 @@
-import { searchArticleApi } from '../api/articleApi';
-import { useState } from 'react';
 import { Chip, IconButton, InputAdornment, TextField, Typography } from '@mui/material';
+import UndoIcon from '@mui/icons-material/Undo';
 import { Search } from '@mui/icons-material';
 
 const InputAdornmentForSearchType = ({searchType, setSearchType}) => {
@@ -34,17 +33,28 @@ const InputAdornmentForSearchType = ({searchType, setSearchType}) => {
     )
 }
 
-const InputAdornmentForSearchIcon = ({isLoading, handleSubmit}) => {
+const InputAdornmentForSearchIcon = ({isLoading, handleSearchArticle, handleGetArticle}) => {
     return (
-        <InputAdornment  position="start">
+        <InputAdornment position="start">
+            
             <IconButton
                 color='primary'
-                sx={{ marginLeft: '10px'}}
+                sx={{ marginLeft: '10px' }}
                 disabled={isLoading}
-                onClick={handleSubmit}>
+                onClick={handleSearchArticle}>
                 <Search />
                 <Typography>검색</Typography>
             </IconButton>
+
+            <IconButton
+                color='primary'
+                sx={{ marginLeft: '10px' }}
+                disabled={isLoading}
+                onClick={handleGetArticle}>
+                <UndoIcon />
+                <Typography>되돌리기</Typography>
+            </IconButton>
+
         </InputAdornment>
     )
 }
@@ -55,11 +65,6 @@ export default function SearchArticle(props) {
         props.setSearchWord(e.target.value);
     }
 
-    const handleSubmit = async () => {
-        await props.handleSearchArticle();
-        props.setSearchWord("");
-    };
-
     return (
         <TextField
             placeholder='검색유형과 검색어를 입력해주세요'
@@ -69,7 +74,7 @@ export default function SearchArticle(props) {
             sx={{ minWidth: '500px' }}
             InputProps={{
                 startAdornment: <InputAdornmentForSearchType searchType={props.searchType} setSearchType={props.setSearchType} />,
-                endAdornment: <InputAdornmentForSearchIcon isLoading={props.isLoading} handleSubmit={handleSubmit} />
+                endAdornment: <InputAdornmentForSearchIcon isLoading={props.isLoading} handleSearchArticle={props.handleSearchArticle} handleGetArticle={props.handleGetArticle}/>
             }}
         />
     )

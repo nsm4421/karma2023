@@ -1,34 +1,4 @@
-### 회원가입
-POST http://localhost:8080/api/user/register
+GET http://localhost:8080/api/user/kakao/me?code=tHTTUc3XgyBncJe4KNNutUeAWCQ2GKdxhxy0Csx5VEpbB86ZJ5sTXkBiF6fCaDgR1gCpMAo9c5oAAAGHGk1yFw
 Content-Type: application/json
 Accept-Encoding: UTF-8
 
-{
-    "username":"username",
-    "nickname":"nickname",
-    "email":"email",
-    "password":"password",
-    "description":"description"
-}
-
-### 로그인
-POST http://localhost:8080/login
-Content-Type: application/json
-Accept-Encoding: UTF-8
-
-{
-    "username":"username",
-    "password":"password"
-}
-
-
-### 게시글 작성
-POST http://localhost:8080/api/article/write
-Content-Type: application/json
-Accept-Encoding: UTF-8
-
-{
-    "title":"title",
-    "content":"content",
-    "hashtags":[""]
-}

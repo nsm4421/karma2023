@@ -46,7 +46,7 @@ export default function Nav() {
         { label: '회원가입', href: '/register', showOnLogin: false, showOnNotLogin: true },
         { label: '로그인', href: '/login', showOnLogin: false, showOnNotLogin: true },
         // TODO : 로그아웃시 로그아웃 처리 및 쿠키 clear
-        { label: '로그아웃', href: '/logout', showOnLogin: true, showOnNotLogin: true},
+        { label: '로그아웃', href: '/logout', showOnLogin: true, showOnNotLogin: false},
         { label: '게시글', href: '/article', showOnLogin: true, showOnNotLogin: true },
     ]
 
@@ -70,11 +70,6 @@ export default function Nav() {
         setMobileMoreAnchorEl(null);
     };
 
-    const handleMenuClose = () => {
-        setAnchorEl(null);
-        handleMobileMenuClose();
-    };
-
     const handleMobileMenuOpen = (event) => {
         setMobileMoreAnchorEl(event.currentTarget);
     };
@@ -93,29 +88,6 @@ export default function Nav() {
     }
 
     const menuId = 'primary-search-account-menu';
-
-    const MenuOnClickProfile = () => {
-        return isLogin ?
-            <Menu
-                anchorEl={anchorEl}
-                anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                }}
-                id={menuId}
-                keepMounted
-                transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                }}
-                open={isMenuOpen}
-                onClose={handleMenuClose}
-            >
-                <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-                <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-            </Menu>
-            : null
-    }
 
     const RightSideIconsOnWideView = () => {
         return isLogin ?
@@ -241,7 +213,6 @@ export default function Nav() {
 
             {/* 화면이 줄어들었을 때 오른쪽 아이콘 메뉴 대신 보여줄 메뉴 */}
             <RightSideIconsOnNarrowView />
-            <MenuOnClickProfile />
         </Box>
     );
 }

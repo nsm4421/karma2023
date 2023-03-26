@@ -3,7 +3,7 @@ package com.karma.community.controller;
 import com.karma.community.controller.request.ModifyArticleCommentRequest;
 import com.karma.community.controller.request.SaveArticleCommentRequest;
 import com.karma.community.model.dto.ArticleCommentDto;
-import com.karma.community.model.dto.CustomPrincipal;
+import com.karma.community.model.security.CustomPrincipal;
 import com.karma.community.model.util.CustomResponse;
 import com.karma.community.service.ArticleCommentService;
 import lombok.RequiredArgsConstructor;

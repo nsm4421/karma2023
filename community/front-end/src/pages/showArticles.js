@@ -65,6 +65,7 @@ export default function ShowArticle(){
         setIsLoading(true);
         await getArticlesApi(currentPage, successCallback, failureCallback);
         setIsLoading(false);
+        setSearchWord("");
     }
 
     const handleSearchArticle = async () => {
@@ -103,7 +104,7 @@ export default function ShowArticle(){
             
             {/* 검색창 */}
             <SearchArticle searchType={searchType} setSearchType={setSearchType} searchWord={searchWord} setSearchWord={setSearchWord}
-                isLoading={isLoading} setIsLoading={setIsLoading} handleSearchArticle={handleSearchArticle}
+                isLoading={isLoading} setIsLoading={setIsLoading} handleSearchArticle={handleSearchArticle} handleGetArticle={handleGetArticle}
             />
 
             {/* 게시글 */}
