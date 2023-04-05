@@ -15,7 +15,7 @@
     "jsx": "preserve",
     "incremental": true,
     "paths": {
-      "@compilerOptions":["component/*"]
+      "@components":["components/*"]
     },
     "baseUrl": ".",
   },

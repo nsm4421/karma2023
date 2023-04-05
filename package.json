@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@notionhq/client": "^2.2.3",
     "@types/node": "18.15.11",
     "@types/react": "18.0.33",
     "@types/react-dom": "18.0.11",
@@ -26,8 +27,8 @@
     "husky": "^8.0.3",
     "lint-staged": "^13.2.0"
   },
-  "lint-staged":{
-    "*.{js,jsx,ts,tsx}":[
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
       "eslint --fix",
       "prettier --write",
       "git add"
