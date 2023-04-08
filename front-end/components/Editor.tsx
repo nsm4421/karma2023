@@ -23,7 +23,6 @@ export default function MyEditor({
         onSave?:()=>void,
         onEditorStateChange?:Dispatch<SetStateAction<EditorState|undefined>>
     }){
-        console.log(readOnly)
     return (
         <div>
             <Editor 

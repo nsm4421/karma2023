@@ -17,8 +17,8 @@ async function getProducts() {
   try {
     const endPoint = "http://localhost:8080/api/product"
     const res = await axios.get(endPoint)
-    console.debug(res.data??res);
-    return res.data;
+    console.debug(res.data.content??res);
+    return res.data.content;
   } catch (e) {
     console.error(JSON.stringify(e))
   }

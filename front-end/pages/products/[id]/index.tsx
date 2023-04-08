@@ -4,7 +4,7 @@ export default function Product() {
 
    return (
     <>
-      <EditProduct readOnly={true}/>
+      <EditProduct/>
     </>
   )
 }
