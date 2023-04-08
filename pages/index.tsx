@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import styles from 'styles/Home.module.css'
 import { useEffect, useState } from 'react'
+import Products from './products'
 
 export default function Home() {
   const [products, setProducts] = useState<
@@ -30,28 +31,8 @@ export default function Home() {
         <link rel="icons" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}>
-        <div>
-          {products &&
-            products.map((product, idx) => {
-              return (
-                <div key={idx}>
-                  {Object.entries(product.properties).map(([key, value]) => (
-                    <button
-                      key={key}
-                      onClick={() => handleGetDetail(product.id, value.id)}
-                      type="button"
-                      disabled={false}
-                    >
-                      {key}
-                      {JSON.stringify(value)}
-                    </button>
-                  ))}
-                </div>
-              )
-            })}
-        </div>
-      </main>
+      <main className={styles.main}></main>
+      <Products />
     </>
   )
 }
