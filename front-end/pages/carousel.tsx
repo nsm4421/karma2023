@@ -17,7 +17,8 @@ const images = [
   },
 ]
 
-export default function Products() {
+export default function MyCarousel() {
+
   const [slideIndex, setSlideIndex] = useState<number>(0)
   const handleSlideIndex = (idx: number) => () => setSlideIndex(idx)
 
@@ -56,6 +57,8 @@ export default function Products() {
             />
           </div>
         ))}
+        <div/>
+       
       </div>
     </>
   )

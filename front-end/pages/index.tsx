@@ -1,26 +1,17 @@
 import Head from 'next/head'
-import styles from 'styles/Home.module.css'
 import { useEffect, useState } from 'react'
-import Products from './products'
+import MyCarousel from './carousel'
+import EditProduct from './products/[id]/edit'
 
 export default function Home() {
-  const [products, setProducts] = useState<
-    { id: string; properties: { id: string }[] }[]
-  >([])
+  const [products, setProducts] = useState([])
 
   useEffect(() => {
-    fetch('/api/get-items')
+    fetch('/api/get-products')
       .then((res) => res.json())
       .then((data) => setProducts(data.items))
       .catch(console.error)
   }, [])
-
-  const handleGetDetail = (pageId: string, propertyId: string) => {
-    fetch(`/api/get-detail?pageId=${pageId}&propertyId=${propertyId}`)
-      .then((res) => res.json())
-      .then((data) => alert(data.detail))
-      .catch(console.error)
-  }
 
   return (
     <>
@@ -30,9 +21,8 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icons" href="/favicon.ico" />
       </Head>
-
-      <main className={styles.main}></main>
-      <Products />
+      <MyCarousel/>
+      <EditProduct/>
     </>
   )
 }
