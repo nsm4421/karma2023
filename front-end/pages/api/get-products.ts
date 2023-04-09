@@ -1,24 +1,22 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import axios from 'axios'
+import ProductModel from 'model/ProductModel'
 
-export type Data = {
-    items?: {
-      id:Number,
-      name:String,
-      imgUrl:String,
-      categoryId:String,
-      description:String,
-      price:Number
-    }[]
-    message: string
+type Data = {
+  message:String,
+  items : {
+      content : ProductModel[],
+      pageable : any,
+      totalElements : Number,
+      totalPages : Number
+  }[] 
 }
 
-async function getProducts() {
+async function getProducts(page:Number) {
   try {
-    const endPoint = "http://localhost:8080/api/product"
+    const endPoint = 'http://localhost:8080/api/product' + (page?`?page=${page}`:'')
     const res = await axios.get(endPoint)
-    console.debug(res.data.content??res);
-    return res.data.content;
+    return res.data;
   } catch (e) {
     console.error(JSON.stringify(e))
   }
@@ -28,11 +26,12 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
+  const { page } = req.query
   try {
-    const items = await getProducts()
+    const items = await getProducts(Number(page))
     res.status(200).json({ message: 'Get item success', items: items })
   } catch (e) {     
     console.error(e)
-    return res.status(400).json({ message: 'Fail to get item' })
+    return res.status(400).json({ message: 'Fail to get item', items:[]})
   }
 }
