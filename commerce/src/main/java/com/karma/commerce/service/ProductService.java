@@ -1,5 +1,6 @@
 package com.karma.commerce.service;
 
+import com.karma.commerce.domain.Category;
 import com.karma.commerce.domain.ProductDto;
 import com.karma.commerce.domain.ProductEntity;
 import com.karma.commerce.repository.ProductRepository;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,8 +23,11 @@ public class ProductService {
     private final ProductRepository productRepository;
 
     @Transactional(readOnly = true)
-    public Page<ProductDto> getProducts(Pageable pageable) {
-        return productRepository.findAll(pageable).map(ProductDto::from);
+    public Page<ProductDto> getProducts(Category category, Pageable pageable) {
+        if (category == null){
+            return productRepository.findAll(pageable).map(ProductDto::from);
+        }
+        return productRepository.findByCategory(category, pageable).map(ProductDto::from);
     }
 
     @Transactional(readOnly = true)

@@ -1,5 +1,6 @@
 package com.karma.commerce.repository;
 
+import com.karma.commerce.domain.Category;
 import com.karma.commerce.domain.ProductEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,4 +11,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
     Page<ProductEntity> findAll(Pageable pageable);
+    Page<ProductEntity> findByCategory(Category category, Pageable pageable);
 }

@@ -6,7 +6,7 @@ public record ProductDto(
         Long id,
         String name,
         String imgUrl,
-        Long categoryId,
+        Category category,
         String description,
         Long price,
         LocalDateTime createdAt,
@@ -17,7 +17,7 @@ public record ProductDto(
     public static ProductDto of(
             String name,
             String imgUrl,
-            Long categoryId,
+            Category category,
             String description,
             Long price
     ){
@@ -25,7 +25,7 @@ public record ProductDto(
                 null,
                 name,
                 imgUrl,
-                categoryId,
+                category,
                 description,
                 price,
                 null,
@@ -39,7 +39,7 @@ public record ProductDto(
                 entity.getId(),
                 entity.getName(),
                 entity.getImgUrl(),
-                entity.getCategoryId(),
+                entity.getCategory(),
                 entity.getDescription(),
                 entity.getPrice(),
                 entity.getCreatedAt(),

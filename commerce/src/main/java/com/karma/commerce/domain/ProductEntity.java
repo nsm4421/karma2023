@@ -18,8 +18,8 @@ public class ProductEntity extends AuditingFields{
     private String name;
     @Column(name="img_url")
     private String imgUrl;
-    @Column(name="category_id")
-    private Long categoryId;
+    @Enumerated(value = EnumType.STRING)
+    private Category category;
     @Column(name="description", columnDefinition = "TEXT") @Setter
     private String description;
     @Column(name="price") @Setter

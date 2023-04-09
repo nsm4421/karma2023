@@ -12,9 +12,9 @@ type Data = {
   }[] 
 }
 
-async function getProducts(page:Number) {
+async function getProducts(page:Number, category:String) {
   try {
-    const endPoint = 'http://localhost:8080/api/product' + (page?`?page=${page}`:'')
+    const endPoint = 'http://localhost:8080/api/product?page=' + (page?`${page}`:'0') + (category=='ALL'?'':`&category=${category}`)
     const res = await axios.get(endPoint)
     return res.data;
   } catch (e) {
@@ -26,9 +26,9 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  const { page } = req.query
+  const { page, category } = req.query
   try {
-    const items = await getProducts(Number(page))
+    const items = await getProducts(Number(page), String(category))
     res.status(200).json({ message: 'Get item success', items: items })
   } catch (e) {     
     console.error(e)

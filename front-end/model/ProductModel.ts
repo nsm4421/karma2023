@@ -2,7 +2,7 @@ type ProductModel = {
     id:number,
     name:string,
     imgUrl:string,
-    categoryId:string,
+    category:string,
     description:string,
     price:number
 }

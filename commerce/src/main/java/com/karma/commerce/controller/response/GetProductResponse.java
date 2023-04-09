@@ -1,5 +1,6 @@
 package com.karma.commerce.controller.response;
 
+import com.karma.commerce.domain.Category;
 import com.karma.commerce.domain.ProductDto;
 import lombok.Data;
 
@@ -8,23 +9,23 @@ public class GetProductResponse {
     private Long id;
     private String name;
     private String imgUrl;
-    private Long categoryId;
+    private Category category;
     private String description;
     private Long price;
 
-    private GetProductResponse(Long id, String name, String imgUrl, Long categoryId, String description, Long price) {
+    private GetProductResponse(Long id, String name, String imgUrl, Category category, String description, Long price) {
         this.id = id;
         this.name = name;
         this.imgUrl = imgUrl;
-        this.categoryId = categoryId;
+        this.category = category;
         this.description = description;
         this.price = price;
     }
 
     protected GetProductResponse(){}
 
-    private static GetProductResponse of(Long id, String name, String imgUrl, Long categoryId, String description, Long price){
-        return new GetProductResponse(id, name, imgUrl, categoryId, description, price);
+    private static GetProductResponse of(Long id, String name, String imgUrl, Category category, String description, Long price){
+        return new GetProductResponse(id, name, imgUrl, category, description, price);
     }
 
     public static GetProductResponse from(ProductDto dto){
@@ -32,7 +33,7 @@ public class GetProductResponse {
                 dto.id(),
                 dto.name(),
                 dto.imgUrl(),
-                dto.categoryId(),
+                dto.category(),
                 dto.description(),
                 dto.price()
         );
