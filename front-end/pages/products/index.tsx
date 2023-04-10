@@ -1,10 +1,14 @@
-import ProductModel from 'model/ProductModel'
+import productModel from 'model/ProductModel'
 import { useEffect, useState } from 'react'
 import { css } from '@emotion/css'
 import Image from 'next/image'
 import MyEditor from '../../components/Editor'
-import { Pagination, SegmentedControl } from '@mantine/core'
+import {
+  Pagination,
+  SegmentedControl,
+} from '@mantine/core'
 import { EditorState, convertFromRaw } from 'draft-js'
+import { Select } from '@mantine/core'
 
 export default function Products() {
   /**
@@ -12,39 +16,48 @@ export default function Products() {
    * currentCategory : 현재 선택한 카테고리(default : ALL)
    * categories : 카테고리 종류
    * totoalPage : 전체 페이지수
-   * products :
+   * products : 상품 List
    */
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [currentCategory, setCurrentCategory] = useState<string>('ALL')
+  const [currentSort, setCurrentSort] = useState<string | null>(null)
   const [categories, setCategories] = useState<
     { label: String; value: String }[]
   >([])
   const [totoalPage, setTotalPage] = useState<number>(0)
-  const [products, setProducts] = useState<ProductModel[]>([])
+  const [products, setProducts] = useState<productModel[]>([])
 
+  const filters = [
+    { value: 'price,asc', label: '가격 낮은 순' },
+    { value: 'price,desc', label: '가격 높은 순' },
+    { value: 'createdAt,asc', label: '최신 순' },
+  ]
+
+  // Get category
   useEffect(() => {
-    fetch(
-      `/api/get-products?page=${currentPage - 1}&category=${currentCategory}`
-    )
+    fetch('/api/get-category')
+    .then((res) => res.json())
+    .then((data) => setCategories([{label:'전체', value : 'ALL'}, ...data.items]))
+    .catch(console.error)
+  }, [])
+
+  // When end point change, Get product
+  useEffect(()=>{    
+    fetch('/api/get-products', {
+      method:"POST",
+      body : JSON.stringify({sort:currentSort, page:currentPage, category:currentCategory})
+    })
       .then((res) => res.json())
       .then((data) => {
         setProducts([...data.items.content])
         setTotalPage(data.items.totalPages)
       })
       .catch(console.error)
-  }, [currentPage, currentCategory])
-
-  useEffect(() => {
-    fetch('/api/get-category')
-      .then((res) => res.json())
-      .then((data) =>
-        setCategories([{ label: '전체', value: 'ALL' }, ...data.items])
-      )
-      .catch(console.error)
-  }, [])
+  }, [currentPage, currentCategory, currentSort])
 
   return (
     <>
+      {/* Header */}
       <h1
         className={css`
           margin-bottom: 20px;
@@ -53,26 +66,41 @@ export default function Products() {
         Products
       </h1>
 
+      {/* Sort */}
       <div
         className={css`
+          max-width: 300px;
           margin-bottom: 20px;
         `}
       >
-        {
-          <SegmentedControl
-            value={currentCategory}
-            onChange={setCurrentCategory}
-            data={[
-              ...categories.map((cat) => ({
-                label: String(cat.label),
-                value: String(cat.value),
-              })),
-            ]}
-            color="dark"
-          />
-        }
+        <Select
+          clearable
+          label="Sort"
+          placeholder="Sort"
+          data={filters}
+          value={currentSort}
+          onChange={setCurrentSort}
+        />
       </div>
 
+      {/* Category */}
+      <div className={css`margin-bottom:20px;`}>
+        <SegmentedControl
+          value={currentCategory}
+          onChange={setCurrentCategory}
+          data={[
+            ...categories.map((cat) => ({
+              label: String(cat.label),
+              value: String(cat.value),
+            })),  
+          ]}
+          color="dark"
+          defaultChecked={true}
+          defaultValue={'ALL'}
+        />
+      </div>
+
+      {/* Products */}
       <div>
         {products &&
           products.map((prod) => {
@@ -169,7 +197,6 @@ export default function Products() {
             margin: 'auto';
           `}
         />
-        ;
       </div>
     </>
   )

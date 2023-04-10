@@ -1,20 +1,23 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import axios from 'axios'
-import ProductModel from 'model/ProductModel'
+import productModel from 'model/ProductModel'
 
 type Data = {
   message:String,
   items : {
-      content : ProductModel[],
+      content : productModel[],
       pageable : any,
       totalElements : Number,
       totalPages : Number
   }[] 
 }
 
-async function getProducts(page:Number, category:String) {
+async function getProducts(page:Number, category:String, sort:String) {
+  const endPoint = 'http://localhost:8080/api/product?page=' 
+  + (page?`${page}`:0) 
+  + (category==='ALL'?'':`&category=${category}`) 
+  + (sort?`&sort=${sort}`:'')
   try {
-    const endPoint = 'http://localhost:8080/api/product?page=' + (page?`${page}`:'0') + (category=='ALL'?'':`&category=${category}`)
     const res = await axios.get(endPoint)
     return res.data;
   } catch (e) {
@@ -26,9 +29,9 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  const { page, category } = req.query
+  const { page, category, sort } = JSON.parse(req.body)
   try {
-    const items = await getProducts(Number(page), String(category))
+    const items = await getProducts(page, category, sort)
     res.status(200).json({ message: 'Get item success', items: items })
   } catch (e) {     
     console.error(e)

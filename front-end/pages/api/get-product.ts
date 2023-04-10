@@ -1,11 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import axios from 'axios'
-import ProductModel from 'model/ProductModel'
+import productModel from 'model/ProductModel'
 
 // API response
 type Data = {
   message : String,
-  data : ProductModel| undefined
+  data : productModel| undefined
 }
 
 async function getProduct(id:number) {

@@ -1,4 +1,4 @@
-type ProductModel = {
+type productModel = {
     id:number,
     name:string,
     imgUrl:string,
@@ -7,4 +7,4 @@ type ProductModel = {
     price:number
 }
 
-export default ProductModel
+export default productModel
