@@ -1,4 +1,4 @@
-import productModel from 'model/productModel'
+import productModel from 'constant/productModel'
 import { useEffect, useState } from 'react'
 import { css } from '@emotion/css'
 import Image from 'next/image'

@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import axios from 'axios'
-import productModel from 'model/productModel'
+import productModel from 'constant/productModel'
 
 type Data = {
   message: String
