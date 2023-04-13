@@ -1,12 +1,9 @@
-import productModel from 'model/ProductModel'
+import productModel from 'model/productModel'
 import { useEffect, useState } from 'react'
 import { css } from '@emotion/css'
 import Image from 'next/image'
 import MyEditor from '../../components/Editor'
-import {
-  Pagination,
-  SegmentedControl,
-} from '@mantine/core'
+import { Button, CloseButton, Input, Pagination, SegmentedControl, StarIcon, TextInput } from '@mantine/core'
 import { EditorState, convertFromRaw } from 'draft-js'
 import { Select } from '@mantine/core'
 
@@ -15,6 +12,8 @@ export default function Products() {
    * currentPage : 현재 페이지수
    * currentCategory : 현재 선택한 카테고리(default : ALL)
    * categories : 카테고리 종류
+   * currentInput : 검색창에 입력된 키워드
+   * searchInput : 현재 적용된 검색어
    * totoalPage : 전체 페이지수
    * products : 상품 List
    */
@@ -24,28 +23,35 @@ export default function Products() {
   const [categories, setCategories] = useState<
     { label: String; value: String }[]
   >([])
+  const [currentKeyword, setCurrentKeyword] = useState<string>('')
+  const [currentSearchType, setCurrentSearchType] = useState<string | null>(null)
   const [totoalPage, setTotalPage] = useState<number>(0)
   const [products, setProducts] = useState<productModel[]>([])
 
-  const filters = [
+  const searchSelectMenu = [
+    { value: 'NAME', label: '상품명' },
+    { value: 'HASHTAG', label: '해시태그' },
+    { value: 'DESCRIPTION', label: '상품설명' },
+  ]
+
+  const sortSelectMenu = [
     { value: 'price,asc', label: '가격 낮은 순' },
     { value: 'price,desc', label: '가격 높은 순' },
     { value: 'createdAt,asc', label: '최신 순' },
   ]
 
-  // Get category
-  useEffect(() => {
-    fetch('/api/get-category')
-    .then((res) => res.json())
-    .then((data) => setCategories([{label:'전체', value : 'ALL'}, ...data.items]))
-    .catch(console.error)
-  }, [])
-
-  // When end point change, Get product
-  useEffect(()=>{    
+  const handleCurrentInput = (e: React.FormEvent<HTMLInputElement>) => setCurrentKeyword(e.currentTarget.value)
+  const handleDeleteCurrentKeyword = () => {setCurrentKeyword('')}
+  const getProducts = () => {
     fetch('/api/get-products', {
-      method:"POST",
-      body : JSON.stringify({sort:currentSort, page:currentPage, category:currentCategory})
+      method: 'POST',
+      body: JSON.stringify({
+        sort: currentSort,
+        page: currentPage,
+        category: currentCategory,
+        keyword:currentKeyword,
+        searchType :currentSearchType
+      }),
     })
       .then((res) => res.json())
       .then((data) => {
@@ -53,6 +59,28 @@ export default function Products() {
         setTotalPage(data.items.totalPages)
       })
       .catch(console.error)
+  }
+
+  const getCategories = () => {
+    fetch('/api/get-category')
+    .then((res) => res.json())
+    .then((data) =>
+      setCategories([{ label: '전체', value: 'ALL' }, ...data.items])
+    )
+    .catch(console.error)
+  }
+
+  useEffect(() => {
+    getCategories()
+  }, [])
+
+  useEffect(()=>{
+    setCurrentPage(1)
+  }, [currentCategory])
+
+  // When end point change, Get product
+  useEffect(() => {
+    getProducts()
   }, [currentPage, currentCategory, currentSort])
 
   return (
@@ -66,6 +94,53 @@ export default function Products() {
         Products
       </h1>
 
+      {/* Search */}
+      <div
+        className={css`
+          align-items: center;
+          display: flex;
+        `}
+      >
+        <div
+          className={css`
+            margin-right: 10px;
+          `}
+        >
+          <Select
+            placeholder="Search"
+            data={searchSelectMenu}
+            value={currentSearchType}
+            onChange={setCurrentSearchType}
+            clearable
+          />
+        </div>
+        <div
+          className={css`
+            min-width: 50%;
+            margin-right: 10px;
+          `}
+        >
+          <Input
+            value={currentKeyword}
+            onChange={handleCurrentInput}
+            rightSection={
+              <CloseButton
+                onClick={handleDeleteCurrentKeyword}
+                aria-label="Close modal"
+              />
+            }
+            placeholder='검색어를 입력하세요'
+          />
+        </div>
+        <div>
+          <Button
+            onClick={getProducts}
+          >
+            Search
+          </Button>
+        </div>
+      </div>
+
       {/* Sort */}
       <div
         className={css`
@@ -77,14 +152,18 @@ export default function Products() {
           clearable
           label="Sort"
           placeholder="Sort"
-          data={filters}
+          data={sortSelectMenu}
           value={currentSort}
           onChange={setCurrentSort}
         />
       </div>
 
       {/* Category */}
-      <div className={css`margin-bottom:20px;`}>
+      <div
+        className={css`
+          margin-bottom: 20px;
+        `}
+      >
         <SegmentedControl
           value={currentCategory}
           onChange={setCurrentCategory}
@@ -92,7 +171,7 @@ export default function Products() {
             ...categories.map((cat) => ({
               label: String(cat.label),
               value: String(cat.value),
-            })),  
+            })),
           ]}
           color="dark"
           defaultChecked={true}

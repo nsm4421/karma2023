@@ -1,4 +1,4 @@
-package com.karma.commerce.domain;
+package com.karma.commerce.domain.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,6 +1,6 @@
 package com.karma.commerce.controller.response;
 
-import com.karma.commerce.domain.Category;
+import com.karma.commerce.domain.constant.Category;
 import com.karma.commerce.domain.ProductDto;
 import lombok.Data;
 

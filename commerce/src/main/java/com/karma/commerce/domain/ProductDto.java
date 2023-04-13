@@ -1,5 +1,7 @@
 package com.karma.commerce.domain;
 
+import com.karma.commerce.domain.constant.Category;
+
 import java.time.LocalDateTime;
 
 public record ProductDto(
