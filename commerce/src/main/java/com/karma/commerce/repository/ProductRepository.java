@@ -22,11 +22,17 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
     Page<ProductEntity> findByNameContaining(String name, Pageable pageable);
 
     @Transactional(readOnly = true)
+    Page<ProductEntity> findByHashtags(String hashtag, Pageable pageable);
+
+    @Transactional(readOnly = true)
     Page<ProductEntity> findByDescriptionContaining(String description, Pageable pageable);
 
     @Transactional(readOnly = true)
     Page<ProductEntity> findByNameContainingAndCategory(String name, Category category, Pageable pageable);
 
     @Transactional(readOnly = true)
-    Page<ProductEntity> findByDescriptionAndCategory(String description, Category category, Pageable pageable);
+    Page<ProductEntity> findByDescriptionContainingAndCategory(String description, Category category, Pageable pageable);
+
+    @Transactional(readOnly = true)
+    Page<ProductEntity> findByHashtagsAndCategory(String hashtag, Category category, Pageable pageable);
 }

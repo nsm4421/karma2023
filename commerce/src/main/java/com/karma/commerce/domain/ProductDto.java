@@ -3,6 +3,7 @@ package com.karma.commerce.domain;
 import com.karma.commerce.domain.constant.Category;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 public record ProductDto(
         Long id,
@@ -11,6 +12,7 @@ public record ProductDto(
         Category category,
         String description,
         Long price,
+        Set<String> hashtags,
         LocalDateTime createdAt,
         String createdBy,
         LocalDateTime modifiedAt,
@@ -21,7 +23,8 @@ public record ProductDto(
             String imgUrl,
             Category category,
             String description,
-            Long price
+            Long price,
+            Set<String> hashtags
     ){
         return new ProductDto(
                 null,
@@ -30,6 +33,7 @@ public record ProductDto(
                 category,
                 description,
                 price,
+                hashtags,
                 null,
                 null,
                 null,
@@ -44,6 +48,7 @@ public record ProductDto(
                 entity.getCategory(),
                 entity.getDescription(),
                 entity.getPrice(),
+                entity.getHashtags(),
                 entity.getCreatedAt(),
                 entity.getCreatedBy(),
                 entity.getModifiedAt(),

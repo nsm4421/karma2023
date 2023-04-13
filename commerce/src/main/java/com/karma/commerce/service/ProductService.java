@@ -21,36 +21,42 @@ public class ProductService {
 
     public Page<ProductDto> getProducts(Category category, SearchType searchType, String keyword, Pageable pageable) {
         // no category & no search
-        if (category == null && searchType == null){
+        if (category == null && searchType == null) {
             return productRepository.findAll(pageable).map(ProductDto::from);
         }
         // category & no search
-        if (searchType == null){
+        if (searchType == null) {
             return productRepository.findByCategory(category, pageable).map(ProductDto::from);
         }
         // no category & search
-        if (category == null){
+        if (category == null) {
             return switch (searchType) {
                 case NAME -> productRepository.findByNameContaining(keyword, pageable).map(ProductDto::from);
-                case DESCRIPTION -> productRepository.findByDescriptionContaining(keyword, pageable).map(ProductDto::from);
+                case DESCRIPTION ->
+                        productRepository.findByDescriptionContaining(keyword, pageable).map(ProductDto::from);
+                case HASHTAG -> productRepository.findByHashtags(keyword, pageable).map(ProductDto::from);
             };
         }
         // category & search
         return switch (searchType) {
-            case NAME -> productRepository.findByNameContainingAndCategory(keyword, category, pageable).map(ProductDto::from);
-            case DESCRIPTION -> productRepository.findByDescriptionAndCategory(keyword, category, pageable).map(ProductDto::from);
+            case NAME ->
+                    productRepository.findByNameContainingAndCategory(keyword, category, pageable).map(ProductDto::from);
+            case DESCRIPTION ->
+                    productRepository.findByDescriptionContainingAndCategory(keyword, category, pageable).map(ProductDto::from);
+            case HASHTAG ->
+                    productRepository.findByHashtagsAndCategory(keyword, category, pageable).map(ProductDto::from);
         };
     }
 
     @Transactional(readOnly = true)
-    public ProductDto getProduct(Long id){
-        return ProductDto.from(productRepository.findById(id).orElseThrow(()->{
+    public ProductDto getProduct(Long id) {
+        return ProductDto.from(productRepository.findById(id).orElseThrow(() -> {
             throw new EntityNotFoundException("Invalid product id is given");
         }));
     }
 
-    public ProductDto updateProduct(Long id, String description){
-        ProductEntity entity = productRepository.findById(id).orElseThrow(()->{
+    public ProductDto updateProduct(Long id, String description) {
+        ProductEntity entity = productRepository.findById(id).orElseThrow(() -> {
             throw new EntityNotFoundException("Invalid product id is given");
         });
         entity.setDescription(description);
