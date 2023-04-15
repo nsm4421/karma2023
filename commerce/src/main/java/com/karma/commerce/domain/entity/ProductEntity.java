@@ -1,5 +1,6 @@
-package com.karma.commerce.domain;
+package com.karma.commerce.domain.entity;
 
+import com.karma.commerce.domain.AuditingFields;
 import com.karma.commerce.domain.constant.Category;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -15,7 +16,7 @@ import java.util.Set;
 @Table(name = "product")
 @SQLDelete(sql = "UPDATE product SET removed_at = NOW() WHERE id=?")
 @Where(clause = "removed_at is NULL")
-public class ProductEntity extends AuditingFields{
+public class ProductEntity extends AuditingFields {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false) @Setter
@@ -30,4 +31,19 @@ public class ProductEntity extends AuditingFields{
     private Set<String> hashtags = new LinkedHashSet<>();
     @Column(name="price") @Setter
     private Long price;
+
+    private ProductEntity(String name, String imgUrl, Category category, String description, Set<String> hashtags, Long price) {
+        this.name = name;
+        this.imgUrl = imgUrl;
+        this.category = category;
+        this.description = description;
+        this.hashtags = hashtags;
+        this.price = price;
+    }
+
+    protected ProductEntity(){}
+
+    public static ProductEntity of(String name, String imgUrl, Category category, String description, Set<String> hashtags, Long price){
+        return new ProductEntity(name, imgUrl, category, description, hashtags, price);
+    }
 }

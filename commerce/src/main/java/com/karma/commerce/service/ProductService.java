@@ -1,8 +1,8 @@
 package com.karma.commerce.service;
 
 import com.karma.commerce.domain.constant.Category;
-import com.karma.commerce.domain.ProductDto;
-import com.karma.commerce.domain.ProductEntity;
+import com.karma.commerce.domain.dto.ProductDto;
+import com.karma.commerce.domain.entity.ProductEntity;
 import com.karma.commerce.domain.constant.SearchType;
 import com.karma.commerce.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;

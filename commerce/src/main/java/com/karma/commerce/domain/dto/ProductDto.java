@@ -1,6 +1,7 @@
-package com.karma.commerce.domain;
+package com.karma.commerce.domain.dto;
 
 import com.karma.commerce.domain.constant.Category;
+import com.karma.commerce.domain.entity.ProductEntity;
 
 import java.time.LocalDateTime;
 import java.util.Set;

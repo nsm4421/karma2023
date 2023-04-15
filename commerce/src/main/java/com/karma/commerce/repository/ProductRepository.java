@@ -1,7 +1,7 @@
 package com.karma.commerce.repository;
 
 import com.karma.commerce.domain.constant.Category;
-import com.karma.commerce.domain.ProductEntity;
+import com.karma.commerce.domain.entity.ProductEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
