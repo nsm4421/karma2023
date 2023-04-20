@@ -19,4 +19,12 @@ Content-Type: application/json
     "password":"test_password"
 }
 
-
+### modify
+PUT http://localhost:8080/api/user/modify
+Content-Type: application/json
+Authorization: Bearer 
+{
+    "password":"test_password",
+    "email":"changed_email",
+    "memo":"changed_memo"
+}

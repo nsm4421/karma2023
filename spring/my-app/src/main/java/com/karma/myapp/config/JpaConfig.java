@@ -1,6 +1,5 @@
 package com.karma.myapp.config;
 
-import com.karma.myapp.domain.dto.CustomPrincipal;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;

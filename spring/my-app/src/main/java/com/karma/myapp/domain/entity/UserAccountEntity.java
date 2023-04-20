@@ -2,6 +2,7 @@ package com.karma.myapp.domain.entity;
 
 import com.karma.myapp.domain.constant.UserRole;
 import com.karma.myapp.domain.constant.UserStatus;
+import com.karma.myapp.domain.dto.CustomPrincipal;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -114,6 +115,22 @@ public class UserAccountEntity {
                 null,
                 null,
                 null
+        );
+    }
+
+    // principal → entity
+    public static UserAccountEntity from(CustomPrincipal principal){
+        return new UserAccountEntity(
+                principal.getId(),
+                principal.getUsername(),
+                principal.getEmail(),
+                principal.getPassword(),
+                principal.getUserRole(),
+                principal.getUserStatus(),
+                principal.getMemo(),
+                principal.getCreatedAt(),
+                principal.getModifiedAt(),
+                principal.getRemovedAt()
         );
     }
 }

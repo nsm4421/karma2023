@@ -10,11 +10,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +33,6 @@ public class UserAccountService {
     // JWT 만료 시간
     @Value("${jwt.expire-ms}")
     private Long expireMs;
-
 
     /**
      * Email 회원가입
@@ -73,6 +69,7 @@ public class UserAccountService {
      * @param password (raw) 비밀전호
      * @return token(JWT)
      */
+    @Transactional(readOnly = true)
     public String login(String username, String password) {
         // check user exist
         UserAccountEntity entity = userAccountRepository.findByUsername(username).orElseThrow(() -> {
@@ -96,11 +93,28 @@ public class UserAccountService {
                 .compact();
     }
 
+    /**
+     * 유저 정보 수정
+     *
+     * @param principal 로그인한 유저 principal
+     * @param email     수정할 이메일
+     * @param password  수정할 비밀번호
+     * @param memo      수정할 메모
+     * @return UserAccount Dto
+     */
+    public UserAccountDto modifyUserInfo(CustomPrincipal principal, String email, String password, String memo) {
+        UserAccountEntity entity = UserAccountEntity.from(principal);
+        entity.setEmail(email);
+        entity.setPassword(passwordEncoder.encode(password));
+        entity.setMemo(memo);
+        return UserAccountDto.from(userAccountRepository.save(entity));
+    }
+
     @Transactional(readOnly = true)
     public CustomPrincipal loadByUsername(String username) {
         return CustomPrincipal.from(
                 userAccountRepository.findByUsername(username).orElseThrow(() -> {
-                    throw new UsernameNotFoundException(String.format("Username %s is not founded", username));
+                    throw CustomException.of(CustomErrorCode.ENTITY_NOT_FOUND, String.format("Username %s not exists", username));
                 }));
     }
 }
