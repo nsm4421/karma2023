@@ -9,7 +9,6 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -46,21 +45,20 @@ public class ArticleEntity extends BaseEntity {
     @Setter
     private String content;
     @ToString.Exclude
-    @ElementCollection(fetch = FetchType.EAGER)
-    @Column(name = "hashtag")
-    @Setter
-    private Set<String> hashtags = new HashSet<String>();
+    @OrderBy("created_at DESC")
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
+    private final Set<HashtagEntity> hashtags = new LinkedHashSet<>();
+
     @ToString.Exclude
     @OrderBy("created_at DESC")
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
     private final Set<ArticleCommentEntity> comments = new LinkedHashSet<>();
 
-    private ArticleEntity(Long id, UserAccountEntity user, String title, String content, Set<String> hashtags) {
+    private ArticleEntity(Long id, UserAccountEntity user, String title, String content) {
         this.id = id;
         this.user = user;
         this.title = title;
         this.content = content;
-        this.hashtags = hashtags;
     }
 
     protected ArticleEntity() {
@@ -71,15 +69,15 @@ public class ArticleEntity extends BaseEntity {
             String title,
             String content
     ) {
-        return new ArticleEntity(null, user, title, content, Set.of());
+        return new ArticleEntity(null, user, title, content);
     }
 
     public static ArticleEntity of(
             UserAccountEntity user,
             String title,
             String content,
-            Set<String> hashtags
+            Set<HashtagEntity> hashtags
     ) {
-        return new ArticleEntity(null, user, title, content, hashtags);
+        return new ArticleEntity(null, user, title, content);
     }
 }

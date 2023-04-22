@@ -4,13 +4,14 @@ import com.karma.myapp.domain.entity.ArticleEntity;
 
 import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public record ArticleDto(
         Long id,
         UserAccountDto user,
         String title,
         String content,
-        Set<String> hashtags,
+        Set<HashtagDto> hashtags,
         LocalDateTime createdAt,
         String createdBy,
         LocalDateTime modifiedAt,
@@ -40,7 +41,7 @@ public record ArticleDto(
                 UserAccountDto.from(entity.getUser()),
                 entity.getTitle(),
                 entity.getContent(),
-                entity.getHashtags(),
+                entity.getHashtags().stream().map(HashtagDto::from).collect(Collectors.toSet()),
                 entity.getCreatedAt(),
                 entity.getCreatedBy(),
                 entity.getModifiedAt(),

@@ -73,7 +73,7 @@ public class ArticleController {
     ) {
         return CustomResponse.success(
                 GetArticleResponse.from(
-                        articleService.writeArticle(principal, req.getTitle(), req.getContent(), req.getHashtags())),
+                        articleService.writeArticle(principal, req.getTitle(), req.getContent())),
                 "write article success"
         );
     }
@@ -91,7 +91,7 @@ public class ArticleController {
             @AuthenticationPrincipal CustomPrincipal principal
     ) {
         return CustomResponse.success(
-                GetArticleResponse.from(articleService.modifyArticle(principal, req.getArticleId(), req.getTitle(), req.getContent(), req.getHashtags())),
+                GetArticleResponse.from(articleService.modifyArticle(principal, req.getArticleId(), req.getTitle(), req.getContent())),
                 "modify article success"
         );
     }

@@ -14,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -63,17 +62,15 @@ public class ArticleService {
      * @param principal 로그인한 유저의 인증정보
      * @param title     제목
      * @param content   본문
-     * @param hashtags  해시태그
      * @return
      */
     @Transactional
-    public ArticleDto writeArticle(CustomPrincipal principal, String title, String content, Set<String> hashtags) {
+    public ArticleDto writeArticle(CustomPrincipal principal, String title, String content) {
         return ArticleDto.from(articleRepository.save(
                 ArticleEntity.of(
                         UserAccountEntity.from(principal),
                         title,
-                        content,
-                        hashtags
+                        content
                 )));
     }
 
@@ -84,11 +81,10 @@ public class ArticleService {
      * @param articleId 수정할 게시글
      * @param title     수정할 제목
      * @param content   수정할 본문
-     * @param hashtags  수정할 해시태그
      * @return 게시글 Dto
      */
     @Transactional
-    public ArticleDto modifyArticle(CustomPrincipal principal, Long articleId, String title, String content, Set<String> hashtags) {
+    public ArticleDto modifyArticle(CustomPrincipal principal, Long articleId, String title, String content) {
         // get article
         ArticleEntity article = articleRepository.findById(articleId).orElseThrow(() -> {
             throw CustomException.of(CustomErrorCode.ENTITY_NOT_FOUND, String.format("Article with id %s not exists", articleId));
@@ -100,7 +96,6 @@ public class ArticleService {
         }
         article.setTitle(title);
         article.setContent(content);
-        article.setHashtags(hashtags);
         return ArticleDto.from(articleRepository.save(article));
     }
 
