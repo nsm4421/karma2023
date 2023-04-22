@@ -9,7 +9,6 @@ Content-Type: application/json
     "memo":"test_memo"
 }
 
-
 ### login
 POST http://localhost:8080/api/user/login
 Content-Type: application/json
@@ -19,12 +18,51 @@ Content-Type: application/json
     "password":"test_password"
 }
 
-### modify
+### modify user info
 PUT http://localhost:8080/api/user/modify
 Content-Type: application/json
-Authorization: Bearer 
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3RfdXNlcm5hbWUiLCJpYXQiOjE2ODIxNTEzMTEsImV4cCI6MTY4MjE1MjMxMX0.NdiAtZ3uDqhne6YxH8WvDeOEuPBIExHNIKw0_myRwsY
+
 {
     "password":"test_password",
     "email":"changed_email",
     "memo":"changed_memo"
 }
+
+
+### write article
+POST http://localhost:8080/api/article
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3RfdXNlcm5hbWUiLCJpYXQiOjE2ODIxNTEzMTEsImV4cCI6MTY4MjE1MjMxMX0.NdiAtZ3uDqhne6YxH8WvDeOEuPBIExHNIKw0_myRwsY
+
+{
+    "title":"test_title",
+    "content":"test_content",
+    "hashtags":["test_h1", "test_h2", "test_h3"]
+}
+
+### update article
+PUT http://localhost:8080/api/article
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3RfdXNlcm5hbWUiLCJpYXQiOjE2ODIxNTEzMTEsImV4cCI6MTY4MjE1MjMxMX0.NdiAtZ3uDqhne6YxH8WvDeOEuPBIExHNIKw0_myRwsY
+
+{
+    "articleId":1,
+    "title":"modified_title",
+    "content":"modified_content",
+    "hashtags":["modified_h1", "test_h2", "test_h3"]
+}
+
+### Delete article
+DELETE  http://localhost:8080/api/article/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3RfdXNlcm5hbWUiLCJpYXQiOjE2ODIxNTEzMTEsImV4cCI6MTY4MjE1MjMxMX0.NdiAtZ3uDqhne6YxH8WvDeOEuPBIExHNIKw0_myRwsY
+
+### Get article
+GET http://localhost:8080/api/article/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3RfdXNlcm5hbWUiLCJpYXQiOjE2ODIxNTEzMTEsImV4cCI6MTY4MjE1MjMxMX0.NdiAtZ3uDqhne6YxH8WvDeOEuPBIExHNIKw0_myRwsY
+
+### Get articles
+GET http://localhost:8080/api/article
+Content-Type: application/json

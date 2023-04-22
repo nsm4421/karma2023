@@ -38,7 +38,6 @@ public class ArticleEntity extends BaseEntity {
     private Long id;
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id")
-    @Setter
     private UserAccountEntity user;
     @Column(nullable = false)
     @Setter
@@ -47,8 +46,9 @@ public class ArticleEntity extends BaseEntity {
     @Setter
     private String content;
     @ToString.Exclude
-    @ElementCollection(fetch = FetchType.LAZY)
+    @ElementCollection(fetch = FetchType.EAGER)
     @Column(name = "hashtag")
+    @Setter
     private Set<String> hashtags = new HashSet<String>();
     @ToString.Exclude
     @OrderBy("created_at DESC")

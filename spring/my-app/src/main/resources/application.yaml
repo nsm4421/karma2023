@@ -12,7 +12,10 @@ spring:
     password: LOCAL_PASSWORD
   jpa:
     defer-datasource-initialize: true
-    hibernate.ddl-auto: create
+    hibernate:
+      ddl-auto: create
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     open-in-view: false
     show-sql: true
     sql-init-mode: always
@@ -20,6 +23,7 @@ spring:
       hibernate:
         format_sql: true
         default_batch_fetch_size: 100
+
 jwt:
   secret-key: JWT_SECRET_KEY_NEED_TO_CHANGE_AT_PRODUCTION
   expire-ms: 1000000
