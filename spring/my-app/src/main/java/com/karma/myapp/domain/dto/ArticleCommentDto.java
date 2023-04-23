@@ -2,29 +2,34 @@ package com.karma.myapp.domain.dto;
 
 import com.karma.myapp.domain.entity.ArticleCommentEntity;
 
+import java.time.LocalDateTime;
+
 public record ArticleCommentDto(
         Long id,
         ArticleDto article,
         UserAccountDto user,
-        String content
+        String content,
+        Long parentCommentId,
+        LocalDateTime createdAt,
+        String createdBy,
+        LocalDateTime modifiedAt,
+        String modifiedBy,
+        LocalDateTime removedAt
+
 ) {
-    public static ArticleCommentDto of(
-        ArticleDto article,
-        String content
-    ){
-        return new ArticleCommentDto(
-                null,
-                article,
-                article.user(),
-                content
-        );
-    }
-    public static ArticleCommentDto from(ArticleCommentEntity entity){
+    // Entity → Dto
+    public static ArticleCommentDto from(ArticleCommentEntity entity) {
         return new ArticleCommentDto(
                 entity.getId(),
                 ArticleDto.from(entity.getArticle()),
                 UserAccountDto.from(entity.getUser()),
-                entity.getContent()
+                entity.getContent(),
+                entity.getParentCommentId(),
+                entity.getCreatedAt(),
+                entity.getCreatedBy(),
+                entity.getModifiedAt(),
+                entity.getModifiedBy(),
+                entity.getRemovedAt()
         );
     }
 }

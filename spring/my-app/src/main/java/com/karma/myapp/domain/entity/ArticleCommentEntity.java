@@ -9,6 +9,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+
 @Entity
 @Getter
 @ToString(callSuper = true)
@@ -22,26 +23,42 @@ public class ArticleCommentEntity extends BaseEntity {
      * article : 게시글
      * user : 댓쓴이
      * content : 댓글내용
+     * parentCommentId : 부모 댓글의 id (댓글의 경우 null, 대댓글의 경우 댓글의 id)
      */
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne(optional = false) @Setter
+    @ManyToOne(optional = false)
+    @Setter
     private ArticleEntity article;          // ArticleEntity.java 파일에서 mapped.by에 사용한 명칭과 동일하게 article으로 작명
-    @ManyToOne(optional = false) @JoinColumn(name = "user_id") @Setter
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id")
+    @Setter
     private UserAccountEntity user;
-    @Column(nullable = false, columnDefinition = "TEXT") @Setter
+    @Column(nullable = false, columnDefinition = "TEXT")
+    @Setter
     private String content;
 
-    private ArticleCommentEntity(Long id, ArticleEntity article, UserAccountEntity user, String content) {
+    @Setter
+    @Column(updatable = false, name = "parent_comment_id")
+    private Long parentCommentId;
+
+    private ArticleCommentEntity(Long id, ArticleEntity article, UserAccountEntity user, String content, Long parentCommentId) {
         this.id = id;
         this.article = article;
         this.user = user;
         this.content = content;
+        this.parentCommentId = parentCommentId;
     }
 
-    protected ArticleCommentEntity(){}
+    protected ArticleCommentEntity() {
+    }
 
-    public static ArticleCommentEntity of(ArticleEntity article, UserAccountEntity user, String content){
-        return new ArticleCommentEntity(null, article, user, content);
+    public static ArticleCommentEntity of(ArticleEntity article, UserAccountEntity user, String content) {
+        return new ArticleCommentEntity(null, article, user, content, null);
+    }
+
+    public static ArticleCommentEntity of(ArticleEntity article, UserAccountEntity user, String content, Long parentCommentId) {
+        return new ArticleCommentEntity(null, article, user, content, parentCommentId);
     }
 }

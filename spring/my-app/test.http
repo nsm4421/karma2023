@@ -64,5 +64,85 @@ Content-Type: application/json
 Authorization: Bearer [jwt]
 
 ### 게시글 단건 조회
-GET http://localhost:8080/api/article/2
+GET http://localhost:8080/api/article/1
+Content-Type: application/json
+
+
+### 부모 댓글 작성
+POST http://localhost:8080/api/comment
+Content-Type: application/json
+Authorization: Bearer [jwt]
+
+{
+    "articleId" : 1,
+    "parentCommentId": null,
+    "content": "test for parent comment"
+}
+
+### 자식 댓글 작성 1
+POST http://localhost:8080/api/comment
+Content-Type: application/json
+Authorization: Bearer [jwt]
+
+{
+    "articleId" : 1,
+    "parentCommentId": 1,
+    "content": "test for child comment1"
+}
+
+### 자식 댓글 작성 2
+POST http://localhost:8080/api/comment
+Content-Type: application/json
+Authorization: Bearer [jwt]
+
+{
+    "articleId" : 1,
+    "parentCommentId": 1,
+    "content": "test for child comment2"
+}
+
+### 부모 댓글 조회
+GET http://localhost:8080/api/comment?article-id=1
+Content-Type: application/json
+
+### 자식 댓글 조회
+GET http://localhost:8080/api/comment?parent-comment-id=1
+Content-Type: application/json
+
+### 댓글 수정1
+PUT http://localhost:8080/api/comment
+Content-Type: application/json
+Authorization: Bearer [jwt]
+
+{
+    "commentId": 1,
+    "content": "test for modify comment1"
+}
+
+### 댓글 수정2
+PUT http://localhost:8080/api/comment
+Content-Type: application/json
+Authorization: Bearer [jwt]
+
+{
+    "commentId": 2,
+    "content": "test for modify comment2"
+}
+
+### 댓글 삭제
+DELETE http://localhost:8080/api/comment/1
+Content-Type: application/json
+Authorization: Bearer [jwt]
+
+{
+    "commentId": 1,
+    "content": "test for delete comment"
+}
+
+### 부모 댓글 조회
+GET http://localhost:8080/api/comment?article-id=1
+Content-Type: application/json
+
+### 자식 댓글 조회
+GET http://localhost:8080/api/comment?parent-comment-id=1
 Content-Type: application/json

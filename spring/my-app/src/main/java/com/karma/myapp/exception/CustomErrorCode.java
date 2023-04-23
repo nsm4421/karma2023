@@ -12,6 +12,7 @@ public enum CustomErrorCode {
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "password is wrong"),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "Token is invalid"),
     NOT_GRANT(HttpStatus.UNAUTHORIZED, "Not granted access"),
+    INVALID_PARAMETER(HttpStatus.CONFLICT, "Given parameter is invalid"),
     DUPLICATED_USER_INFO(HttpStatus.CONFLICT,"User information is wrong");
     private final HttpStatus httpStatus;
     private final String message;
