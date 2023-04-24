@@ -45,7 +45,7 @@ public class ArticleController {
      */
     @GetMapping
     public CustomResponse<Page<GetArticleResponse>> getArticles(
-            @RequestParam(value = "sort-filed", required = false) String sortField,
+            @RequestParam(value = "sort-field", required = false) String sortField,
             @RequestParam(value = "sort-direction", required = false) SortDirection sortDirection,
             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
             @RequestParam(value = "size", required = false, defaultValue = "20") int size,
