@@ -1,10 +1,13 @@
 package com.karma.myapp.service;
 
+import com.karma.myapp.domain.dto.AlarmDto;
 import com.karma.myapp.domain.dto.CustomPrincipal;
 import com.karma.myapp.domain.dto.UserAccountDto;
+import com.karma.myapp.domain.entity.AlarmEntity;
 import com.karma.myapp.domain.entity.UserAccountEntity;
 import com.karma.myapp.exception.CustomErrorCode;
 import com.karma.myapp.exception.CustomException;
+import com.karma.myapp.repository.AlarmRepository;
 import com.karma.myapp.repository.UserAccountRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -12,6 +15,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +31,9 @@ import java.util.Date;
 public class UserAccountService {
 
     private final UserAccountRepository userAccountRepository;
+    private final AlarmRepository alarmRepository;
     private final PasswordEncoder passwordEncoder;
+
     // JWT 비밀키
     @Value("${jwt.secret-key}")
     private String secretKey;
@@ -108,6 +115,39 @@ public class UserAccountService {
         entity.setPassword(passwordEncoder.encode(password));
         entity.setMemo(memo);
         return UserAccountDto.from(userAccountRepository.save(entity));
+    }
+
+    /**
+     * 알림 가져오기
+     * @param principal 로그인한 유저의 인증정보
+     * @param pageable
+     * @return 알림 page
+     */
+    @Transactional(readOnly = true)
+    public Page<AlarmDto> getAlarms(CustomPrincipal principal, Pageable pageable){
+        UserAccountEntity user = UserAccountEntity.from(principal);
+        return alarmRepository.findByUser(user, pageable).map(AlarmDto::from);
+    }
+
+    /**
+     * 단일 알람 삭제
+     * @param principal 로그인한 유저의 인증 정보
+     * @param alarmId 삭제할 알림 id
+     */
+    public void deleteAlarm(CustomPrincipal principal, Long alarmId){
+        AlarmEntity alarm = alarmRepository.getReferenceById(alarmId);
+        if (!alarm.getUser().equals(UserAccountEntity.from(principal))){
+            throw CustomException.of(CustomErrorCode.NOT_GRANT, "not granted access for alarm");
+        };
+        alarmRepository.deleteById(alarmId);
+    }
+
+    /**
+     * 모든 알림 삭제
+     * @param principal 로그인한 유저의 인증정보
+     */
+    public void deleteAllAlarm(CustomPrincipal principal){
+        alarmRepository.deleteByUser(UserAccountEntity.from(principal));
     }
 
     @Transactional(readOnly = true)

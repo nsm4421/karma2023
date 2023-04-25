@@ -1,12 +1,15 @@
 package com.karma.myapp.service;
 
+import com.karma.myapp.domain.constant.AlarmType;
 import com.karma.myapp.domain.dto.ArticleCommentDto;
 import com.karma.myapp.domain.dto.CustomPrincipal;
+import com.karma.myapp.domain.entity.AlarmEntity;
 import com.karma.myapp.domain.entity.ArticleCommentEntity;
 import com.karma.myapp.domain.entity.ArticleEntity;
 import com.karma.myapp.domain.entity.UserAccountEntity;
 import com.karma.myapp.exception.CustomErrorCode;
 import com.karma.myapp.exception.CustomException;
+import com.karma.myapp.repository.AlarmRepository;
 import com.karma.myapp.repository.ArticleCommentRepository;
 import com.karma.myapp.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Map;
 
 
 @Service
@@ -23,6 +28,7 @@ public class ArticleCommentService {
 
     private final ArticleRepository articleRepository;
     private final ArticleCommentRepository articleCommentRepository;
+    private final AlarmRepository alarmRepository;
 
     /**
      * 댓글 가져오기
@@ -54,6 +60,13 @@ public class ArticleCommentService {
     public ArticleCommentDto writeComment(CustomPrincipal principal, Long articleId, Long parentCommentId, String content) {
         UserAccountEntity user = UserAccountEntity.from(principal);
         ArticleEntity article = articleRepository.getReferenceById(articleId);
+        alarmRepository.save(
+                AlarmEntity.of(
+                        article.getUser(),
+                        AlarmType.NEW_COMMENT_ON_ARTICLE,
+                        String.format("%s write comment as %s", principal.getUsername(), content)
+                )
+        );
         return ArticleCommentDto.from(articleCommentRepository.save(ArticleCommentEntity.of(article, user, content, parentCommentId)));
     }
 
@@ -78,6 +91,7 @@ public class ArticleCommentService {
 
     /**
      * 댓글 삭제
+     *
      * @param principal 로그인한 유저의 인증정보
      * @param commentId 삭제할 댓글의 id
      */
