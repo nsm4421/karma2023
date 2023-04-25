@@ -46,10 +46,10 @@ public class UserAccountService {
     public UserAccountDto signUp(String username, String email, String password, String memo) {
         // check duplicated or not
         userAccountRepository.findByUsername(username).ifPresent(it -> {
-            throw CustomException.of(CustomErrorCode.DUPLICATED_USER_INFO, String.format("Username is duplicated - %s", username));
+            throw CustomException.of(CustomErrorCode.DUPLICATED_ENTITY, String.format("Username is duplicated - %s", username));
         });
         userAccountRepository.findByEmail(email).ifPresent(it -> {
-            throw CustomException.of(CustomErrorCode.DUPLICATED_USER_INFO, String.format("Email is duplicated - %s", email));
+            throw CustomException.of(CustomErrorCode.DUPLICATED_ENTITY, String.format("Email is duplicated - %s", email));
         });
         // save
         return UserAccountDto.from(userAccountRepository.save(

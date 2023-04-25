@@ -21,7 +21,7 @@ Content-Type: application/json
 ### 회원정보 수정
 PUT http://localhost:8080/api/user/modify
 Content-Type: application/json
-Authorization: Bearer [jwt]
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3RfdXNlcm5hbWUiLCJpYXQiOjE2ODI0MjE2MTUsImV4cCI6MTY4MjQyMjYxNX0.NsfqidRvNJgT3PJ1rSaQ-MuW8mSu0JfFJHrYq_xknkE
 
 {
     "password":"test_password",
@@ -33,7 +33,7 @@ Authorization: Bearer [jwt]
 ### 게시글 작성
 POST http://localhost:8080/api/article
 Content-Type: application/json
-Authorization: Bearer [jwt]
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3RfdXNlcm5hbWUiLCJpYXQiOjE2ODI0MjE2MTUsImV4cCI6MTY4MjQyMjYxNX0.NsfqidRvNJgT3PJ1rSaQ-MuW8mSu0JfFJHrYq_xknkE
 
 {
     "title":"test_title",
@@ -44,7 +44,7 @@ Authorization: Bearer [jwt]
 ### 게시글 수정
 PUT http://localhost:8080/api/article
 Content-Type: application/json
-Authorization: Bearer [jwt]
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3RfdXNlcm5hbWUiLCJpYXQiOjE2ODI0MjE2MTUsImV4cCI6MTY4MjQyMjYxNX0.NsfqidRvNJgT3PJ1rSaQ-MuW8mSu0JfFJHrYq_xknkE
 
 {
     "articleId":1,
@@ -56,12 +56,12 @@ Authorization: Bearer [jwt]
 ### 게시글 삭제
 DELETE  http://localhost:8080/api/article/1
 Content-Type: application/json
-Authorization: Bearer [jwt]
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3RfdXNlcm5hbWUiLCJpYXQiOjE2ODI0MjE2MTUsImV4cCI6MTY4MjQyMjYxNX0.NsfqidRvNJgT3PJ1rSaQ-MuW8mSu0JfFJHrYq_xknkE
 
 ### 게시글 다건 조회
 GET http://localhost:8080/api/article
 Content-Type: application/json
-Authorization: Bearer [jwt]
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3RfdXNlcm5hbWUiLCJpYXQiOjE2ODI0MjE2MTUsImV4cCI6MTY4MjQyMjYxNX0.NsfqidRvNJgT3PJ1rSaQ-MuW8mSu0JfFJHrYq_xknkE
 
 ### 게시글 단건 조회
 GET http://localhost:8080/api/article/1
@@ -71,7 +71,7 @@ Content-Type: application/json
 ### 부모 댓글 작성
 POST http://localhost:8080/api/comment
 Content-Type: application/json
-Authorization: Bearer [jwt]
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3RfdXNlcm5hbWUiLCJpYXQiOjE2ODI0MjE2MTUsImV4cCI6MTY4MjQyMjYxNX0.NsfqidRvNJgT3PJ1rSaQ-MuW8mSu0JfFJHrYq_xknkE
 
 {
     "articleId" : 1,
@@ -82,7 +82,7 @@ Authorization: Bearer [jwt]
 ### 자식 댓글 작성 1
 POST http://localhost:8080/api/comment
 Content-Type: application/json
-Authorization: Bearer [jwt]
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3RfdXNlcm5hbWUiLCJpYXQiOjE2ODI0MjE2MTUsImV4cCI6MTY4MjQyMjYxNX0.NsfqidRvNJgT3PJ1rSaQ-MuW8mSu0JfFJHrYq_xknkE
 
 {
     "articleId" : 1,
@@ -93,7 +93,7 @@ Authorization: Bearer [jwt]
 ### 자식 댓글 작성 2
 POST http://localhost:8080/api/comment
 Content-Type: application/json
-Authorization: Bearer [jwt]
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3RfdXNlcm5hbWUiLCJpYXQiOjE2ODI0MjE2MTUsImV4cCI6MTY4MjQyMjYxNX0.NsfqidRvNJgT3PJ1rSaQ-MuW8mSu0JfFJHrYq_xknkE
 
 {
     "articleId" : 1,
@@ -112,7 +112,7 @@ Content-Type: application/json
 ### 댓글 수정1
 PUT http://localhost:8080/api/comment
 Content-Type: application/json
-Authorization: Bearer [jwt]
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3RfdXNlcm5hbWUiLCJpYXQiOjE2ODI0MjE2MTUsImV4cCI6MTY4MjQyMjYxNX0.NsfqidRvNJgT3PJ1rSaQ-MuW8mSu0JfFJHrYq_xknkE
 
 {
     "commentId": 1,
@@ -122,7 +122,7 @@ Authorization: Bearer [jwt]
 ### 댓글 수정2
 PUT http://localhost:8080/api/comment
 Content-Type: application/json
-Authorization: Bearer [jwt]
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3RfdXNlcm5hbWUiLCJpYXQiOjE2ODI0MjE2MTUsImV4cCI6MTY4MjQyMjYxNX0.NsfqidRvNJgT3PJ1rSaQ-MuW8mSu0JfFJHrYq_xknkE
 
 {
     "commentId": 2,
@@ -132,7 +132,7 @@ Authorization: Bearer [jwt]
 ### 댓글 삭제
 DELETE http://localhost:8080/api/comment/1
 Content-Type: application/json
-Authorization: Bearer [jwt]
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3RfdXNlcm5hbWUiLCJpYXQiOjE2ODI0MjE2MTUsImV4cCI6MTY4MjQyMjYxNX0.NsfqidRvNJgT3PJ1rSaQ-MuW8mSu0JfFJHrYq_xknkE
 
 {
     "commentId": 1,
@@ -145,4 +145,18 @@ Content-Type: application/json
 
 ### 자식 댓글 조회
 GET http://localhost:8080/api/comment?parent-comment-id=1
+Content-Type: application/json
+
+### 좋아요
+POST http://localhost:8080/api/emotion
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3RfdXNlcm5hbWUiLCJpYXQiOjE2ODI0MjE2MTUsImV4cCI6MTY4MjQyMjYxNX0.NsfqidRvNJgT3PJ1rSaQ-MuW8mSu0JfFJHrYq_xknkE
+
+{
+    "emotion":"LIKE",
+    "articleId":1
+}
+
+### 좋아요 개수 가져오기
+GET http://localhost:8080/api/emotion?article-id=1
 Content-Type: application/json
