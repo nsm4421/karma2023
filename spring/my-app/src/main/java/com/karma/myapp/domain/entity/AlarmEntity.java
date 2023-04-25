@@ -2,7 +2,6 @@ package com.karma.myapp.domain.entity;
 
 import com.karma.myapp.domain.constant.AlarmType;
 import com.karma.myapp.domain.constant.BaseEntity;
-import com.karma.myapp.domain.constant.EmotionConst;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,6 +9,8 @@ import lombok.ToString;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -28,6 +29,7 @@ public class AlarmEntity extends BaseEntity {
     @Enumerated(value = EnumType.STRING)
     @Column(name = "alarm_type", nullable = false)
     private AlarmType alarmType;
+    @Setter
     private String message;
     @Column(columnDefinition = "json")
     private String memo;
@@ -49,5 +51,17 @@ public class AlarmEntity extends BaseEntity {
 
     public static AlarmEntity of(UserAccountEntity user, AlarmType alarmType, String message, String memo) {
         return new AlarmEntity(null, user, alarmType, message, memo);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AlarmEntity that)) return false;
+        return this.getId() != null && this.getId().equals(that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

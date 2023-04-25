@@ -10,6 +10,8 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.util.Objects;
+
 @Entity
 @Getter
 @ToString(callSuper = true)
@@ -38,5 +40,17 @@ public class EmotionEntity extends BaseEntity {
 
     public static EmotionEntity of(EmotionConst emotion, UserAccountEntity user, ArticleEntity article){
         return new EmotionEntity(null, emotion, user, article);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof EmotionEntity that)) return false;
+        return this.getId() != null && this.getId().equals(that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

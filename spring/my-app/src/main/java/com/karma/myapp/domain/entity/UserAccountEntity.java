@@ -41,25 +41,34 @@ public class UserAccountEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true) @Setter
+    @Column(unique = true)
+    @Setter
     private String username;
-    @Column @Setter
+    @Column
+    @Setter
     private String email;
-    @Column @Setter
+    @Column
+    @Setter
     private String password;
-    @Enumerated(EnumType.STRING) @Setter
+    @Enumerated(EnumType.STRING)
+    @Setter
     private UserRole userRole = UserRole.USER;
-    @Enumerated(EnumType.STRING) @Setter
+    @Enumerated(EnumType.STRING)
+    @Setter
     private UserStatus userStatus = UserStatus.ACTIVE;
-    @Column(columnDefinition = "TEXT") @Setter
+    @Column(columnDefinition = "TEXT")
+    @Setter
     private String memo;
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @CreatedDate
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @CreatedDate
     @Column(updatable = false, name = "created_at")
     private LocalDateTime createdAt;
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @LastModifiedDate
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @LastModifiedDate
     @Column(name = "modified_at")
     private LocalDateTime modifiedAt;
-    @Column(name = "removed_at") @Setter
+    @Column(name = "removed_at")
+    @Setter
     private LocalDateTime removedAt;
 
     private UserAccountEntity(Long id, String username, String email, String password, UserRole userRole, UserStatus userStatus, String memo, LocalDateTime createdAt, LocalDateTime modifiedAt, LocalDateTime removedAt) {
@@ -75,7 +84,8 @@ public class UserAccountEntity {
         this.removedAt = removedAt;
     }
 
-    protected UserAccountEntity(){}
+    protected UserAccountEntity() {
+    }
 
     public static UserAccountEntity of(
             String username,
@@ -84,7 +94,7 @@ public class UserAccountEntity {
             String memo,
             UserRole userRole,
             UserStatus userStatus
-    ){
+    ) {
         return new UserAccountEntity(
                 null,
                 username,
@@ -104,7 +114,7 @@ public class UserAccountEntity {
             String email,
             String password,
             String memo
-    ){
+    ) {
         return new UserAccountEntity(
                 null,
                 username,
@@ -120,7 +130,7 @@ public class UserAccountEntity {
     }
 
     // principal → entity
-    public static UserAccountEntity from(CustomPrincipal principal){
+    public static UserAccountEntity from(CustomPrincipal principal) {
         return new UserAccountEntity(
                 principal.getId(),
                 principal.getUsername(),
@@ -138,9 +148,8 @@ public class UserAccountEntity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UserAccountEntity entity = (UserAccountEntity) o;
-        return id.equals(entity.id);
+        if (!(o instanceof UserAccountEntity that)) return false;
+        return this.getId() != null && this.getId().equals(that.getId());
     }
 
     @Override

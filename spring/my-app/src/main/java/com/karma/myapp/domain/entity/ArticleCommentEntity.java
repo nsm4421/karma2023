@@ -9,6 +9,8 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.util.Objects;
+
 
 @Entity
 @Getter
@@ -60,5 +62,17 @@ public class ArticleCommentEntity extends BaseEntity {
 
     public static ArticleCommentEntity of(ArticleEntity article, UserAccountEntity user, String content, Long parentCommentId) {
         return new ArticleCommentEntity(null, article, user, content, parentCommentId);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ArticleCommentEntity that)) return false;
+        return this.getId() != null && this.getId().equals(that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

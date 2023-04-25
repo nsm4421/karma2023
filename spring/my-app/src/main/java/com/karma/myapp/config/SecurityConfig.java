@@ -5,8 +5,10 @@ import com.karma.myapp.service.UserAccountService;
 import com.karma.myapp.utils.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -50,9 +52,22 @@ public class SecurityConfig {
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                // TODO : endpoint 별로 요청 허용/제한 설정
                 .authorizeHttpRequests(
-                        auth -> auth.anyRequest().permitAll()
+                        auth -> auth
+                                // static files(html,css,js,favicon...) → permit all
+                                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                                // articles → GET request permit all
+                                .requestMatchers(
+                                        HttpMethod.GET,
+                                        "/api/article", "api/article/*"
+                                ).permitAll()
+                                // sign up, login → POST request permit all
+                                .requestMatchers(
+                                        HttpMethod.POST,
+                                        "/api/user/signup", "api/user/login"
+                                ).permitAll()
+                                // others  → authenticated
+                                .anyRequest().authenticated()
                 )
                 // exception handling
                 .exceptionHandling()
