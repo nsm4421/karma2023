@@ -8,6 +8,7 @@ import com.karma.myapp.domain.entity.UserAccountEntity;
 import com.karma.myapp.exception.CustomErrorCode;
 import com.karma.myapp.exception.CustomException;
 import com.karma.myapp.repository.AlarmRepository;
+import com.karma.myapp.repository.PrincipalRedisRepository;
 import com.karma.myapp.repository.UserAccountRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -31,6 +32,7 @@ import java.util.Date;
 public class UserAccountService {
 
     private final UserAccountRepository userAccountRepository;
+    private final PrincipalRedisRepository principalRedisRepository;
     private final AlarmRepository alarmRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -76,18 +78,17 @@ public class UserAccountService {
      * @param password (raw) 비밀전호
      * @return token(JWT)
      */
-    @Transactional(readOnly = true)
     public String login(String username, String password) {
-        // check user exist
-        UserAccountEntity entity = userAccountRepository.findByUsername(username).orElseThrow(() -> {
-                    throw CustomException.of(CustomErrorCode.ENTITY_NOT_FOUND, String.format("Username not exists - %s", username));
-                }
-        );
+        // get principal
+        CustomPrincipal principal = loadByUsername(username);
 
         // check password
-        if (!passwordEncoder.matches(password, entity.getPassword())) {
+        if (!passwordEncoder.matches(password, principal.getPassword())) {
             throw CustomException.of(CustomErrorCode.INVALID_PASSWORD, "Password is wrong");
         }
+
+        // set principal in redis
+        principalRedisRepository.setPrincipal(principal);
 
         // create access token
         Claims claims = Jwts.claims();
@@ -110,51 +111,69 @@ public class UserAccountService {
      * @return UserAccount Dto
      */
     public UserAccountDto modifyUserInfo(CustomPrincipal principal, String email, String password, String memo) {
-        UserAccountEntity entity = UserAccountEntity.from(principal);
-        entity.setEmail(email);
-        entity.setPassword(passwordEncoder.encode(password));
-        entity.setMemo(memo);
-        return UserAccountDto.from(userAccountRepository.save(entity));
+        // modify principal
+        principal.setEmail(email);
+        principal.setPassword(passwordEncoder.encode(password));
+        principal.setMemo(memo);
+
+        // set principal in redis
+        principalRedisRepository.setPrincipal(principal);
+
+        // save in DB
+        return UserAccountDto.from(userAccountRepository.save(UserAccountEntity.from(principal)));
     }
 
     /**
      * 알림 가져오기
+     *
      * @param principal 로그인한 유저의 인증정보
      * @param pageable
      * @return 알림 page
      */
     @Transactional(readOnly = true)
-    public Page<AlarmDto> getAlarms(CustomPrincipal principal, Pageable pageable){
+    public Page<AlarmDto> getAlarms(CustomPrincipal principal, Pageable pageable) {
         UserAccountEntity user = UserAccountEntity.from(principal);
         return alarmRepository.findByUser(user, pageable).map(AlarmDto::from);
     }
 
     /**
      * 단일 알람 삭제
+     *
      * @param principal 로그인한 유저의 인증 정보
-     * @param alarmId 삭제할 알림 id
+     * @param alarmId   삭제할 알림 id
      */
-    public void deleteAlarm(CustomPrincipal principal, Long alarmId){
+    public void deleteAlarm(CustomPrincipal principal, Long alarmId) {
         AlarmEntity alarm = alarmRepository.getReferenceById(alarmId);
-        if (!alarm.getUser().equals(UserAccountEntity.from(principal))){
+        if (!alarm.getUser().equals(UserAccountEntity.from(principal))) {
             throw CustomException.of(CustomErrorCode.NOT_GRANT, "not granted access for alarm");
-        };
+        }
+        ;
         alarmRepository.deleteById(alarmId);
     }
 
     /**
      * 모든 알림 삭제
+     *
      * @param principal 로그인한 유저의 인증정보
      */
-    public void deleteAllAlarm(CustomPrincipal principal){
+    public void deleteAllAlarm(CustomPrincipal principal) {
         alarmRepository.deleteByUser(UserAccountEntity.from(principal));
     }
 
     @Transactional(readOnly = true)
     public CustomPrincipal loadByUsername(String username) {
-        return CustomPrincipal.from(
-                userAccountRepository.findByUsername(username).orElseThrow(() -> {
-                    throw CustomException.of(CustomErrorCode.ENTITY_NOT_FOUND, String.format("Username %s not exists", username));
-                }));
+        // find user in redis cache
+        return principalRedisRepository.getUser(username)
+                .orElseGet(() -> CustomPrincipal.from(
+                        // or else find user in DB
+                        userAccountRepository.findByUsername(username)
+                                // or else throw
+                                .orElseThrow(() -> {
+                                    throw CustomException.of(
+                                            CustomErrorCode.ENTITY_NOT_FOUND,
+                                            String.format("Username %s not exists", username)
+                                    );
+                                })
+                ));
     }
 }

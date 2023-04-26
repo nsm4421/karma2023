@@ -17,3 +17,8 @@ services:
       - MYSQL_PASSWORD=LOCAL_PASSWORD
       - MYSQL_ROOT_PASSWORD=LOCAL_PASSWORD
       - TZ=ASIA/SEOUL
+  # redis
+  redis:
+    image: redis
+    ports:
+      - 6379:6379

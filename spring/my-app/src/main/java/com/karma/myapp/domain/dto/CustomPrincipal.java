@@ -1,9 +1,15 @@
 package com.karma.myapp.domain.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.karma.myapp.domain.constant.UserRole;
 import com.karma.myapp.domain.constant.UserStatus;
 import com.karma.myapp.domain.entity.UserAccountEntity;
-import lombok.Getter;
+import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,7 +19,8 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Getter
+@Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CustomPrincipal implements UserDetails {
     private Long id;
     private String username;
@@ -22,8 +29,14 @@ public class CustomPrincipal implements UserDetails {
     private UserRole userRole;
     private UserStatus userStatus;
     private String memo;
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime createdAt;
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime modifiedAt;
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime removedAt;
 
     private CustomPrincipal(Long id, String username, String email, String password, UserRole userRole, UserStatus userStatus, String memo, LocalDateTime createdAt, LocalDateTime modifiedAt, LocalDateTime removedAt) {
@@ -39,13 +52,14 @@ public class CustomPrincipal implements UserDetails {
         this.removedAt = removedAt;
     }
 
-    protected CustomPrincipal(){}
+    protected CustomPrincipal() {
+    }
 
-    public static CustomPrincipal of(String username, String email, String password, UserRole userRole, UserStatus userStatus, String memo){
+    public static CustomPrincipal of(String username, String email, String password, UserRole userRole, UserStatus userStatus, String memo) {
         return new CustomPrincipal(null, username, email, password, userRole, userStatus, memo, null, null, null);
     }
 
-    public static CustomPrincipal from(UserAccountEntity entity){
+    public static CustomPrincipal from(UserAccountEntity entity) {
         return new CustomPrincipal(
                 entity.getId(),
                 entity.getUsername(),
@@ -61,6 +75,7 @@ public class CustomPrincipal implements UserDetails {
     }
 
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Stream.of(userRole)
                 .map(UserRole::getName)
@@ -69,22 +84,26 @@ public class CustomPrincipal implements UserDetails {
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonExpired() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonLocked() {
         return !userStatus.equals(UserStatus.BLOCKED);
     }
 
     @Override
+    @JsonIgnore
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isEnabled() {
-        return removedAt==null && !userStatus.equals(UserStatus.BLOCKED);
+        return removedAt == null && !userStatus.equals(UserStatus.BLOCKED);
     }
 }
