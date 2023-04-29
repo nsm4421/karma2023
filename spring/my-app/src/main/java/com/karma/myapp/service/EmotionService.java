@@ -86,7 +86,10 @@ public class EmotionService {
                 case DISLIKE ->
                         String.format("User %s hate your post with title %s", user.getUsername(), article.getTitle());
             };
-            alarmRepository.save(AlarmEntity.of(article.getUser(), AlarmType.NEW_EMOTION_ON_ARTICLE, message));
+            // 글쓴이와 좋아요 누른 사람이 다른 경우에 알람기능 사용
+            if (!user.equals(article.getUser())){
+                alarmRepository.save(AlarmEntity.of(article.getUser(), AlarmType.NEW_EMOTION_ON_ARTICLE, message));
+            }
         });
     }
 }

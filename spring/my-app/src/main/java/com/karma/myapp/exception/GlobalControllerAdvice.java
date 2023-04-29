@@ -14,6 +14,6 @@ public class GlobalControllerAdvice {
         log.error("CustomError : {}", e.getMessage());
         return ResponseEntity
                 .status(e.getCustomErrorCode().getHttpStatus())
-                .body(CustomResponse.error(e.getMessage()));
+                .body(CustomResponse.error(e.getMessage()).toJson());
     }
 }

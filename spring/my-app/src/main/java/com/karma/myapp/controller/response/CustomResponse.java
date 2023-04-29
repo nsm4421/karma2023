@@ -16,10 +16,17 @@ public record CustomResponse<T>(T data, String message) {
     }
 
     public static <T> CustomResponse<T> error(String message) {
-        return new CustomResponse<>(null, message);
+        return new CustomResponse<T>(null, message);
     }
 
     public static <T> CustomResponse<T> error(CustomErrorCode customErrorCode) {
-        return new CustomResponse<>(null, customErrorCode.getMessage());
+        return new CustomResponse<T>(null, customErrorCode.getMessage());
+    }
+
+    public String toJson(){
+        return "{" +
+                "\"message\":" + "\"" + message + "\"," +
+                "\"data\":" + (data==null?"null":data) +
+                "}";
     }
 }

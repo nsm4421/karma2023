@@ -57,13 +57,16 @@ public class ArticleCommentService {
     public ArticleCommentDto writeComment(CustomPrincipal principal, Long articleId, Long parentCommentId, String content) {
         UserAccountEntity user = UserAccountEntity.from(principal);
         ArticleEntity article = articleRepository.getReferenceById(articleId);
-        alarmRepository.save(
-                AlarmEntity.of(
-                        article.getUser(),
-                        AlarmType.NEW_COMMENT_ON_ARTICLE,
-                        String.format("%s write comment as %s", principal.getUsername(), content)
-                )
-        );
+        // 글쓴이와 댓쓴이가 다른 경우, 알람기능 사용
+        if (!user.equals(article.getUser())){
+            alarmRepository.save(
+                    AlarmEntity.of(
+                            article.getUser(),
+                            AlarmType.NEW_COMMENT_ON_ARTICLE,
+                            String.format("%s write comment as %s", principal.getUsername(), content)
+                    )
+            );
+        }
         return ArticleCommentDto.from(articleCommentRepository.save(ArticleCommentEntity.of(article, user, content, parentCommentId)));
     }
 
