@@ -1,15 +1,8 @@
-version: '3.8'
+version: '3'
 
 services:
-  # my sql db
-  db:
-    container_name: mysql_local
-    image: mysql:8.0.30
-    volumes:
-      - /db/conf.d:/etc/mysql/conf.d
-      - /db/initdb.d:/docker-entrypoint-initdb.d
-    ports:
-      - "3306:3306"
+  mysql:
+    image: mysql:5.7
     restart: always
     environment:
       - MYSQL_DATABASE=LOCAL_DB
@@ -17,8 +10,14 @@ services:
       - MYSQL_PASSWORD=LOCAL_PASSWORD
       - MYSQL_ROOT_PASSWORD=LOCAL_PASSWORD
       - TZ=ASIA/SEOUL
-  # redis
+    ports:
+      - "3306:3306"
+    volumes:
+      - /db/conf.d:/etc/mysql/conf.d
+      - /db/initdb.d:/docker-entrypoint-initdb.d
+
   redis:
     image: redis
+    restart: always
     ports:
       - 6379:6379

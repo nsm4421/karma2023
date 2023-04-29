@@ -1,11 +1,10 @@
-import { faCoffee } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import Link from 'next/link'
 
 export default function Home() {
   return (
     <main>
-      <h1>Test</h1>
-      <FontAwesomeIcon icon={faCoffee} />
+      <h1>Home</h1>
+      <Link href={"/auth/sign-up"}>Go To Sign Up Page</Link>
     </main>
   )
 }

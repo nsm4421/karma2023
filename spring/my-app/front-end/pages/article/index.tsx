@@ -4,8 +4,28 @@ import axios from "axios";
 import { Box, Grid, Pagination } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { SearchType, SortField, Article, Direction } from "@/utils/model";
+import { IconArticle, IconPencil, IconUser } from '@tabler/icons-react';
+
+const tabs = [
+  {
+    label:"Articles",
+    value:"list",
+    icon:<IconArticle />
+  },
+  {
+    label:"Write",
+    value:"write",
+    icon:<IconPencil />
+  },
+  {
+    label:"My Page",
+    value:"my",
+    icon:<IconUser />
+  },
+]
 
 export default function Article() {
+  const [currentTab, setCurrentTab] = useState<Number>(0);
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [totalPages, setTotalpages] = useState<number>(1);
   const [size, setSize] = useState<number>(20);
@@ -59,7 +79,7 @@ export default function Article() {
         <Box key={idx} m="sm" p="sm">
           <ArticleCard article={article} />
         </Box>
-      ))}
+      ))}   
 
       {/* 페이지네이션 바 */}
       <Grid justify="center" mt={"md"} mb={"md"}>
