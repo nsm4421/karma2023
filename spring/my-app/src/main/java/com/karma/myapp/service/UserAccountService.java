@@ -91,14 +91,7 @@ public class UserAccountService {
         principalRedisRepository.setPrincipal(principal);
 
         // create access token
-        Claims claims = Jwts.claims();
-        claims.put("username", username);
-        return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expireMs))
-                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)), SignatureAlgorithm.HS256)
-                .compact();
+        return generateToken("username", username);
     }
 
     /**
@@ -175,5 +168,17 @@ public class UserAccountService {
                                     );
                                 })
                 ));
+    }
+
+    public String generateToken(String key, String value){
+        // create access token
+        Claims claims = Jwts.claims();
+        claims.put(key, value);
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + expireMs))
+                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)), SignatureAlgorithm.HS256)
+                .compact();
     }
 }
