@@ -73,73 +73,75 @@ export default function SignUp() {
     router.push("/auth/login");
   };
 
-  const checkInputs = () :boolean => {
-    if (!username){
-      setErrorMessage("Username is blank")
+  const checkInputs = (): boolean => {
+    if (!username) {
+      setErrorMessage("Username is blank");
       return false;
     }
-    if (!email){
-      setErrorMessage("Email is blank")
+    if (!email) {
+      setErrorMessage("Email is blank");
       return false;
     }
-    if (!password){
-      setErrorMessage("Password is blank")
+    if (!password) {
+      setErrorMessage("Password is blank");
       return false;
-    }    
-    if (!passwordConfirm){
-      setErrorMessage("Password is blank")
+    }
+    if (!passwordConfirm) {
+      setErrorMessage("Password is blank");
       return false;
-    }    
-    if (usernameErrorMessage){
+    }
+    if (usernameErrorMessage) {
       setErrorMessage(usernameErrorMessage);
       return false;
     }
-    if (emailErrorMessage){
+    if (emailErrorMessage) {
       setErrorMessage(emailErrorMessage);
       return false;
     }
-    if (passwordErrorMessage){
+    if (passwordErrorMessage) {
       setErrorMessage(passwordConfirm);
       return false;
     }
-    if (passwordConfirmErrorMessage){
+    if (passwordConfirmErrorMessage) {
       setErrorMessage(passwordConfirmErrorMessage);
       return false;
     }
     return true;
-  }
+  };
 
   // 회원가입 요청
   const handleSubmit = async () => {
     setIsLoading(true);
     // 입력값 체크
-    if (!await checkInputs()){
+    if (!(await checkInputs())) {
       setIsLoading(false);
       return;
     }
-
-    await fetch("/api/user/sign-up", {
-      method: "POST",
-      body: JSON.stringify({ username, password, email }),
-    })
-      // 회원가입 성공시 → 로그인 페이지로
-      .then((res) => {
-        if (res.ok) {
-          goToLoginPage();
-          return;
-        }
-        return res;
+    try {
+      await fetch("/api/user/sign-up", {
+        method: "POST",
+        body: JSON.stringify({ username, password, email }),
       })
-      .then((res) => res?.json())
-      // 회원가입 실패시 → 에러 메세지 보여주기
-      .then((data) => {
-        setErrorMessage(data.message ?? "Error Occurs...");
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        setErrorMessage(err.data);
-        setIsLoading(false);
-      });
+        // 회원가입 성공시 → 로그인 페이지로
+        .then((res) => {
+          if (res.ok) {
+            goToLoginPage();
+            return;
+          }
+          return res;
+        })
+        .then((res) => res?.json())
+        // 회원가입 실패시 → 에러 메세지 보여주기
+        .then((data) => {
+          setErrorMessage(data.message ?? "Error Occurs...");
+        })
+        .catch((err) => {
+          setErrorMessage(err.data);
+        });
+    } catch (e) {
+      console.error("Error on sign up >>> ", e);
+      setIsLoading(false);
+    }
   };
 
   return (

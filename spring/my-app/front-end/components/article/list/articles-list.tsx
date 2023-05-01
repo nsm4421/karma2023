@@ -1,4 +1,4 @@
-import ArticleCard from "@/components/article/article-card";
+import ArticleCard from "@/components/article/list/article-card";
 import axios from "axios";
 import { Badge, Box, Grid, Text } from "@mantine/core";
 import { useEffect, useState } from "react";

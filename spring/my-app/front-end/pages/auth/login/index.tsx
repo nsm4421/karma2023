@@ -32,17 +32,16 @@ export default function Login() {
       body: JSON.stringify({ username, password }),
     })
       .then((res) => res.json())
-
-      .then((data) => {
-        console.log(data);
+      .then((res) => {
         // 로그인 성공시 → 토큰을 저장
-        if (data.data) {
-          localStorage.setItem("token", data.data);
+        if (res.data) {
+          console.debug(res.message);
+          localStorage.setItem("token", res.data.token);
           handleGoToArticlePage();
           return;
         }
         // 로그인 실패시 → 에러 메세지 보여주기
-        setErrorMessage(data.message ?? "Error Occurs...");
+        setErrorMessage(res.message ?? "Error Occurs...");
         setIsLoading(false);
       })
       .catch((err) => {

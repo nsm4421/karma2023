@@ -5,8 +5,9 @@ import {
   IconPencil,
   IconUser,
 } from "@tabler/icons-react";
-import ArticleList from "@/components/article/articles-list";
 import { Tabs } from "@mantine/core";
+import ArticleList from "@/components/article/list/articles-list";
+import WriteArticle from "@/components/article/write/write-article";
 
 export default function Article() {
   const [currentTab, setCurrentTab] = useState<string | null>("list");
@@ -31,7 +32,7 @@ export default function Article() {
         </Tabs.Panel>
 
         <Tabs.Panel value="write" pt="xs">
-          Messages tab content
+          <WriteArticle/>
         </Tabs.Panel>
 
         <Tabs.Panel value="settings" pt="xs">
