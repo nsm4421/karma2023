@@ -11,6 +11,7 @@ public record ArticleDto(
         String title,
         String content,
         Set<String> hashtags,
+        String memo,
         LocalDateTime createdAt,
         String createdBy,
         LocalDateTime modifiedAt,
@@ -30,6 +31,7 @@ public record ArticleDto(
                 null,
                 null,
                 null,
+                null,
                 null
         );
     }
@@ -41,6 +43,7 @@ public record ArticleDto(
                 entity.getTitle(),
                 entity.getContent(),
                 entity.getHashtags(),
+                entity.getMemo(),
                 entity.getCreatedAt(),
                 entity.getCreatedBy(),
                 entity.getModifiedAt(),

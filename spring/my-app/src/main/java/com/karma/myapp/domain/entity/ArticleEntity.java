@@ -33,6 +33,7 @@ public class ArticleEntity extends BaseEntity {
      * content : 게시글 본문
      * hashtags : 해쉬태그
      * comments : 댓글
+     * memo
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,15 +41,18 @@ public class ArticleEntity extends BaseEntity {
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id")
     private UserAccountEntity user;
-    @Column(nullable = false)
+    @Column(columnDefinition = "VARCHAR(1000) CHARACTER SET UTF8", nullable = false)
     @Setter
     private String title;
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "VARCHAR(10000) CHARACTER SET UTF8", nullable = false)
     @Setter
     private String content;
+    @Column(columnDefinition = "json")
+    private String memo;
     @ToString.Exclude
     @ElementCollection(fetch = FetchType.EAGER)
-    @Column(name = "hashtag")
+    @CollectionTable(name = "ARTICLE_HASHTAG")
+    @Column(columnDefinition = "VARCHAR(1000) CHARACTER SET UTF8")
     @Setter
     private Set<String> hashtags = new HashSet<String>();
     @ToString.Exclude
@@ -56,12 +60,13 @@ public class ArticleEntity extends BaseEntity {
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
     private final Set<ArticleCommentEntity> comments = new LinkedHashSet<>();
 
-    private ArticleEntity(Long id, UserAccountEntity user, String title, String content, Set<String> hashtags) {
+    private ArticleEntity(Long id, UserAccountEntity user, String title, String content, Set<String> hashtags, String memo) {
         this.id = id;
         this.user = user;
         this.title = title;
         this.content = content;
         this.hashtags = hashtags;
+        this.memo = memo;
     }
 
     protected ArticleEntity() {
@@ -72,7 +77,7 @@ public class ArticleEntity extends BaseEntity {
             String title,
             String content
     ) {
-        return new ArticleEntity(null, user, title, content, Set.of());
+        return new ArticleEntity(null, user, title, content, Set.of(), null);
     }
 
     public static ArticleEntity of(
@@ -81,7 +86,7 @@ public class ArticleEntity extends BaseEntity {
             String content,
             Set<String> hashtags
     ) {
-        return new ArticleEntity(null, user, title, content, hashtags);
+        return new ArticleEntity(null, user, title, content, hashtags, null);
     }
 
     @Override

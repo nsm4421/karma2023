@@ -37,7 +37,7 @@ public class ArticleCommentEntity extends BaseEntity {
     @JoinColumn(name = "user_id")
     @Setter
     private UserAccountEntity user;
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(nullable = false, columnDefinition = "VARCHAR(10000) CHARACTER SET UTF8")
     @Setter
     private String content;
 

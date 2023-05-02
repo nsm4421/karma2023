@@ -41,7 +41,7 @@ public class UserAccountEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
+    @Column(unique = true, columnDefinition = "VARCHAR(100) CHARACTER SET UTF8")
     @Setter
     private String username;
     @Column

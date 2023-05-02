@@ -6,7 +6,6 @@ import ArticleTitleAccordian from "@/components/article/write/article-title-acco
 import ArticleContentAccrodian from "@/components/article/write/article-content-accordian";
 import ArticleHashtagAccordian from "@/components/article/write/article-hashtag-accordian";
 import { useRouter } from "next/router";
-import axios from "axios";
 
 export default function WriteArticle() {
   const router = useRouter();
@@ -63,7 +62,9 @@ export default function WriteArticle() {
             Write Article
           </Title>
         </Grid.Col>
-        <Grid.Col span={3}>
+        <Grid.Col span={2}>
+        </Grid.Col>
+        <Grid.Col span={1}>
           <Button onClick={handleSubmit} disabled={isLoading} color="yellow">
             Save
           </Button>

@@ -10,6 +10,7 @@ public record GetArticleResponse (
         String title,
         String content,
         Set<String> hashtags,
+        String memo,
         LocalDateTime createdAt,
         String createdBy,
         LocalDateTime modifiedAt
@@ -20,6 +21,7 @@ public record GetArticleResponse (
                 dto.title(),
                 dto.content(),
                 dto.hashtags(),
+                dto.memo(),
                 dto.createdAt(),
                 dto.user().username(),
                 dto.modifiedAt()
