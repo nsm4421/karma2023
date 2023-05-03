@@ -27,6 +27,13 @@ export default function ArticleCard({ article }: { article: Article }) {
       <Group position="apart" mt="md" mb="xs">
         {/* 제목 */}
         <Text weight={500}>{article.title}</Text>
+      </Group>
+
+      <Group position="apart" mt="md" mb="xs" pl="sm" pr="sm">
+        {/* 유저명 */}
+        <Text size="sm" color="dimmed">
+          {article.createdBy}
+        </Text>
 
         {/* 상세 페이지로 버튼 */}
         <Button
@@ -37,16 +44,6 @@ export default function ArticleCard({ article }: { article: Article }) {
           <Text>Go</Text>
           <WiDirectionRight style={{ fontSize: "20px" }} />
         </Button>
-      </Group>
-
-      <Group position="apart" mt="md" mb="xs">
-        {/* 본문 */}
-        <Text size="sm">{article.content}</Text>
-
-        {/* 유저명 */}
-        <Text size="sm" color="dimmed">
-          {article.createdBy}
-        </Text>
       </Group>
 
       <Group position="apart" mt="md" mb="xs">

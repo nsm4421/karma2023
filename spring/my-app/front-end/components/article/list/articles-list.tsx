@@ -34,9 +34,6 @@ export default function ArticleList() {
 
   return (
     <>
-      <Text>
-        테스트용 ▶ Endpoint : {endPoint} / totalPages : {totalPages}
-      </Text>
       {/* 헤더 */}
       <Box m="sm" p="lg">
         <Grid grow align="center" justify="space-between">
@@ -45,7 +42,7 @@ export default function ArticleList() {
               Page
             </Badge>
           </Grid.Col>
-          <Grid.Col span={10} >
+          <Grid.Col span={10}>
             {/* 페이징 바 */}
             <PagingBar
               pageNumber={pageNumber}

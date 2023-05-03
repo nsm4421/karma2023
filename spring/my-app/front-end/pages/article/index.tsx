@@ -2,28 +2,33 @@ import { useState } from "react";
 import { Article } from "@/utils/model";
 import {
   IconPhoto,
-  IconPencil,
   IconUser,
+  IconNotification,
 } from "@tabler/icons-react";
 import { Tabs } from "@mantine/core";
 import ArticleList from "@/components/article/list/articles-list";
-import WriteArticle from "@/components/article/write/write-article";
 
 export default function Article() {
   const [currentTab, setCurrentTab] = useState<string | null>("list");
 
   return (
     <>
-      <Tabs defaultValue="list" value={currentTab} onTabChange={setCurrentTab} variant="pills" color="green">
+      <Tabs
+        defaultValue="list"
+        value={currentTab}
+        onTabChange={setCurrentTab}
+        variant="pills"
+        color="green"
+      >
         <Tabs.List>
-          <Tabs.Tab value="list" icon={<IconPhoto/>}>
+          <Tabs.Tab value="list" icon={<IconPhoto />}>
             Articles
           </Tabs.Tab>
-          <Tabs.Tab value="write" icon={<IconPencil />}>
-            Write
-          </Tabs.Tab>
-          <Tabs.Tab value="settings" icon={<IconUser />}>
+          <Tabs.Tab value="my-page" icon={<IconUser />}>
             My Article
+          </Tabs.Tab>
+          <Tabs.Tab value="notification" icon={<IconNotification />}>
+            Notification
           </Tabs.Tab>
         </Tabs.List>
 
@@ -31,12 +36,12 @@ export default function Article() {
           <ArticleList />
         </Tabs.Panel>
 
-        <Tabs.Panel value="write" pt="xs">
-          <WriteArticle/>
+        <Tabs.Panel value="my-page" pt="xs">
+          TODO : My Page
         </Tabs.Panel>
 
-        <Tabs.Panel value="settings" pt="xs">
-          Settings tab content
+        <Tabs.Panel value="notification" pt="xs">
+          TODO : Notification
         </Tabs.Panel>
       </Tabs>
     </>

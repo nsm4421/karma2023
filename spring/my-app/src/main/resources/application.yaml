@@ -11,9 +11,9 @@ spring:
     username: LOCAL_USER
     password: LOCAL_PASSWORD
   jpa:
-    defer-datasource-initialize: true
+#    defer-datasource-initialize: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     open-in-view: false
