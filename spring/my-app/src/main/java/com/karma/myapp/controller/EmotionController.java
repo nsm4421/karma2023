@@ -20,7 +20,7 @@ public class EmotionController {
     private final EmotionService emotionService;
 
     @GetMapping("/{articleId}")
-    public CustomResponse<EmotionDto> getMyEmotion(
+    public CustomResponse<EmotionConst> getMyEmotion(
             @PathVariable Long articleId,
             @AuthenticationPrincipal CustomPrincipal principal
     ) {

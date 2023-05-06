@@ -29,7 +29,7 @@ public class AlarmEntity extends BaseEntity {
     @Enumerated(value = EnumType.STRING)
     @Column(name = "alarm_type", nullable = false)
     private AlarmType alarmType;
-    @Setter
+    @Setter @Column(columnDefinition = "VARCHAR(5000) CHARACTER SET UTF8", nullable = false)
     private String message;
     @Column(columnDefinition = "json")
     private String memo;

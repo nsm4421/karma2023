@@ -17,7 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
-import java.util.List;
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -32,17 +32,17 @@ public class SecurityConfig {
         return http
                 // csrf
                 .csrf()
-                .disable()
-                // cors : 모두 허용
+                .disable()                // cors : 모두 허용
                 .cors(c -> {
                             CorsConfigurationSource source = request -> {
                                 CorsConfiguration config = new CorsConfiguration();
                                 config.setAllowedOrigins(
-                                        List.of("*")
+                                        Arrays.asList("http://localhost:3000")
                                 );
                                 config.setAllowedMethods(
-                                        List.of("*")
+                                        Arrays.asList("GET", "POST", "PUT", "DELETE")
                                 );
+                                config.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
                                 return config;
                             };
                             c.configurationSource(source);
@@ -59,7 +59,7 @@ public class SecurityConfig {
                                 // articles → GET request permit all
                                 .requestMatchers(
                                         HttpMethod.GET,
-                                        "/api/article", "api/article/*"
+                                        "/api/article", "api/article/*", "api/comment", "api/emotion"
                                 ).permitAll()
                                 // sign up, login → POST request permit all
                                 .requestMatchers(

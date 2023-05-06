@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,10 +35,11 @@ public class EmotionService {
      * @return
      */
     @Transactional(readOnly = true)
-    public EmotionDto getMyEmotion(CustomPrincipal principal, Long articleId) {
+    public EmotionConst getMyEmotion(CustomPrincipal principal, Long articleId) {
         UserAccountEntity user = UserAccountEntity.from(principal);
         ArticleEntity article = articleRepository.getReferenceById(articleId);
-        return EmotionDto.from(emotionRepository.findByUserAndArticle(user, article).orElseGet(null));
+        Optional<EmotionEntity> emotion = emotionRepository.findByUserAndArticle(user, article);
+        return emotion.map(EmotionEntity::getEmotion).orElse(null);
     }
 
     /**
@@ -53,6 +55,11 @@ public class EmotionService {
             EmotionConst emotion = EmotionConst.valueOf(String.valueOf(o[0]));
             Long cnt = Long.parseLong(o[1].toString());
             countMap.put(emotion, cnt);
+        }
+        for (EmotionConst e: EmotionConst.values()){
+            if (!countMap.containsKey(e)){
+                countMap.put(e, 0L);
+            }
         }
         return countMap;
     }
