@@ -37,7 +37,7 @@ export default function Article() {
         </Tabs.Panel>
 
         <Tabs.Panel value="my-page" pt="xs">
-          TODO : My Page
+      
         </Tabs.Panel>
 
         <Tabs.Panel value="notification" pt="xs">

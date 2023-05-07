@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Article } from "@/utils/model";
 import SearchArticle from "./search-article";
 import PagingBar from "./pagination-bar";
+import Loading from "@/components/loading";
 
 export default function ArticleList() {
   const [pageNumber, setPageNumber] = useState<number>(1);
@@ -30,7 +31,12 @@ export default function ArticleList() {
 
   useEffect(() => {
     getArticles();
+    return;
   }, [pageNumber]);
+
+  if (isLoading){
+    return <Loading/>
+  }
 
   return (
     <>

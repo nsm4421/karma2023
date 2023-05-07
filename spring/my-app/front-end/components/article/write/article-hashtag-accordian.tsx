@@ -14,6 +14,7 @@ export default function ArticleHashtagAccordian({
     (idx: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
       const newHashtag = [...hashtags];
       newHashtag[idx] = e.target.value;
+      newHashtag.filter((v, _, __) => (v!==""))
       setHashtags(newHashtag);
     };
   const addHashtag = () => {

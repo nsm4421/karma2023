@@ -76,7 +76,7 @@ export default function Login() {
       <TextInput
         type="password"
         withAsterisk
-        label={"password"}
+        label={"Password"}
         placeholder={"press password"}
         value={password}
         onChange={handlePassword}

@@ -39,9 +39,7 @@ export default function WriteArticle() {
       }),
     }).then(res=>{
       if (res.ok){
-        setTitle("");
-        setEditorState(EditorState.createEmpty());
-        setHashtags([""]);
+        router.push("/article")
         alert("Sucess")
         return;
       }
