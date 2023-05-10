@@ -3,6 +3,8 @@ package com.karma.myapp.controller;
 import com.karma.myapp.controller.response.CustomResponse;
 import com.karma.myapp.controller.response.GetAlarmResponse;
 import com.karma.myapp.domain.dto.CustomPrincipal;
+import com.karma.myapp.domain.entity.UserAccountEntity;
+import com.karma.myapp.service.AlarmService;
 import com.karma.myapp.service.UserAccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -10,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
 @RequestMapping("/api/alarm")
@@ -17,6 +20,13 @@ import org.springframework.web.bind.annotation.*;
 public class AlarmController {
 
     private final UserAccountService userAccountService;
+    private final AlarmService alarmService;
+
+    @GetMapping("/subscribe")
+    public SseEmitter subscribe(@AuthenticationPrincipal CustomPrincipal principal){
+        UserAccountEntity user = UserAccountEntity.from(principal);
+        return alarmService.connect(user.getUsername());
+    }
 
     // 알림 가져오기
     @GetMapping

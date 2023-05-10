@@ -13,10 +13,13 @@ import com.karma.myapp.repository.AlarmRepository;
 import com.karma.myapp.repository.ArticleCommentRepository;
 import com.karma.myapp.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
+import net.minidev.json.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +28,7 @@ public class ArticleCommentService {
 
     private final ArticleRepository articleRepository;
     private final ArticleCommentRepository articleCommentRepository;
-    private final AlarmRepository alarmRepository;
+    private final AlarmService alarmService;
 
     /**
      * 댓글 가져오기
@@ -58,14 +61,20 @@ public class ArticleCommentService {
         UserAccountEntity user = UserAccountEntity.from(principal);
         ArticleEntity article = articleRepository.getReferenceById(articleId);
         // 글쓴이와 댓쓴이가 다른 경우, 알람기능 사용
-        if (!user.equals(article.getUser())){
-            alarmRepository.save(
-                    AlarmEntity.of(
+        if (!user.equals(article.getUser())) {
+            JSONObject message = new JSONObject();
+            message.putAll(Map.of(
+                    "Event-Type", AlarmType.NEW_COMMENT_ON_ARTICLE.name(),
+                    "Article-Id", articleId,
+                    "Parent-Comment-Id", parentCommentId,
+                    "Username", user.getUsername()));
+            alarmService.sendAlarm(
+                    alarmService.saveAlarm(
                             article.getUser(),
                             AlarmType.NEW_COMMENT_ON_ARTICLE,
-                            String.format("%s write comment as %s", principal.getUsername(), content)
-                    )
-            );
+                            message.toJSONString(),
+                            null
+                    ));
         }
         return ArticleCommentDto.from(articleCommentRepository.save(ArticleCommentEntity.of(article, user, content, parentCommentId)));
     }

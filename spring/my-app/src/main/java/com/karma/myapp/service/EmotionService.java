@@ -12,6 +12,7 @@ import com.karma.myapp.repository.AlarmRepository;
 import com.karma.myapp.repository.ArticleRepository;
 import com.karma.myapp.repository.EmotionRepository;
 import lombok.RequiredArgsConstructor;
+import net.minidev.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +26,7 @@ import java.util.Optional;
 public class EmotionService {
     private final ArticleRepository articleRepository;
     private final EmotionRepository emotionRepository;
-    private final AlarmRepository alarmRepository;
+    private final AlarmService alarmService;
 
     /**
      * 내 감정표현 가져오기
@@ -56,8 +57,8 @@ public class EmotionService {
             Long cnt = Long.parseLong(o[1].toString());
             countMap.put(emotion, cnt);
         }
-        for (EmotionConst e: EmotionConst.values()){
-            if (!countMap.containsKey(e)){
+        for (EmotionConst e : EmotionConst.values()) {
+            if (!countMap.containsKey(e)) {
                 countMap.put(e, 0L);
             }
         }
@@ -87,15 +88,22 @@ public class EmotionService {
         }, () -> {
             // 기존에 감정표현이 없는 경우 → 저장 & 알림
             emotionRepository.save(EmotionEntity.of(emotion, user, article));
-            String message = switch (emotion) {
-                case LIKE ->
-                        String.format("User %s like your post with title %s", user.getUsername(), article.getTitle());
-                case DISLIKE ->
-                        String.format("User %s hate your post with title %s", user.getUsername(), article.getTitle());
-            };
             // 글쓴이와 좋아요 누른 사람이 다른 경우에 알람기능 사용
-            if (!user.equals(article.getUser())){
-                alarmRepository.save(AlarmEntity.of(article.getUser(), AlarmType.NEW_EMOTION_ON_ARTICLE, message));
+            if (!user.equals(article.getUser())) {
+                JSONObject message = new JSONObject();
+                message.putAll(Map.of("Article-Id", articleId,
+                        "Article-Title", article.getTitle(),
+                        "Username", user.getUsername(),
+                        "Emotion-Type", emotion.name()
+                ));
+                alarmService.sendAlarm(
+                        alarmService.saveAlarm(
+                                article.getUser(),
+                                AlarmType.NEW_EMOTION_ON_ARTICLE,
+                                message.toJSONString(),
+                                null
+                        )
+                );
             }
         });
     }

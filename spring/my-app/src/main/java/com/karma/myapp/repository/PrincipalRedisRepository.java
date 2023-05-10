@@ -1,7 +1,6 @@
 package com.karma.myapp.repository;
 
 import com.karma.myapp.domain.dto.CustomPrincipal;
-import com.karma.myapp.domain.entity.UserAccountEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

@@ -20,6 +20,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -27,32 +30,55 @@ public class JwtFilter extends OncePerRequestFilter {
     private final UserAccountService userAccountService;
     private final String secretKey;
 
+    // 인증토큰이 Url param으로 주어지는 경우 End point
+    private final static List<String> TOKEN_IN_PARAM_URL = List.of("/api/alarm/subscribe");
+
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,
-            FilterChain chain) throws ServletException, IOException {
+            FilterChain chain
+    ) throws ServletException, IOException {
         final String header;
         final String token;
+
         try {
-            // validate header
-            header = request.getHeader(HttpHeaders.AUTHORIZATION);
-            if (header == null || !header.startsWith("Bearer ")) {
-                log.error("Header is invalid(request url : {})", request.getRequestURI());
-                chain.doFilter(request, response);
-                return;
-            } else {
-                token = header.split(" ")[1].trim();
+            /// Ⅰ.Extract Access Token
+            // Case (ⅰ) Access token is in url as param
+            if (TOKEN_IN_PARAM_URL.contains(request.getRequestURI())){
+                Map<String, String> params = new HashMap<>();
+                for (String param:request.getQueryString().split("&")){
+                    String[] keyValue = param.split("=");
+                    params.put(keyValue[0], keyValue[1]);
+                }
+                if (params.containsKey("token")){
+                    token = params.get("token");
+                } else {
+                    log.error("Token in url is not valid - url:{}",request.getRequestURI());
+                    chain.doFilter(request, response);
+                    return;
+                }
+            }
+            // Case (ⅱ) Access token is in header
+            else {
+                header = request.getHeader(HttpHeaders.AUTHORIZATION);
+                if (header == null || !header.startsWith("Bearer ")) {
+                    log.error("Header is invalid(request url : {})", request.getRequestURI());
+                    chain.doFilter(request, response);
+                    return;
+                } else {
+                    token = header.split(" ")[1].trim();
+                }
             }
 
-            // extract claims
+            // Ⅱ. extract claims
             Claims claims = Jwts.parserBuilder()
                     .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)))
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
 
-            // check token is expired
+            // Ⅲ. check token is expired
             Date expires = claims.getExpiration();
             if (expires.before(new Date())){
                 log.error("Token is expired");
@@ -60,11 +86,11 @@ public class JwtFilter extends OncePerRequestFilter {
                 return;
             }
 
-            // get principal from DB
+            // Ⅳ. Get principal from DB
             String username = claims.get("username", String.class);
             CustomPrincipal principal = userAccountService.loadByUsername(username);
 
-            // return authentication
+            // Ⅴ. Set authentication in security context
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                     principal, null,
                     principal.getAuthorities()
