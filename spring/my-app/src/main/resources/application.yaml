@@ -11,7 +11,6 @@ spring:
     username: LOCAL_USER
     password: LOCAL_PASSWORD
   jpa:
-#    defer-datasource-initialize: true
     hibernate:
       ddl-auto: validate
       naming:
@@ -29,7 +28,29 @@ spring:
     ttl:  # 캐싱 기간 (단위 : day)
       principal: 3
 
+  kafka:
+    bootstrap-servers: localhost:29092
+    properties:
+      # serialization 시에 dto 패키지 내에 class들에 대해서 허용
+      spring.json.trusted.packages: com.karma.myapp.domain.dto
+    consumer:
+      group-id: ALARM             # consumer그룹 id
+      enable-auto-commit: true    # offset을 주기적으로 저장할지 여부
+      auto-offset-reset: latest   # offset에 오류가 있을 경우 이전꺼는 무시하고, 이제부터 들어오는 데이터부터 읽기 시작
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      max-poll-records: 1000     # consumer가 한번에 가져오는 message 갯수
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties.enable.idempotence: false
+    template:
+      default-topic: ALARM_TOPIC # 기본 설정 topic name
+
+sse:      # server sent event
+  timeout: 3600000
+  event-name: ALARM
 
 jwt:
   secret-key: JWT_SECRET_KEY_NEED_TO_CHANGE_AT_PRODUCTION
-  expire-ms: 1000000
+  expire-ms: 1000000000

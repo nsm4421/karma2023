@@ -3,17 +3,15 @@ package com.karma.myapp.service;
 import com.karma.myapp.domain.constant.AlarmType;
 import com.karma.myapp.domain.dto.ArticleCommentDto;
 import com.karma.myapp.domain.dto.CustomPrincipal;
-import com.karma.myapp.domain.entity.AlarmEntity;
 import com.karma.myapp.domain.entity.ArticleCommentEntity;
 import com.karma.myapp.domain.entity.ArticleEntity;
 import com.karma.myapp.domain.entity.UserAccountEntity;
 import com.karma.myapp.exception.CustomErrorCode;
 import com.karma.myapp.exception.CustomException;
-import com.karma.myapp.repository.AlarmRepository;
 import com.karma.myapp.repository.ArticleCommentRepository;
 import com.karma.myapp.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
-import net.minidev.json.JSONObject;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,6 +22,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class ArticleCommentService {
 
     private final ArticleRepository articleRepository;
@@ -60,23 +59,23 @@ public class ArticleCommentService {
     public ArticleCommentDto writeComment(CustomPrincipal principal, Long articleId, Long parentCommentId, String content) {
         UserAccountEntity user = UserAccountEntity.from(principal);
         ArticleEntity article = articleRepository.getReferenceById(articleId);
+        ArticleCommentEntity comment = articleCommentRepository.save(ArticleCommentEntity.of(article, user, content, parentCommentId));
         // 글쓴이와 댓쓴이가 다른 경우, 알람기능 사용
         if (!user.equals(article.getUser())) {
-            JSONObject message = new JSONObject();
-            message.putAll(Map.of(
-                    "Event-Type", AlarmType.NEW_COMMENT_ON_ARTICLE.name(),
-                    "Article-Id", articleId,
-                    "Parent-Comment-Id", parentCommentId,
-                    "Username", user.getUsername()));
             alarmService.sendAlarm(
                     alarmService.saveAlarm(
                             article.getUser(),
                             AlarmType.NEW_COMMENT_ON_ARTICLE,
-                            message.toJSONString(),
-                            null
+                            String.format("%s write comment on your article", user.getUsername()),
+                            "{" +
+                                    "\"username\":" + "\"" + user.getUsername() + "\"" + "," +
+                                    "\"articleId\":" + "\"" + articleId + "\"" + "," +
+                                    "\"commentId\":" + "\"" + comment.getId() + "\"" + "," +
+                                    "\"parentCommentId\":" + "\"" + comment.getParentCommentId() + "\"" +
+                                    "}"
                     ));
         }
-        return ArticleCommentDto.from(articleCommentRepository.save(ArticleCommentEntity.of(article, user, content, parentCommentId)));
+        return ArticleCommentDto.from(comment);
     }
 
     /**

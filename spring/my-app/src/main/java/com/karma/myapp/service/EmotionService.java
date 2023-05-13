@@ -3,16 +3,12 @@ package com.karma.myapp.service;
 import com.karma.myapp.domain.constant.AlarmType;
 import com.karma.myapp.domain.constant.EmotionConst;
 import com.karma.myapp.domain.dto.CustomPrincipal;
-import com.karma.myapp.domain.dto.EmotionDto;
-import com.karma.myapp.domain.entity.AlarmEntity;
 import com.karma.myapp.domain.entity.ArticleEntity;
 import com.karma.myapp.domain.entity.EmotionEntity;
 import com.karma.myapp.domain.entity.UserAccountEntity;
-import com.karma.myapp.repository.AlarmRepository;
 import com.karma.myapp.repository.ArticleRepository;
 import com.karma.myapp.repository.EmotionRepository;
 import lombok.RequiredArgsConstructor;
-import net.minidev.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -87,23 +83,20 @@ public class EmotionService {
             }
         }, () -> {
             // 기존에 감정표현이 없는 경우 → 저장 & 알림
-            emotionRepository.save(EmotionEntity.of(emotion, user, article));
+            EmotionEntity entity = emotionRepository.save(EmotionEntity.of(emotion, user, article));
             // 글쓴이와 좋아요 누른 사람이 다른 경우에 알람기능 사용
             if (!user.equals(article.getUser())) {
-                JSONObject message = new JSONObject();
-                message.putAll(Map.of("Article-Id", articleId,
-                        "Article-Title", article.getTitle(),
-                        "Username", user.getUsername(),
-                        "Emotion-Type", emotion.name()
-                ));
                 alarmService.sendAlarm(
                         alarmService.saveAlarm(
                                 article.getUser(),
                                 AlarmType.NEW_EMOTION_ON_ARTICLE,
-                                message.toJSONString(),
-                                null
-                        )
-                );
+                                String.format("%s express emotion on your article", user.getUsername()),
+                                "{" +
+                                        "\"username\":" + "\"" + user.getUsername() + "\"" + "," +
+                                        "\"articleId\":" + "\"" + articleId + "\"" + "," +
+                                        "\"emotion\":" + "\"" + emotion.name() + "\"" + "," +
+                                        "}"
+                        ));
             }
         });
     }

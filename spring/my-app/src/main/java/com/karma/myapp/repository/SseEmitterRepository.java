@@ -16,7 +16,7 @@ public class SseEmitterRepository {
     public Optional<SseEmitter> getEmitter(String username) {
         final String key = getKey(username);
         log.info("SseEmitterRepository.getEmitter key:{}", key);
-        return Optional.of(emitterMap.get(key));
+        return Optional.ofNullable(emitterMap.get(key));
     }
 
     public void saveEmitter(String username, SseEmitter sseEmitter) {

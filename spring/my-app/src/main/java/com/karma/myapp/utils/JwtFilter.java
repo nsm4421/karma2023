@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@RequiredArgsConstructor
+    @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
     private final UserAccountService userAccountService;
     private final String secretKey;
