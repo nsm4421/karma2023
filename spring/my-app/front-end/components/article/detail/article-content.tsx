@@ -1,9 +1,7 @@
 import { Article } from "@/utils/model";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import MyEditor from "../write/edit-article";
 import { EditorState, convertFromRaw } from "draft-js";
-import Loading from "@/components/loading";
 import {
   Avatar,
   Badge,
@@ -11,56 +9,37 @@ import {
   Divider,
   Group,
   Paper,
-  Text,
   Title,
 } from "@mantine/core";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import EmotionButton from "./emotion-button";
 
-export default function ArticleContent({ id }: { id: string }) {
-  const [article, setArticle] = useState<Article | null>(null);
+export default function ArticleContent(props: {
+  id: string ;
+  article: Article | null;
+}) {
   const [editorState, setEditorState] = useState<EditorState | undefined>(
     undefined
   );
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const getArticle = async (id: string) => {
-    setIsLoading(true);
-    await axios
-      .get(`http://localhost:8080/api/article/${id}`)
-      .then((res) => res.data)
-      .then((data) => {
-        setEditorState(
-          EditorState.createWithContent(
-            convertFromRaw(JSON.parse(data.data.content))
-          )
-        );
-        setArticle(data.data);
-      })
-      .catch((err) => {
-        alert("Error occurs...");
-        console.error(err);
-      });
-    setIsLoading(false);
-    return;
-  };
-
+  // Get Article
   useEffect(() => {
-    getArticle(id);
-  }, []);
+    if (props.article?.content) {
+      setEditorState(
+        EditorState.createWithContent(
+          convertFromRaw(JSON.parse(props.article?.content))
+        )
+      );
+    }
+  }, [props.article]);
 
-  //   에러
-  if (!(article && editorState)) {
+  // On Error
+  if (!props.article) {
     return (
       <>
-        <Text>Error</Text>
+        <h1>Faile to get Article</h1>
       </>
     );
-  }
-
-  // 로딩중
-  if (isLoading) {
-    return <Loading />;
   }
 
   return (
@@ -70,7 +49,7 @@ export default function ArticleContent({ id }: { id: string }) {
           {/* 제목 */}
           <Group>
             <Badge>Title</Badge>
-            <Title order={6}>{article.title}</Title>
+            <Title order={6}>{props.article.title}</Title>
           </Group>
           {/* 작성자 */}
           <Badge
@@ -80,7 +59,7 @@ export default function ArticleContent({ id }: { id: string }) {
             radius="xl"
             leftSection={<Avatar size="sm" />}
           >
-            {article.createdBy}
+            {props.article.createdBy}
           </Badge>
         </Group>
       </Paper>
@@ -92,20 +71,22 @@ export default function ArticleContent({ id }: { id: string }) {
         <Divider />
         {/* 본문 */}
         <Box p="sm" mb="md">
-          <MyEditor readOnly={true} editorState={editorState} />
+          {editorState && (
+            <MyEditor readOnly={true} editorState={editorState} />
+          )}
         </Box>
         <Divider />
         <Group position="apart">
           {/* 해시태그 */}
           <Box maw={400} pt="sm">
-            {Array.from(article.hashtags).map((hashtag, idx) => (
+            {Array.from(props.article.hashtags).map((hashtag, idx) => (
               <Badge key={idx} color="green">
                 #{hashtag}
               </Badge>
             ))}
           </Box>
           {/* 좋아요/싫어요 버튼 */}
-          <EmotionButton id={id} />
+          <EmotionButton id={props.id} />
         </Group>
       </Paper>
     </>

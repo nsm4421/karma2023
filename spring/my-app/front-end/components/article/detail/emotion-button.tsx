@@ -1,15 +1,10 @@
+import { Emotion, EmtoionCountMap } from "@/utils/model";
 import { ActionIcon, Group, Text } from "@mantine/core";
 import { IconThumbDown, IconThumbUp } from "@tabler/icons-react";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-type Emotion = "LIKE" | "DISLIKE" | null;
-type EmtoionCountMap = {
-  LIKE: number;
-  DISLIKE: number;
-} | null;
-
-export default function EmotionButton({ id }: { id: string }) {
+export default function EmotionButton(props: { id: string }) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [emotionCountMap, setEmotionCountMap] = useState<EmtoionCountMap>(null);
   const [currentEmotion, setCurrentEmotion] = useState<Emotion>(null);
@@ -24,7 +19,7 @@ export default function EmotionButton({ id }: { id: string }) {
   const getEmotionCountMap = async () => {
     setIsLoading(true);
     await axios
-      .get(`http://localhost:8080/api/emotion?article-id=${id}`)
+      .get(`http://localhost:8080/api/emotion?article-id=${props.id}`)
       .then((res) => res.data)
       .then((data) => {
         setEmotionCountMap({
@@ -44,7 +39,7 @@ export default function EmotionButton({ id }: { id: string }) {
     const token = await localStorage.getItem("token");
     setIsLoading(true);
     await axios
-      .get(`http://localhost:8080/api/emotion/${id}`, {
+      .get(`http://localhost:8080/api/emotion/${props.id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         },
@@ -72,7 +67,7 @@ export default function EmotionButton({ id }: { id: string }) {
       .post(
         "http://localhost:8080/api/emotion",
         {
-          articleId: id,
+          articleId: props.id,
           emotion,
         },
         {

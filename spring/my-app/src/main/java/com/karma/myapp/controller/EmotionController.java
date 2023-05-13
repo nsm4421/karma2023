@@ -5,7 +5,6 @@ import com.karma.myapp.controller.request.EmotionRequest;
 import com.karma.myapp.controller.response.CustomResponse;
 import com.karma.myapp.domain.constant.EmotionConst;
 import com.karma.myapp.domain.dto.CustomPrincipal;
-import com.karma.myapp.domain.dto.EmotionDto;
 import com.karma.myapp.service.EmotionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

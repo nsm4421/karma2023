@@ -1,7 +1,7 @@
 package com.karma.myapp.service;
 
 import com.karma.myapp.domain.constant.AlarmType;
-import com.karma.myapp.domain.dto.KafkaAlarmDto;
+import com.karma.myapp.domain.dto.AlarmMessageDto;
 import com.karma.myapp.domain.entity.AlarmEntity;
 import com.karma.myapp.domain.entity.UserAccountEntity;
 import com.karma.myapp.exception.CustomErrorCode;
@@ -26,7 +26,7 @@ import java.io.IOException;
 public class AlarmService {
     private final AlarmRepository alarmRepository;
     private final SseEmitterRepository sseEmitterRepository;
-    private final KafkaTemplate<String, KafkaAlarmDto> kafkaTemplate;
+    private final KafkaTemplate<String, AlarmMessageDto> kafkaTemplate;
     @Value("${sse.timeout}")
     private Long TIMEOUT;
     @Value("${sse.event-name}")
@@ -39,7 +39,7 @@ public class AlarmService {
      * Producer - Kafka 서버로 알람 보내기
      * @param dto 알람 dto
      */
-    public void sendAlarmToKafka(KafkaAlarmDto dto) {
+    public void sendAlarmToKafka(AlarmMessageDto dto) {
         final String key = "AID_" + dto.id();
         try {
             kafkaTemplate.send(TOPIC, key, dto);
@@ -55,7 +55,7 @@ public class AlarmService {
      * @param ack acknowledgement
      */
     @KafkaListener(topics = "${spring.kafka.template.default-topic}", groupId = "${spring.kafka.consumer.group-id}")
-    public void listen(ConsumerRecord<String, KafkaAlarmDto> record, Acknowledgment ack) {
+    public void listen(ConsumerRecord<String, AlarmMessageDto> record, Acknowledgment ack) {
         log.info("Consume the event - json:{}", record.key());
         ack.acknowledge();
     }
@@ -65,14 +65,14 @@ public class AlarmService {
      * @param entity Alarm Entity
      */
     public void sendAlarm(AlarmEntity entity) {
-        sendAlarmToKafka(KafkaAlarmDto.from(entity));
+        sendAlarmToKafka(AlarmMessageDto.from(entity));
         sseEmitterRepository.getEmitter(entity.getUser().getUsername()).ifPresentOrElse(it -> {
             try {
                 it.send(SseEmitter
                         .event()
                         .id(entity.getId().toString())
                         .name(EVENT_NAME)
-                        .data(entity.getMessage())
+                        .data(AlarmMessageDto.from(entity))
                 );
             } catch (IOException e) {
                 throw CustomException.of(CustomErrorCode.INTERNAL_SERVER_ERROR, "Send Alarm failed");

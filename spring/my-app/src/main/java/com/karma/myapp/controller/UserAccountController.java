@@ -58,6 +58,11 @@ public class UserAccountController {
         return CustomResponse.success(new LoginResponse(username, newToken), "new token");
     }
 
+    @GetMapping("/username")
+    public CustomResponse<String> getUsername(@AuthenticationPrincipal CustomPrincipal principal) {
+        return CustomResponse.success(principal.getUsername());
+    }
+
     // 회원정보 변경
     @PutMapping("/modify")
     public CustomResponse<SignUpResponse> modifyUserInfo(

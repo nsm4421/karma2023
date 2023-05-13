@@ -17,7 +17,7 @@ import PagingBar from "../list/pagination-bar";
 import { parseLocalDateTimeInKoreanTime } from "@/utils/date-util";
 import { Comment } from "@/utils/model";
 
-export default function ArticleComment({ id }: { id: string }) {
+export default function ArticleComment(props: { id: string }) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [comments, setComments] = useState<Comment[]>([]);
   const [pageNumber, setPageNumber] = useState<number>(1);
@@ -27,7 +27,7 @@ export default function ArticleComment({ id }: { id: string }) {
     setIsLoading(true);
     await axios
       .get(
-        `http://localhost:8080/api/comment?article-id=${id}&page=${
+        `http://localhost:8080/api/comment?article-id=${props.id}&page=${
           pageNumber - 1
         }`
       )
@@ -56,7 +56,7 @@ export default function ArticleComment({ id }: { id: string }) {
     <Box>
       {/* 댓글입력 */}
       <Paper p="sm" shadow="md" m="sm" withBorder>
-        <CommentInput id={id} callback={getComments} />
+        <CommentInput id={props.id} callback={getComments} />
       </Paper>
 
       {/* 댓글보기 */}

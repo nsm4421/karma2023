@@ -5,25 +5,23 @@ import com.karma.myapp.domain.entity.AlarmEntity;
 
 import java.time.LocalDateTime;
 
-public record KafkaAlarmDto (
+public record AlarmMessageDto(
         Long id,
-        Long uid,
         AlarmType alarmType,
         String message,
         String memo,
         LocalDateTime createdAt
 ){
-    public static KafkaAlarmDto from(AlarmDto dto){
-        return new KafkaAlarmDto(
+    public static AlarmMessageDto from(AlarmDto dto){
+        return new AlarmMessageDto(
                 dto.id(),
-                dto.user().id(),
                 dto.alarmType(),
                 dto.message(),
                 dto.memo(),
                 dto.createdAt()
         );
     }
-    public static KafkaAlarmDto from(AlarmEntity entity){
+    public static AlarmMessageDto from(AlarmEntity entity){
         return from(AlarmDto.from(entity));
     }
 }

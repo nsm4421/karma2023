@@ -1,24 +1,36 @@
 import ArticleContent from "@/components/article/detail/article-content";
-import ArticleComment from "@/components/article/detail/article-comment";
-import { Accordion } from "@mantine/core";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { Article } from "@/utils/model";
+import ArticleComment from "@/components/article/detail/article-comment";
+import ErrorPage from "@/components/error";
 export default function ArticleDetail() {
   const router = useRouter();
   const { id } = router.query;
+  const [article, setArticle] = useState<Article | null>(null);
 
-  if (!(typeof id === "string")) {
-    return (
-      <>
-        <h1>Error</h1>
-        <p>Article id is not valid : {id}</p>
-      </>
-    );
-  }
+  const getArticle = async () => {
+    if (!id) {
+      return;
+    }
+    const data = await fetch(`/api/article/get-article?id=${id}`)
+      .then((res) => res.json())
+      .then((json) => json.data.data);
+    setArticle(data);
+  };
+
+  useEffect(() => {
+    getArticle();
+  }, [id]);
+
+  if (id === undefined || !(typeof(id) === "string")){
+    return <ErrorPage/>
+   }
+
   return (
     <>
-        <ArticleContent id={id} />
-
-      <ArticleComment id={id} />
+      <ArticleContent id={id} article={article} />
+      <ArticleComment id={id}/>
     </>
   );
 }
