@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { EditorState, convertToRaw } from "draft-js";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { Accordion, Box, Button, Grid, Title } from "@mantine/core";
+import { Accordion, Box, Button, Container, Grid, Group, Title } from "@mantine/core";
 import ArticleTitleAccordian from "@/components/article/write/article-title-accordian";
 import ArticleContentAccrodian from "@/components/article/write/article-content-accordian";
 import ArticleHashtagAccordian from "@/components/article/write/article-hashtag-accordian";
@@ -11,11 +11,15 @@ export default function WriteArticle() {
   const router = useRouter();
   const [title, setTitle] = useState<string>("");
   const [hashtags, setHashtags] = useState<string[]>([""]);
-  // 본문
+
   const [editorState, setEditorState] = useState<EditorState | undefined>(
     EditorState.createEmpty()
   );
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const handleGoToArticlePage = () => {
+    router.push("/article")
+  }
 
   const handleSubmit = async () => {
     const token = localStorage.getItem("token");
@@ -34,7 +38,7 @@ export default function WriteArticle() {
       body: JSON.stringify({
         title,
         content: JSON.stringify(convertToRaw(editorState.getCurrentContent())),
-        hashtags : Array.from(new Set(hashtags)),
+        hashtags : Array.from(new Set(hashtags)).filter((v, _, __)=>{return v!==""}),
         token: `Bearer ${localStorage.getItem("token")}`,
       }),
     }).then(res=>{
@@ -53,19 +57,23 @@ export default function WriteArticle() {
   };
 
   return (
-    <Box>
-      <Grid p="sm" m="sm">
-        <Grid.Col span={9}>
+    <Container>
+      {/* 헤더 */}
+      <Grid p="sm" m="sm" justify="space-between">
+        <Grid.Col span={7}>
           <Title order={3} weight={400} mb="lg">
             Write Article
           </Title>
         </Grid.Col>
-        <Grid.Col span={2}>
-        </Grid.Col>
-        <Grid.Col span={1}>
-          <Button onClick={handleSubmit} disabled={isLoading} color="yellow">
-            Save
-          </Button>
+        <Grid.Col span={3} offset={2}>
+          <Group>
+            <Button onClick={handleGoToArticlePage} disabled={isLoading} color="green">
+              Back
+            </Button>
+            <Button onClick={handleSubmit} disabled={isLoading} color="yellow">
+              Save
+            </Button>
+          </Group>
         </Grid.Col>
       </Grid>
 
@@ -91,6 +99,6 @@ export default function WriteArticle() {
           setHashtags={setHashtags}
         />
       </Accordion>
-    </Box>
+    </Container>
   );
 }

@@ -32,3 +32,14 @@ export type Alarm = {
   memo: string;
   createdAt: string;
 };
+export type AlarmMemo = {
+  articleId?: number;
+  commentId?: number;
+  parentCommentId?: number;
+  title:string;
+  comment? : string;
+  emotion?:Emotion
+  username?: string;
+  alarmType: AlarmType;
+  createdAt?:string;
+};

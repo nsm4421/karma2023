@@ -94,7 +94,9 @@ public class EmotionService {
                                 "{" +
                                         "\"username\":" + "\"" + user.getUsername() + "\"" + "," +
                                         "\"articleId\":" + "\"" + articleId + "\"" + "," +
-                                        "\"emotion\":" + "\"" + emotion.name() + "\"" + "," +
+                                        "\"title\":" + "\"" + article.getTitle() + "\"" + "," +
+                                        "\"createdAt\":" + "\"" + entity.getCreatedAt() + "\"" + "," +
+                                        "\"emotion\":" + "\"" +  emotion.name() + "\""  +
                                         "}"
                         ));
             }

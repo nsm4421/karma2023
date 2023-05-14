@@ -73,7 +73,7 @@ export default function EmotionButton(props: { id: string }) {
         {
           headers: {
             Authorization: `Bearer ${token}`
-          },
+          }
         }
       )
       .then((res) => {

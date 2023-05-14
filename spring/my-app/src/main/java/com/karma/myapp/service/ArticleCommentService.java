@@ -70,7 +70,10 @@ public class ArticleCommentService {
                             "{" +
                                     "\"username\":" + "\"" + user.getUsername() + "\"" + "," +
                                     "\"articleId\":" + "\"" + articleId + "\"" + "," +
+                                    "\"title\":" + "\"" + article.getTitle() + "\"" + "," +
+                                    "\"comment\":" + "\"" + comment.getContent() + "\"" + "," +
                                     "\"commentId\":" + "\"" + comment.getId() + "\"" + "," +
+                                    "\"createdAt\":" + "\"" + comment.getCreatedAt() + "\"" + "," +
                                     "\"parentCommentId\":" + "\"" + comment.getParentCommentId() + "\"" +
                                     "}"
                     ));

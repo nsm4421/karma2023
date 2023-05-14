@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Article } from "@/utils/model";
 import ArticleComment from "@/components/article/detail/article-comment";
 import ErrorPage from "@/components/error";
+import { Container } from "@mantine/core";
 export default function ArticleDetail() {
   const router = useRouter();
   const { id } = router.query;
@@ -28,9 +29,9 @@ export default function ArticleDetail() {
    }
 
   return (
-    <>
+    <Container>
       <ArticleContent id={id} article={article} />
       <ArticleComment id={id}/>
-    </>
+    </Container>
   );
 }
